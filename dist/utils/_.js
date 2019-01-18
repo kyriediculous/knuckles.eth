@@ -1,0 +1,37 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.sortOldest = exports.sortNewest = exports.groupBy = void 0;
+
+const groupBy = (array, key) => array.reduce((rv, x) => {
+  (rv[x[key]] = rv[x[key]] || []).push(x);
+  return rv;
+}, {});
+
+exports.groupBy = groupBy;
+
+const sortNewest = array => {
+  return array.sort((a, b) => {
+    if (a.timestamp.isBefore(b.timestamp)) {
+      return 1;
+    } else {
+      return -1;
+    }
+  });
+};
+
+exports.sortNewest = sortNewest;
+
+const sortOldest = array => {
+  return array.sort((a, b) => {
+    if (a.timestamp.isBefore(b.timestamp)) {
+      return -1;
+    } else {
+      return 1;
+    }
+  });
+};
+
+exports.sortOldest = sortOldest;

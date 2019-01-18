@@ -1,0 +1,82 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.faucet = faucet;
+exports.setLimit = setLimit;
+exports.received = received;
+exports.currentLimit = currentLimit;
+exports.allFaucets = allFaucets;
+
+var _TokenFaucet = _interopRequireDefault(require("../../../../../contracts/build/contracts/TokenFaucet.json"));
+
+var _utils = require("ethers/utils");
+
+var _moment = _interopRequireDefault(require("moment"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//faucet setlimit received limit
+async function faucet(wallet) {
+  try {
+    if (wallet.provider === undefined) wallet.provider = this.provider;
+    const tokenFaucet = this.ContractProvider(_TokenFaucet.default, wallet);
+    let tx = await tokenFaucet.faucet();
+    return this.provider.waitForTransaction(tx.hash);
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
+async function setLimit(limit, wallet) {
+  try {
+    if (wallet.provider === undefined) wallet.provider = this.provider;
+    const tokenFaucet = this.ContractProvider(_TokenFaucet.default, wallet);
+    let tx = await tokenFaucet.setLimit((0, _utils.parseEther)(limit.toString()));
+    return this.provider.waitForTransaction(tx.hash);
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
+async function received(wallet) {
+  try {
+    if (wallet.provider === undefined) wallet.provider = this.provider;
+    const tokenFaucet = this.ContractProvider(_TokenFaucet.default, wallet);
+    return await tokenFaucet.received(wallet.address);
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
+async function currentLimit() {
+  try {
+    const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider);
+    let limit = await tokenFaucet.faucetLimit();
+    return parseFloat((0, _utils.formatEther)(limit)).toFixed(2);
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
+async function allFaucets() {
+  try {
+    const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider);
+    let faucetEvent = new Interface(_TokenFaucet.default.abi).events.logFaucet;
+    let faucetTopics = [faucetEvent.topics[0]];
+    let logs = await this.provider.getLogs({
+      fromBlock: 0,
+      toBlock: 'latest',
+      topics: faucetTopics
+    });
+    logs = logs.map(log => faucetEvent.parse(log.topics, log.data));
+    return logs.map(l => ({
+      user: l._user,
+      amount: parseFloat((0, _utils.formatEther)(l._amount)).toFixed(2),
+      date: (0, _moment.default)(l._date.toString(10) * 1000, "x")
+    }));
+  } catch (err) {
+    throw new Error(err);
+  }
+}
