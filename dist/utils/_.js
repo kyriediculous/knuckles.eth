@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.functionremove0x = exports.isBN = exports.toBN = exports.functioncheckAddressChecksum = exports.functionisAddress = exports.functionisHex = exports.functionbytes32ToString = exports.functionstringToHex = exports.sortOldest = exports.sortNewest = exports.groupBy = void 0;
+exports.remove0x = exports.isBN = exports.toBN = exports.checkAddressChecksum = exports.isAddress = exports.isHex = exports.bytes32ToString = exports.stringToHex = exports.sortOldest = exports.sortNewest = exports.groupBy = void 0;
 
 var _ethers = require("ethers");
 
@@ -42,7 +42,7 @@ const sortOldest = array => {
 
 exports.sortOldest = sortOldest;
 
-const functionstringToHex = str => {
+const stringToHex = str => {
   if (!str) return "0x00";
   var hex = "";
 
@@ -55,15 +55,15 @@ const functionstringToHex = str => {
   return ("0x" + hex).toString(hex);
 };
 
-exports.functionstringToHex = functionstringToHex;
+exports.stringToHex = stringToHex;
 
-const functionbytes32ToString = hex => {
+const bytes32ToString = hex => {
   return _ethers.utils.toUtf8String(hex).replace(/\u0000/g, '');
 };
 
-exports.functionbytes32ToString = functionbytes32ToString;
+exports.bytes32ToString = bytes32ToString;
 
-const functionisHex = hex => {
+const isHex = hex => {
   if (!/^(0x){1}[0-9a-f]*$/i.test(hex)) {
     return false;
   } else {
@@ -79,9 +79,9 @@ const functionisHex = hex => {
  */
 
 
-exports.functionisHex = functionisHex;
+exports.isHex = isHex;
 
-const functionisAddress = address => {
+const isAddress = address => {
   // check if it has the basic requirements of an address
   if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
     return false; // If it's ALL lowercase or ALL upppercase
@@ -100,9 +100,9 @@ const functionisAddress = address => {
  */
 
 
-exports.functionisAddress = functionisAddress;
+exports.isAddress = isAddress;
 
-const functioncheckAddressChecksum = address => {
+const checkAddressChecksum = address => {
   // Check each case
   address = address.replace(/^0x/i, '');
   var addressHash = (0, _sha.default)(address.toLowerCase());
@@ -125,7 +125,7 @@ const functioncheckAddressChecksum = address => {
  */
 
 
-exports.functioncheckAddressChecksum = functioncheckAddressChecksum;
+exports.checkAddressChecksum = checkAddressChecksum;
 
 const toBN = number => {
   try {
@@ -151,8 +151,8 @@ const isBN = object => {
 
 exports.isBN = isBN;
 
-const functionremove0x = str => {
+const remove0x = str => {
   if (str.startsWith('0x')) return str.substring(2);else return str;
 };
 
-exports.functionremove0x = functionremove0x;
+exports.remove0x = remove0x;
