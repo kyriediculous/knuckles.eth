@@ -414,7 +414,7 @@ class Bounties {
       let singles = await this.eth.bounties.rewardsFor(userAddress)
       let recurring  = await this.eth.recurringBounties.rewardsFor(userAddress)
       let logs =  singles.concat(recurring)
-      logs = log .map(r => {
+      logs = logs.map(r => {
         r._amount = bigNumberify(r._amount)
         return r
       })
