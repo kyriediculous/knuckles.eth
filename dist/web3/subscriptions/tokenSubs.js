@@ -19,7 +19,7 @@ const onTokenTransfer = (provider, callback) => {
     topics: [event.topics[0]],
     address: _Token.default.networks[provider.chainId].address
   }, raw => {
-    callback(raw.map(log => event.parse(log.topics, log.data)));
+    callback(event.parse(raw.topics, raw.data));
   });
 };
 

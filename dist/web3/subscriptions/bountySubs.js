@@ -18,7 +18,7 @@ const onBountyCreated = (provider, callback) => {
   provider.on({
     topics: [event.topics[0]]
   }, raw => {
-    callback(raw.map(log => event.parse(log.topics, log.data)));
+    callback(event.parse(raw.topics, raw.data));
   });
 };
 
