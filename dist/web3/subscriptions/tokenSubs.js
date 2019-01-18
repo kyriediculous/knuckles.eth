@@ -14,7 +14,7 @@ var _Provider = _interopRequireDefault(require("../Provider"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const onTokenTransfer = (provider, callback) => {
-  let event = (0, _utils.Interface)(_Token.default.abi).events.Transfer;
+  let event = new _utils.Interface(_Token.default.abi).events.Transfer;
   provider.on({
     topics: [event.topics[0]],
     address: _Token.default.networks[provider.chainId].address

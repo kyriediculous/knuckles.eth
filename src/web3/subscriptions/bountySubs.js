@@ -4,7 +4,7 @@ import Provider from '../Provider'
 
 
 export const onBountyCreated = (provider, callback) => {
-    let event = (Interface(BountyFactory.abi)).events.logBountyCreated
+    let event = (new Interface(BountyFactory.abi)).events.logBountyCreated
 
     provider.on({
       topics: [event.topics[0]]
