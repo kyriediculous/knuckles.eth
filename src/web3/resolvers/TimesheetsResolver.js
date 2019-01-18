@@ -8,8 +8,8 @@ import {Interface} from 'ethers/utils'
 
 export async function setReward(reward, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const timesheets = this.ContractProvider(Timesheets, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const timesheets = this.ContractProvider(Timesheets, this.provider, wallet)
     let tx = await timesheets.setReward(parseEther(reward.toString()))
     return await tx.wait()
   } catch (err) {
@@ -19,8 +19,8 @@ export async function setReward(reward, wallet) {
 
 export async function setPeriod(user, startPeriod, completed, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const timesheets = this.ContractProvider(Timesheets, wallet)
+  if (wallet === undefined) throw new Error("Must supply a signer")
+    const timesheets = this.ContractProvider(Timesheets, this.provider, wallet)
     let tx = await timesheets.setPeriod(user, startPeriod, completed)
     return await tx.wait()
   } catch (err) {

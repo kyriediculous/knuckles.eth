@@ -40,8 +40,9 @@ var _ = require("../../utils/_");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function bountyAt(address, walletOrProvider) {
-  return new _ethers.Contract(address, _RecurringBountyInterface.default.abi, walletOrProvider);
+function bountyAt(address, provider, wallet = undefined) {
+  if (!wallet) return new _ethers.Contract(address, _RecurringBountyInterface.default.abi, provider);
+  return new _ethers.Contract(address, _RecurringBountyInterface.default.abi, wallet.connect(provider));
 }
 
 const statusOptions = ["Active", "Completed", "Abandoned"];
@@ -85,12 +86,12 @@ async function recurringBountiesFrom(userAddress) {
 
 async function createRecurringBounty(reference, deadline, reward, funding, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
+    if (wallet === undefined) throw new Error("Must supply a signer");
     reference = '0x' + reference;
     deadline = Date.parse(deadline) / 1000;
     funding = (0, _utils.parseEther)(funding.toString());
     reward = (0, _utils.parseEther)(reward.toString());
-    const recurringBountyFactory = this.ContractProvider(_RecurringBountyFactory.default, wallet);
+    const recurringBountyFactory = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let spend = await _TokenResolver.approveSpend.call(this, recurringBountyFactory.address, funding, wallet);
     await spend.wait();
     let creation = await recurringBountyFactory.createBounty(reference, deadline, reward, funding, {
@@ -146,8 +147,8 @@ async function getRecurringBountyMeta(address) {
 
 async function startWork(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const b = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const b = bountyAt(address, this.provider, wallet);
     let tx = await b.startWork({
       gasPrice: '0x0'
     });
@@ -159,8 +160,8 @@ async function startWork(address, wallet) {
 
 async function cancelRecurringBounty(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const b = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const b = bountyAt(address, this.provider, wallet);
     let tx = await b.cancelBounty();
     return await tx.wait();
   } catch (e) {
@@ -170,8 +171,8 @@ async function cancelRecurringBounty(address, wallet) {
 
 async function cancelMintable(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const rbf = this.ContractProvider(_RecurringBountyFactory.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.cancelMintable(address, {
       gasPrice: '0x0'
     });
@@ -234,9 +235,9 @@ async function commitsFrom(address) {
 async function withdrawFunding(address, amount, token, wallet) {
   try {
     if (token == '') token = (0, _utils.hexlify)(0);
-    if (wallet.provider === undefined) wallet.connect(this.provider);
+    if (wallet === undefined) throw new Error("Must supply a signer");
     amount = (0, _utils.parseEther)(amount.toString());
-    const b = bountyAt(address, wallet);
+    const b = bountyAt(address, this.provider, wallet);
     let tx = await b.withdraw(amount, token, {
       gasPrice: '0x0'
     });
@@ -248,12 +249,12 @@ async function withdrawFunding(address, amount, token, wallet) {
 
 async function createMintable(reference, deadline, reward, funding, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
+    if (wallet === undefined) throw new Error("Must supply a signer");
     reference = '0x' + reference;
     deadline = Date.parse(deadline) / 1000;
     funding = (0, _utils.parseEther)(funding.toString());
     reward = (0, _utils.parseEther)(reward.toString());
-    const rbf = this.ContractProvider(_RecurringBountyFactory.default, wallet);
+    const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.createMintableBounty(reference, deadline, reward, funding, {
       gasPrice: '0x0'
     });
@@ -265,8 +266,8 @@ async function createMintable(reference, deadline, reward, funding, wallet) {
 
 async function acceptMintable(address, id, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const rbf = this.ContractProvider(_RecurringBountyFactory.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.acceptMintable(address, id, {
       gasPrice: '0x0'
     });
@@ -278,7 +279,7 @@ async function acceptMintable(address, id, wallet) {
 
 async function addFunding(address, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
+    if (wallet === undefined) throw new Error("Must supply a signer");
     await _TokenResolver.sendTokens.call(this, address, amount, wallet);
     return;
   } catch (e) {
@@ -288,8 +289,8 @@ async function addFunding(address, amount, wallet) {
 
 async function mintFunding(address, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const rbf = this.ContractProvider(_RecurringBountyFactory.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.mintFunding(address, amount, {
       gasPrice: '0x0'
     });
@@ -318,8 +319,8 @@ async function rewardsFor(address) {
 
 async function startWorking(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const b = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const b = bountyAt(address, this.provider, wallet);
     let tx = await b.startWork({
       gasPrice: '0x0'
     });

@@ -6,8 +6,8 @@ import moment from 'moment'
 
 export async function faucet(wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const tokenFaucet = this.ContractProvider(TokenFaucet, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const tokenFaucet = this.ContractProvider(TokenFaucet, this.provider, wallet)
     let tx =  await tokenFaucet.faucet()
     return await tx.wait()
   } catch (err) {
@@ -17,8 +17,8 @@ export async function faucet(wallet) {
 
 export async function setLimit(limit, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const tokenFaucet = this.ContractProvider(TokenFaucet, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const tokenFaucet = this.ContractProvider(TokenFaucet, this.provider, wallet)
     let tx =  await tokenFaucet.setLimit(parseEther(limit.toString()))
     return await tx.wait()
   } catch (err) {
@@ -28,7 +28,7 @@ export async function setLimit(limit, wallet) {
 
 export async function received(wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
+    if (wallet === undefined) throw new Error("Must supply a signer")
     const tokenFaucet = this.ContractProvider(TokenFaucet, this.provider)
     return await tokenFaucet.received(wallet.address)
   } catch (err) {

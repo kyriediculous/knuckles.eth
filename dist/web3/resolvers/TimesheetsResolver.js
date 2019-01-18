@@ -24,8 +24,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //setreward, setperiod, getperiod, getperiods
 async function setReward(reward, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const timesheets = this.ContractProvider(_Timesheets.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const timesheets = this.ContractProvider(_Timesheets.default, this.provider, wallet);
     let tx = await timesheets.setReward((0, _utils.parseEther)(reward.toString()));
     return await tx.wait();
   } catch (err) {
@@ -35,8 +35,8 @@ async function setReward(reward, wallet) {
 
 async function setPeriod(user, startPeriod, completed, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const timesheets = this.ContractProvider(_Timesheets.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const timesheets = this.ContractProvider(_Timesheets.default, this.provider, wallet);
     let tx = await timesheets.setPeriod(user, startPeriod, completed);
     return await tx.wait();
   } catch (err) {

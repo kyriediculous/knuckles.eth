@@ -28,8 +28,8 @@ async function getBalance(address) {
 
 async function sendTokens(recipient, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const token = this.ContractProvider(_Token.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const token = this.ContractProvider(_Token.default, this.provider, wallet);
 
     if (typeof amount != 'string') {
       amount = amount.toString();
@@ -47,8 +47,8 @@ async function sendTokens(recipient, amount, wallet) {
 
 async function approveSpend(recipient, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const token = this.ContractProvider(_Token.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const token = this.ContractProvider(_Token.default, this.provider, wallet);
 
     if (typeof amount != 'string') {
       amount = amount.toString();

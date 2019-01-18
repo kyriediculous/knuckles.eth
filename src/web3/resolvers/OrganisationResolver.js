@@ -7,8 +7,8 @@ import {isAdmin} from './UsersResolver'
 //identity , minttokens , addAdmin , removeAdmin , blacklistMember , removeBlacklistMember
 export async function setIdentity(name, swarmHash, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const organisation = this.ContractProvider(Organisation, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const organisation = this.ContractProvider(Organisation, this.provider, wallet)
     let tx =  await organisation.setOrganisationIdentity(stringToHex(name.toLowerCase()), swarmHash, {gasPrice: '0x0'})
     return await tx.wait()
   } catch (err) {
@@ -18,8 +18,8 @@ export async function setIdentity(name, swarmHash, wallet) {
 
 export async function mintTokens(to, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const organisation = this.ContractProvider(Organisation, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const organisation = this.ContractProvider(Organisation, this.provider, wallet)
     let tx = await organisation.mintToken(to, parseEther(amount.toString()), {gasPrice: '0x0'})
     return await tx.wait()
   } catch (err) {
@@ -29,8 +29,8 @@ export async function mintTokens(to, amount, wallet) {
 
 export async function addAdmin(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const organisation = this.ContractProvider(Organisation, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const organisation = this.ContractProvider(Organisation, this.provider, wallet)
     let tx = await organisation.addAdmin(address, {gasPrice: '0x0'})
     return await tx.wait()
   } catch (err) {
@@ -40,8 +40,8 @@ export async function addAdmin(address, wallet) {
 
 export async function removeAdmin(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const organisation = this.ContractProvider(Organisation, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const organisation = this.ContractProvider(Organisation, this.provider, wallet)
     let tx = await organisation.removeAdmin(address, {gasPrice: '0x0'})
     return await tx.wait()
   } catch (err) {
@@ -51,8 +51,8 @@ export async function removeAdmin(address, wallet) {
 
 export async function blacklist(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const organisation = this.ContractProvider(Organisation, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const organisation = this.ContractProvider(Organisation, this.provider, wallet)
     let tx = await organisation.blacklist(address)
     return await tx.wait()
   } catch (err) {
@@ -62,8 +62,8 @@ export async function blacklist(address, wallet) {
 
 export async function whitelist(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const organisation = this.ContractProvider(Organisation, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const organisation = this.ContractProvider(Organisation, this.provider, wallet)
     let tx = await organisation.whitelist(address)
     return await tx.wait()
   } catch (err) {
@@ -215,8 +215,8 @@ export async function pending() {
 
 export async function approve(user, accepted, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const org = this.ContractProvider(Organisation, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const org = this.ContractProvider(Organisation, this.provider, wallet)
     let tx = await org.approve(user, accepted)
     return await tx.wait()
   } catch (err) {
@@ -226,8 +226,8 @@ export async function approve(user, accepted, wallet) {
 
 export async function toggleApproval(wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const org = this.ContractProvider(Organisation, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const org = this.ContractProvider(Organisation, this.provider, wallet)
     let tx = await org.toggleApproval()
     return await tx.wait()
   } catch (err) {

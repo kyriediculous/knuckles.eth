@@ -5,11 +5,11 @@ import {stringToHex} from '../../utils/_'
 
 export async function register(name, swarmHash, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const usersregistry = this.ContractProvider(UsersRegistry, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const usersregistry = this.ContractProvider(UsersRegistry, this.provider, wallet)
     let tx = await usersregistry.register(stringToHex(name.toLowerCase()), swarmHash, {gasPrice: '0x0'})
     await tx.wait()
-    const organisation = this.ContractProvider(Organisation, wallet)
+    const organisation = this.ContractProvider(Organisation, this.provider, wallet)
     tx = await organisation.join()
     return await tx.wait()
   } catch (err) {
@@ -19,8 +19,8 @@ export async function register(name, swarmHash, wallet) {
 
 export async function update(newName, swarmHash, oldName, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider)
-    const usersregistry = this.ContractProvider(UsersRegistry, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const usersregistry = this.ContractProvider(UsersRegistry, this.provider, wallet)
     let tx = await usersregistry.update(stringToHex(newName.toLowerCase()), swarmHash, stringToHex(oldName.toLowerCase()), {gasPrice: '0x0'})
     return await tx.wait()
   } catch (err) {

@@ -45,8 +45,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const statusOptions = ["Active", "Completed", "Abandoned"];
 
-function bountyAt(address, walletOrProvider) {
-  return new _ethers.Contract(address, _BountyInterface.default.abi, walletOrProvider);
+function bountyAt(address, provider, wallet = undefined) {
+  if (!wallet) return new _ethers.Contract(address, _BountyInterface.default.abi, provider);
+  return new _ethers.Contract(address, _BountyInterface.default.abi, wallet.connect(provider));
 } //ADD TYPE ? eg. 'normal' , 'recurring'
 
 
@@ -72,12 +73,12 @@ async function allBounties() {
 
 async function createBounty(reference, deadline, reward, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
+    if (wallet === undefined) throw new Error("Must supply a signer");
     reference = '0x' + reference;
     deadline = Date.parse(deadline) / 1000;
     reward = (0, _utils.parseEther)(reward.toString());
-    const bountyFactory = this.ContractProvider(_BountyFactory.default, wallet);
-    const token = this.ContractProvider(_Token.default, wallet);
+    const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
+    const token = this.ContractProvider(_Token.default, this.provider, wallet);
     const spend = await token.approve(bountyFactory.address, reward, {
       gasPrice: '0x0'
     });
@@ -93,11 +94,11 @@ async function createBounty(reference, deadline, reward, wallet) {
 
 async function createMintable(reference, deadline, reward, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
+    if (wallet === undefined) throw new Error("Must supply a signer");
     reference = '0x' + reference;
     deadline = Date.parse(deadline) / 1000;
     reward = (0, _utils.parseEther)(reward.toString());
-    const bountyFactory = this.ContractProvider(_BountyFactory.default, wallet);
+    const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
     let tx = await bountyFactory.createMintableBounty(reference, deadline, reward, {
       gasPrice: '0x0'
     });
@@ -300,8 +301,8 @@ async function getMeta(address) {
 
 async function cancelBounty(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const bounty = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const bounty = bountyAt(address, this.provider, wallet);
     let tx = await bounty.cancelBounty({
       gasPrice: '0x0'
     });
@@ -313,8 +314,8 @@ async function cancelBounty(address, wallet) {
 
 async function cancelMintable(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const bf = this.ContractProvider(_BountyFactory.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const bf = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
     let tx = await bf.cancelMintable(address, {
       gasPrice: '0x0'
     });
@@ -326,8 +327,8 @@ async function cancelMintable(address, wallet) {
 
 async function contribute(address, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const bounty = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const bounty = bountyAt(address, this.provider, wallet);
     let spend = await _TokenResolver.approveSpend.call(this, address, amount, wallet);
     await spend.wait();
     spend = await bounty.contribute((0, _utils.parseEther)(amount), {
@@ -378,8 +379,8 @@ async function getCommit(address, id) {
 
 async function acceptCommit(address, id, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const b = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const b = bountyAt(address, this.provider, wallet);
     let tx = await b.acceptCommit(id, {
       gasPrice: '0x0'
     });
@@ -392,8 +393,8 @@ async function acceptCommit(address, id, wallet) {
 
 async function acceptMintable(address, id, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const bountyFactory = this.ContractProvider(_BountyFactory.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
     let tx = await bountyFactory.acceptMintable(address, id, {
       gasPrice: '0x0'
     });
@@ -405,8 +406,8 @@ async function acceptMintable(address, id, wallet) {
 
 async function submitCommit(address, reference, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const b = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const b = bountyAt(address, this.provider, wallet);
     reference = '0x' + reference;
     let tx = await b.submitCommit(reference, {
       gasPrice: '0x0'
@@ -460,8 +461,8 @@ async function leaderboard() {
 
 async function startWorking(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const b = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const b = bountyAt(address, this.provider, wallet);
     let tx = await b.startWork({
       gasPrice: '0x0'
     });
@@ -473,8 +474,8 @@ async function startWorking(address, wallet) {
 
 async function refundContribution(address, contributionId, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.connect(this.provider);
-    const bounty = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const bounty = bountyAt(address, this.provider, wallet);
     let tx = await bounty.refundContribution(contributionId, (0, _utils.parseEther)(amount.toString(10)), {
       gasPrice: '0x0'
     });
