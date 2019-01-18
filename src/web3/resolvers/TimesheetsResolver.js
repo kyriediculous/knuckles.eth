@@ -8,7 +8,7 @@ import {Interface} from 'ethers/utils'
 
 export async function setReward(reward, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const timesheets = this.ContractProvider(Timesheets, wallet)
     let tx = await timesheets.setReward(parseEther(reward.toString()))
     return await tx.wait()
@@ -19,7 +19,7 @@ export async function setReward(reward, wallet) {
 
 export async function setPeriod(user, startPeriod, completed, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const timesheets = this.ContractProvider(Timesheets, wallet)
     let tx = await timesheets.setPeriod(user, startPeriod, completed)
     return await tx.wait()
@@ -108,7 +108,7 @@ export async function getLast(user) {
 export async function reward() {
   try {
     const org = this.ContractProvider(Timesheets, this.provider)
-    return parseFloat(formatEther(await org.reward())).toFixed(2)
+    return parseFloat(formatEther(bigNumberify(await org.reward()))).toFixed(2)
   } catch (err) {
     throw new Error(err)
   }

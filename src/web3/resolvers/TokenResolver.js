@@ -1,11 +1,11 @@
 import Token from '../artifacts/Token.json'
-import {formatEther, parseEther} from 'ethers/utils'
+import {formatEther, parseEther, bigNumberify} from 'ethers/utils'
 
 export async function getBalance(address) {
   try {
     const token = this.ContractProvider(Token, this.provider)
     let balance = await token.balanceOf(address)
-    return formatEther(balance)
+    return formatEther(bigNumberify(balance))
   } catch (err) {
     throw new Error('Unable to retrieve token balance' + err)
   }
@@ -13,7 +13,7 @@ export async function getBalance(address) {
 
 export async function sendTokens(recipient, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const token = this.ContractProvider(Token, wallet)
     if (typeof amount != 'string') {
       amount = amount.toString()
@@ -28,7 +28,7 @@ export async function sendTokens(recipient, amount, wallet) {
 
 export async function approveSpend(recipient, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const token = this.ContractProvider(Token, wallet)
     if (typeof amount != 'string') {
       amount = amount.toString()
@@ -45,7 +45,7 @@ export async function getAllowance(approver, spender) {
   try {
     const token = this.ContractProvider(Token, this.provider)
     let balance = await token.allowance(approver, spender)
-    return formatEther(balance)
+    return formatEther(bigNumberify(balance))
   } catch (err) {
     throw new Error('Unable to retrieve token allowance', err)
   }

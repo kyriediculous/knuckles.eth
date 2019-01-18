@@ -22,7 +22,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //add remove get purchase
 async function add(reference, price, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const rewardStore = this.ContractProvider(_RewardStore.default, wallet);
     let tx = await rewardStore.addListing('0x' + reference, (0, _utils.parseEther)(price.toString()), {
       gasPrice: '0x0'
@@ -35,7 +35,7 @@ async function add(reference, price, wallet) {
 
 async function remove(index, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const rewardStore = this.ContractProvider(_RewardStore.default, wallet);
     let tx = await rewardStore.removeListing(index, {
       gasPrice: '0x0'
@@ -52,7 +52,7 @@ async function get(index) {
     let reward = await rewardStore.listings(index);
     return {
       reference: reward[0],
-      price: parseFloat((0, _utils.formatEther)(reward[1])).toFixed(2),
+      price: parseFloat((0, _utils.formatEther)((0, _utils.bigNumberify)(reward[1]))).toFixed(2),
       active: reward[2]
     };
   } catch (err) {
@@ -62,7 +62,7 @@ async function get(index) {
 
 async function update(index, reference, price, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const org = this.ContractProvider(_RewardStore.default, wallet);
     let tx = await org.updateListing(index, '0x' + reference, (0, _utils.parseEther)(price.toString()), {
       gasPrice: '0x0'
@@ -102,7 +102,7 @@ async function getAll() {
 
 async function purchase(item, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const rewardStore = this.ContractProvider(_RewardStore.default, wallet);
     const spend = await _TokenResolver.approveSpend.call(this, rewardStore.address, item.price, wallet);
     await spend.wait();
@@ -115,7 +115,7 @@ async function purchase(item, wallet) {
 
 async function changeStatus(index, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const rewardStore = this.ContractProvider(_RewardStore.default, wallet);
     let tx = await rewardStore.changeActive(index);
     return await tx.wait();

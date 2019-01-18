@@ -2,7 +2,7 @@ import RecurringBountyFactory from '../artifacts/RecurringBountyFactory.json'
 import RecurringBountyInterface from '../artifacts/RecurringBountyInterface.json'
 import {approveSpend, getBalance, sendTokens} from './TokenResolver'
 import moment from 'moment'
-import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther} from 'ethers/utils'
+import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther, bigNumberify} from 'ethers/utils'
 import {Contract} from 'ethers'
 import {Interface} from 'ethers/utils'
 
@@ -54,7 +54,7 @@ export async function recurringBountiesFrom(userAddress)  {
 
 export async function createRecurringBounty(reference, deadline, reward, funding, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     reference = '0x' + reference
     deadline = Date.parse(deadline) / 1000
     funding = parseEther(funding.toString())
@@ -96,7 +96,7 @@ export async function getRecurringBountyMeta(address) {
       issuer: data[1],
       timestamp: moment((data[2].toString(10) * 1000), "x"),
       deadline: moment((data[3].toString(10) * 1000), "x"),
-      reward: parseFloat(formatEther(data[4])).toFixed(2),
+      reward: parseFloat(formatEther(bigNumberify(data[4]))).toFixed(2),
       status: statusOptions[data[5]],
       commits: Number(await b.getCommits()),
       token: data[6],
@@ -111,7 +111,7 @@ export async function getRecurringBountyMeta(address) {
 
 export async function startWork(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const b = bountyAt(address, wallet)
     let tx = await b.startWork({gasPrice: '0x0'})
     return await tx.wait()
@@ -122,7 +122,7 @@ export async function startWork(address, wallet) {
 
 export async function cancelRecurringBounty(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const b = bountyAt(address, wallet)
     let tx = await b.cancelBounty()
     return await tx.wait()
@@ -133,7 +133,7 @@ export async function cancelRecurringBounty(address, wallet) {
 
 export async function cancelMintable(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const rbf = this.ContractProvider(RecurringBountyFactory, wallet)
     let tx = await rbf.cancelMintable(address, {gasPrice: '0x0'})
     return await tx.wait()
@@ -196,7 +196,7 @@ export async function commitsFrom(address) {
 export async function withdrawFunding(address, amount, token, wallet) {
   try {
     if (token == '') token = hexlify(0);
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     amount = parseEther(amount.toString())
     const b = bountyAt(address, wallet)
     let tx = await b.withdraw(amount, token, {gasPrice: '0x0'})
@@ -208,7 +208,7 @@ export async function withdrawFunding(address, amount, token, wallet) {
 
 export async function createMintable(reference, deadline, reward, funding, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     reference = '0x' + reference
     deadline = Date.parse(deadline) / 1000
     funding = parseEther(funding.toString())
@@ -223,7 +223,7 @@ export async function createMintable(reference, deadline, reward, funding, walle
 
 export async function acceptMintable(address, id , wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const rbf = this.ContractProvider(RecurringBountyFactory, wallet)
     let tx = await rbf.acceptMintable(address, id, {gasPrice: '0x0'})
     return await tx.wait()
@@ -234,7 +234,7 @@ export async function acceptMintable(address, id , wallet) {
 
 export async function addFunding(address, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     await sendTokens.call(this, address, amount, wallet)
     return
   } catch (e) {
@@ -244,7 +244,7 @@ export async function addFunding(address, amount, wallet) {
 
 export async function mintFunding(address, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const rbf = this.ContractProvider(RecurringBountyFactory, wallet)
     let tx = await rbf.mintFunding(address, amount, {gasPrice: '0x0'})
     return await tx.wait()
@@ -272,7 +272,7 @@ export async function rewardsFor(address) {
 
 export async function startWorking(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const b = bountyAt(address, wallet)
     let tx = await b.startWork({gasPrice: '0x0'})
     return await tx.wait()

@@ -3,7 +3,7 @@ import BountyInterface from '../artifacts/BountyInterface.json'
 import Token from '../artifacts/Token.json'
 import {approveSpend, getBalance} from './TokenResolver'
 import moment from 'moment'
-import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther} from 'ethers/utils'
+import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther, bigNumberify} from 'ethers/utils'
 import {Contract} from 'ethers'
 import {Interface} from 'ethers/utils'
 import {sortOldest} from '../../utils/_'
@@ -38,7 +38,7 @@ export async function allBounties () {
 
 export async function createBounty(reference, deadline, reward, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     reference = '0x' + reference
     deadline = Date.parse(deadline) / 1000
     reward = parseEther(reward.toString())
@@ -55,7 +55,7 @@ export async function createBounty(reference, deadline, reward, wallet) {
 
 export async function createMintable(reference, deadline, reward, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     reference = '0x' + reference
     deadline = Date.parse(deadline) / 1000
     reward = parseEther(reward.toString())
@@ -152,7 +152,7 @@ commitLogs = commitLogs.map(log => {
         by: ev._by,
         timestamp: moment((ev._timestamp.toString(10) * 1000), "x"),
         type: 'contribute',
-        extraData: parseFloat(formatEther(ev._amount)).toFixed(2)
+        extraData: parseFloat(formatEther(bigNumberify(ev._amount))).toFixed(2)
       }
     })
 
@@ -249,7 +249,7 @@ export async function getMeta(address) {
       issuer: myBounty[1],
       timestamp: moment((myBounty[2].toString(10) * 1000), "x"),
       deadline: moment((myBounty[3].toString(10) * 1000), "x"),
-      reward: parseFloat(formatEther(myBounty[4])).toFixed(2),
+      reward: parseFloat(formatEther(bigNumberify(myBounty[4]))).toFixed(2),
       status: statusOptions[myBounty[5]],
       commits: Number(await bounty.getCommits()),
       contributions: Number(await bounty.getContributions()),
@@ -265,7 +265,7 @@ export async function getMeta(address) {
 
 export async function cancelBounty(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const bounty = bountyAt(address, wallet)
     let tx = await bounty.cancelBounty({
       gasPrice: '0x0'
@@ -278,7 +278,7 @@ export async function cancelBounty(address, wallet) {
 
 export async function cancelMintable(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const bf = this.ContractProvider(BountyFactory, wallet)
     let tx = await bf.cancelMintable(address, {gasPrice: '0x0'})
     return tx.wait()
@@ -289,7 +289,7 @@ export async function cancelMintable(address, wallet) {
 
 export async function contribute(address, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const bounty = bountyAt(address, wallet)
     let spend = await approveSpend.call(this, address, amount, wallet)
     await spend.wait()
@@ -310,7 +310,7 @@ export async function getContribution(address, id) {
       id: id,
       contributer: con[0],
       token: con[1],
-      amount: formatEther(con[2]),
+      amount: formatEther(bigNumberify(con[2])),
       timestamp: moment((con[3].toString(10) * 1000), "x")
     }
     return con
@@ -341,7 +341,7 @@ export async function getCommit(address, id) {
 
 export async function acceptCommit(address, id, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const b = bountyAt(address, wallet)
     let tx = await b.acceptCommit(id, {gasPrice: '0x0'})
     return await tx.wait()
@@ -353,7 +353,7 @@ export async function acceptCommit(address, id, wallet) {
 
 export async function acceptMintable(address, id, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const bountyFactory = this.ContractProvider(BountyFactory, wallet)
     let tx = await bountyFactory.acceptMintable(address, id, {gasPrice: '0x0'})
     return await tx.wait()
@@ -364,7 +364,7 @@ export async function acceptMintable(address, id, wallet) {
 
 export async function submitCommit(address, reference, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const b = bountyAt(address, wallet)
     reference = '0x' + reference
     let tx = await b.submitCommit(reference, {gasPrice: '0x0'})
@@ -417,7 +417,7 @@ export async function leaderboard() {
 
 export async function startWorking(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const b = bountyAt(address, wallet)
     let tx = await b.startWork({gasPrice: '0x0'})
     return await tx.wait()
@@ -428,7 +428,7 @@ export async function startWorking(address, wallet) {
 
 export async function refundContribution(address, contributionId, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const bounty = bountyAt(address, wallet)
     let tx = await bounty.refundContribution(contributionId, parseEther(amount.toString(10)), {gasPrice: '0x0'})
     return await tx.wait()

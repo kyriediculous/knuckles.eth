@@ -1,12 +1,12 @@
 import RewardStore from '../artifacts/RewardStore.json'
 import {approveSpend, getBalance} from './TokenResolver'
-import {parseEther, formatEther} from 'ethers/utils'
+import {parseEther, formatEther, bigNumberify} from 'ethers/utils'
 
 //add remove get purchase
 
 export async function add(reference, price, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const rewardStore = this.ContractProvider(RewardStore, wallet)
     let tx = await rewardStore.addListing('0x' + reference, parseEther(price.toString()), {gasPrice: '0x0'})
     return await tx.wait()
@@ -17,7 +17,7 @@ export async function add(reference, price, wallet) {
 
 export async function remove(index, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const rewardStore = this.ContractProvider(RewardStore, wallet)
     let tx = await rewardStore.removeListing(index, {gasPrice: '0x0'})
     return await tx.wait()
@@ -32,7 +32,7 @@ export async function get(index) {
     let reward = await rewardStore.listings(index)
     return {
       reference: reward[0],
-      price: parseFloat(formatEther(reward[1])).toFixed(2),
+      price: parseFloat(formatEther(bigNumberify(reward[1]))).toFixed(2),
       active: reward[2]
     }
   } catch (err) {
@@ -42,7 +42,7 @@ export async function get(index) {
 
 export async function update(index, reference, price, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const org = this.ContractProvider(RewardStore, wallet)
     let tx = await org.updateListing(index, '0x'+ reference, parseEther(price.toString()), {gasPrice: '0x0'})
     return await tx.wait()
@@ -78,7 +78,7 @@ export async function getAll() {
 
 export async function purchase(item, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const rewardStore = this.ContractProvider(RewardStore, wallet)
     const spend = await approveSpend.call(this, rewardStore.address, item.price, wallet)
     await spend.wait()
@@ -91,7 +91,7 @@ export async function purchase(item, wallet) {
 
 export async function changeStatus(index, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const rewardStore = this.ContractProvider(RewardStore, wallet)
     let tx = await rewardStore.changeActive(index)
     return await tx.wait()

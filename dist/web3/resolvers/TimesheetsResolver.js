@@ -24,7 +24,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //setreward, setperiod, getperiod, getperiods
 async function setReward(reward, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const timesheets = this.ContractProvider(_Timesheets.default, wallet);
     let tx = await timesheets.setReward((0, _utils.parseEther)(reward.toString()));
     return await tx.wait();
@@ -35,7 +35,7 @@ async function setReward(reward, wallet) {
 
 async function setPeriod(user, startPeriod, completed, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const timesheets = this.ContractProvider(_Timesheets.default, wallet);
     let tx = await timesheets.setPeriod(user, startPeriod, completed);
     return await tx.wait();
@@ -124,7 +124,7 @@ async function getLast(user) {
 async function reward() {
   try {
     const org = this.ContractProvider(_Timesheets.default, this.provider);
-    return parseFloat((0, _utils.formatEther)((await org.reward()))).toFixed(2);
+    return parseFloat((0, _utils.formatEther)((0, _utils.bigNumberify)((await org.reward())))).toFixed(2);
   } catch (err) {
     throw new Error(err);
   }

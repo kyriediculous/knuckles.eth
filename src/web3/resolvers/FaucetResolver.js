@@ -1,13 +1,12 @@
 import TokenFaucet from '../artifacts/TokenFaucet.json'
-import {formatEther, parseEther} from 'ethers/utils'
+import {formatEther, parseEther, bigNumberify} from 'ethers/utils'
 import moment from 'moment'
 
 //faucet setlimit received limit
 
 export async function faucet(wallet) {
   try {
-    const provider = this.provider
-    if (wallet.provider === undefined) wallet.provider = provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const tokenFaucet = this.ContractProvider(TokenFaucet, wallet)
     let tx =  await tokenFaucet.faucet()
     return await tx.wait()
@@ -18,8 +17,7 @@ export async function faucet(wallet) {
 
 export async function setLimit(limit, wallet) {
   try {
-    const provider = this.provider
-    if (wallet.provider === undefined) wallet.provider = provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const tokenFaucet = this.ContractProvider(TokenFaucet, wallet)
     let tx =  await tokenFaucet.setLimit(parseEther(limit.toString()))
     return await tx.wait()
@@ -30,7 +28,7 @@ export async function setLimit(limit, wallet) {
 
 export async function received(wallet) {
   try {
-    const provider = this.provider
+    if (wallet.provider === undefined) wallet.connect(this.provider)
     const tokenFaucet = this.ContractProvider(TokenFaucet, this.provider)
     return await tokenFaucet.received(wallet.address)
   } catch (err) {
@@ -42,7 +40,7 @@ export async function currentLimit() {
   try {
     const tokenFaucet = this.ContractProvider(TokenFaucet, this.provider)
     let limit = await tokenFaucet.faucetLimit()
-    return  parseFloat(formatEther(limit)).toFixed(2)
+    return  parseFloat(formatEther(bigNumberify(limit))).toFixed(2)
   } catch (err) {
     throw new Error(err)
   }
@@ -61,7 +59,7 @@ export async function allFaucets() {
     logs = logs.map(log => faucetEvent.decode(log.data, log.topics))
     return logs.map(l => ({
       user: l._user,
-      amount: parseFloat(formatEther(l._amount)).toFixed(2),
+      amount: parseFloat(formatEther(bigNumberify(l._amount))).toFixed(2),
       date: moment((l._date.toString(10) * 1000), "x")
     }))
   } catch (err) {

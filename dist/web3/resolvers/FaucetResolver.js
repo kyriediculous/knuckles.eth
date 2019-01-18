@@ -20,8 +20,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //faucet setlimit received limit
 async function faucet(wallet) {
   try {
-    const provider = this.provider;
-    if (wallet.provider === undefined) wallet.provider = provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, wallet);
     let tx = await tokenFaucet.faucet();
     return await tx.wait();
@@ -32,8 +31,7 @@ async function faucet(wallet) {
 
 async function setLimit(limit, wallet) {
   try {
-    const provider = this.provider;
-    if (wallet.provider === undefined) wallet.provider = provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, wallet);
     let tx = await tokenFaucet.setLimit((0, _utils.parseEther)(limit.toString()));
     return await tx.wait();
@@ -44,7 +42,7 @@ async function setLimit(limit, wallet) {
 
 async function received(wallet) {
   try {
-    const provider = this.provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider);
     return await tokenFaucet.received(wallet.address);
   } catch (err) {
@@ -56,7 +54,7 @@ async function currentLimit() {
   try {
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider);
     let limit = await tokenFaucet.faucetLimit();
-    return parseFloat((0, _utils.formatEther)(limit)).toFixed(2);
+    return parseFloat((0, _utils.formatEther)((0, _utils.bigNumberify)(limit))).toFixed(2);
   } catch (err) {
     throw new Error(err);
   }
@@ -75,7 +73,7 @@ async function allFaucets() {
     logs = logs.map(log => faucetEvent.decode(log.data, log.topics));
     return logs.map(l => ({
       user: l._user,
-      amount: parseFloat((0, _utils.formatEther)(l._amount)).toFixed(2),
+      amount: parseFloat((0, _utils.formatEther)((0, _utils.bigNumberify)(l._amount))).toFixed(2),
       date: (0, _moment.default)(l._date.toString(10) * 1000, "x")
     }));
   } catch (err) {

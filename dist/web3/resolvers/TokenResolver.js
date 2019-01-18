@@ -20,7 +20,7 @@ async function getBalance(address) {
   try {
     const token = this.ContractProvider(_Token.default, this.provider);
     let balance = await token.balanceOf(address);
-    return (0, _utils.formatEther)(balance);
+    return (0, _utils.formatEther)((0, _utils.bigNumberify)(balance));
   } catch (err) {
     throw new Error('Unable to retrieve token balance' + err);
   }
@@ -28,7 +28,7 @@ async function getBalance(address) {
 
 async function sendTokens(recipient, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const token = this.ContractProvider(_Token.default, wallet);
 
     if (typeof amount != 'string') {
@@ -47,7 +47,7 @@ async function sendTokens(recipient, amount, wallet) {
 
 async function approveSpend(recipient, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet.provider === undefined) wallet.connect(this.provider);
     const token = this.ContractProvider(_Token.default, wallet);
 
     if (typeof amount != 'string') {
@@ -68,7 +68,7 @@ async function getAllowance(approver, spender) {
   try {
     const token = this.ContractProvider(_Token.default, this.provider);
     let balance = await token.allowance(approver, spender);
-    return (0, _utils.formatEther)(balance);
+    return (0, _utils.formatEther)((0, _utils.bigNumberify)(balance));
   } catch (err) {
     throw new Error('Unable to retrieve token allowance', err);
   }
