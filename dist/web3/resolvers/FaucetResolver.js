@@ -20,7 +20,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //faucet setlimit received limit
 async function faucet(wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    const provider = this.provider;
+    if (wallet.provider === undefined) wallet.provider = provider;
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, wallet);
     let tx = await tokenFaucet.faucet();
     return await tx.wait();
@@ -31,7 +32,8 @@ async function faucet(wallet) {
 
 async function setLimit(limit, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    const provider = this.provider;
+    if (wallet.provider === undefined) wallet.provider = provider;
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, wallet);
     let tx = await tokenFaucet.setLimit((0, _utils.parseEther)(limit.toString()));
     return await tx.wait();
@@ -42,8 +44,9 @@ async function setLimit(limit, wallet) {
 
 async function received(wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const tokenFaucet = this.ContractProvider(_TokenFaucet.default, wallet);
+    const provider = this.provider;
+    if (wallet.provider === undefined) wallet.provider = provider;
+    const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider);
     return await tokenFaucet.received(wallet.address);
   } catch (err) {
     throw new Error(err);

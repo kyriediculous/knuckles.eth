@@ -182,8 +182,9 @@ export async function commitsFrom(address) {
     })
     logs = logs.map(log => event.decode(log.data, log.topics))
     logs = logs.map(l => {
-      l.type = 'recurring'
-      return l
+      let log = l
+      log.type = 'recurring'
+      return log
     })
     return logs
   } catch (e) {

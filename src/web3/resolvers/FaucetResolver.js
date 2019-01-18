@@ -6,7 +6,8 @@ import moment from 'moment'
 
 export async function faucet(wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    const provider = this.provider 
+    if (wallet.provider === undefined) wallet.provider = provider
     const tokenFaucet = this.ContractProvider(TokenFaucet, wallet)
     let tx =  await tokenFaucet.faucet()
     return await tx.wait()
@@ -17,7 +18,8 @@ export async function faucet(wallet) {
 
 export async function setLimit(limit, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    const provider = this.provider
+    if (wallet.provider === undefined) wallet.provider = provider
     const tokenFaucet = this.ContractProvider(TokenFaucet, wallet)
     let tx =  await tokenFaucet.setLimit(parseEther(limit.toString()))
     return await tx.wait()
@@ -28,8 +30,9 @@ export async function setLimit(limit, wallet) {
 
 export async function received(wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const tokenFaucet = this.ContractProvider(TokenFaucet, wallet)
+    const provider = this.provider
+    if (wallet.provider === undefined) wallet.provider = provider
+    const tokenFaucet = this.ContractProvider(TokenFaucet, this.provider)
     return await tokenFaucet.received(wallet.address)
   } catch (err) {
     throw new Error(err)
