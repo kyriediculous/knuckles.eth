@@ -168,7 +168,7 @@ async function currentBlacklist() {
       topics: blTopics
     });
     logs = logs.map(l => {
-      l = blEvent.parse(l.topics, l.data);
+      l = blEvent.decode(l.data, l.topics);
       return l._subject;
     });
     logs = Array.from(new Set(logs));
@@ -205,7 +205,7 @@ async function members() {
       toBlock: 'latest',
       topics: joinTopics
     });
-    logs = logs.map(l => joinEvent.parse(l.topics, l.data));
+    logs = logs.map(l => joinEvent.decode(l.data, l.topics));
     logs = logs.map(l => l._user);
     logs = Array.from(new Set(logs));
     let isMembers = await Promise.all(logs.map(l => isMember.call(this, l)));
@@ -238,7 +238,7 @@ async function pending() {
       toBlock: 'latest',
       topics: joinTopics
     });
-    logs = logs.map(l => joinEvent.parse(l.topics, l.data));
+    logs = logs.map(l => joinEvent.decode(l.data, l.topics));
     logs = logs.map(l => l._user);
     logs = Array.from(new Set(logs));
     const org = this.ContractProvider(_OrganisationContract.default, this.provider);
