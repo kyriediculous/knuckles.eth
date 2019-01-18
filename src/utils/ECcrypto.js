@@ -8,7 +8,7 @@ import {
 } from 'eccrypto'
 import {
   verifyMessage
-} from 'ethers/wallet/wallet'
+} from 'ethers/wallet'
 import {
   publicKeyConvert
 } from 'secp256k1';

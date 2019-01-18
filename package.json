@@ -1,11 +1,11 @@
 {
-  "name": "knuckles.js",
+  "name": "knucklesJS",
   "version": "1.0.0",
   "description": "A javascript package to interact with the Knuckles blockchain and swarm cluster",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "npm run test",
-    "build": "babel src --out-dir dist"
+    "build": "babel src --out-dir dist --copy-files"
   },
   "keywords": [
     "ethereum",
@@ -23,5 +23,17 @@
     "@babel/plugin-proposal-decorators": "^7.2.3",
     "@babel/plugin-syntax-throw-expressions": "^7.2.0",
     "@babel/preset-env": "^7.2.3"
+  },
+  "dependencies": {
+    "@erebos/swarm": "^0.6.2",
+    "bip39": "^2.5.0",
+    "class-transformer": "^0.2.0",
+    "crypto-js": "^3.1.9-1",
+    "eccrypto": "^1.1.0",
+    "ethers": "^4.0.21",
+    "localforage": "^1.7.3",
+    "moment": "^2.23.0",
+    "reflect-metadata": "^0.1.13",
+    "secp256k1": "^3.6.1"
   }
 }

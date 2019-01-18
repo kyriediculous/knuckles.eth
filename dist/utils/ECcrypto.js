@@ -10,7 +10,7 @@ var _utils = require("ethers/utils");
 
 var _eccrypto = require("eccrypto");
 
-var _wallet = require("ethers/wallet/wallet");
+var _wallet = require("ethers/wallet");
 
 var _secp256k = require("secp256k1");
 

@@ -12,11 +12,7 @@ exports.isBN = exports.toBN = void 0;
 
 var _ethers = require("ethers");
 
-var _bs = _interopRequireDefault(require("bs58"));
-
 var _sha = _interopRequireDefault(require("crypto-js/sha3"));
-
-var _bs2 = _interopRequireDefault(require("bs64"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

@@ -1,4 +1,4 @@
-import Timesheets from '../../../../../contracts/build/contracts/Timesheets.json'
+import Timesheets from '../artifacts/Timesheets.json'
 import moment from 'moment'
 import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther, bigNumberify} from 'ethers/utils'
 import {members} from './OrganisationResolver'

@@ -1,5 +1,5 @@
-import UsersRegistry from '../../../../../contracts/build/contracts/UsersRegistry.json'
-import Organisation from '../../../../../contracts/build/contracts/OrganisationContract.json'
+import UsersRegistry from '../artifacts/UsersRegistry.json'
+import Organisation from '../artifacts/OrganisationContract.json'
 import {solidityKeccak256 as keccak256} from 'ethers/utils'
 import {stringToHex} from '../../utils/conversion'
 
