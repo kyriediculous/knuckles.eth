@@ -11,6 +11,10 @@ var _BountyFactory = _interopRequireDefault(require("../artifacts/BountyFactory.
 
 var _RecurringBountyFactory = _interopRequireDefault(require("../artifacts/RecurringBountyFactory.json"));
 
+var _BountyInterface = _interopRequireDefault(require("../artifacts/BountyInterface.json"));
+
+var _RecurringBountyInterface = _interopRequireDefault(require("../artifacts/RecurringBountyInterface.json"));
+
 var _Provider = _interopRequireDefault(require("../Provider"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -33,8 +37,8 @@ const onBountyCreated = (provider, callback) => {
 exports.onBountyCreated = onBountyCreated;
 
 const onBountyAccepted = (provider, callback) => {
-  let event = new _utils.Interface(_BountyFactory.default.abi).events.logBountyAccepted;
-  let recurringEvent = new _utils.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyAccepted;
+  let event = new _utils.Interface(_BountyInterface.default.abi).events.logBountyAccepted;
+  let recurringEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringBountyAccepted;
   provider.on({
     topics: [event.topic]
   }, raw => {
@@ -50,8 +54,8 @@ const onBountyAccepted = (provider, callback) => {
 exports.onBountyAccepted = onBountyAccepted;
 
 const onBountyCommit = (provider, callback) => {
-  let event = new _utils.Interface(_BountyFactory.default.abi).events.logCommit;
-  let recurringEvent = new _utils.Interface(_RecurringBountyFactory.default.abi).events.logRecurringCommit;
+  let event = new _utils.Interface(_BountyInterface.default.abi).events.logCommit;
+  let recurringEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
   provider.on({
     topics: [event.topic]
   }, raw => {

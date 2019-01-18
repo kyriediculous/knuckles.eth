@@ -2,7 +2,8 @@ import {Interface} from 'ethers/utils'
 
 import BountyFactory from '../artifacts/BountyFactory.json'
 import RecurringBountyFactory from '../artifacts/RecurringBountyFactory.json'
-
+import BountyInterface from '../artifacts/BountyInterface.json'
+import RecurringBountyInterface from '../artifacts/RecurringBountyInterface.json'
 import Provider from '../Provider'
 
 
@@ -24,8 +25,8 @@ export const onBountyCreated = (provider, callback) => {
 
 
 export const onBountyAccepted = (provider, callback) => {
-  let event = (new Interface(BountyFactory.abi)).events.logBountyAccepted
-  let recurringEvent = (new Interface(RecurringBountyFactory.abi)).events.logRecurringBountyAccepted
+  let event = (new Interface(BountyInterface.abi)).events.logBountyAccepted
+  let recurringEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringBountyAccepted
   provider.on({
     topics: [event.topic]
   }, raw => {
@@ -40,8 +41,8 @@ export const onBountyAccepted = (provider, callback) => {
 }
 
 export const onBountyCommit = (provider, callback) => {
-  let event = (new Interface(BountyFactory.abi)).events.logCommit
-  let recurringEvent = (new Interface(RecurringBountyFactory.abi)).events.logRecurringCommit
+  let event = (new Interface(BountyInterface.abi)).events.logCommit
+  let recurringEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringCommit
   provider.on({
     topics: [event.topic]
   }, raw => {
