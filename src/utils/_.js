@@ -30,7 +30,7 @@ export const sortOldest = (array) => {
 }
 
 
-export const functionstringToHex = (str) => {
+export const stringToHex = (str) => {
   if (!str)
     return "0x00";
   var hex = "";
@@ -43,11 +43,11 @@ export const functionstringToHex = (str) => {
   return ("0x" + hex).toString(hex);
 };
 
-export const functionbytes32ToString = (hex) => {
+export const bytes32ToString = (hex) => {
   return utils.toUtf8String(hex).replace(/\u0000/g, '')
 }
 
-export const functionisHex = (hex) => {
+export const isHex = (hex) => {
   if (!/^(0x){1}[0-9a-f]*$/i.test(hex)) {
     return false;
   } else {
@@ -62,7 +62,7 @@ export const functionisHex = (hex) => {
  * @param {String} address the given HEX address
  * @return {Boolean}
  */
-export const functionisAddress = (address) => {
+export const isAddress = (address) => {
   // check if it has the basic requirements of an address
   if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
     return false;
@@ -82,7 +82,7 @@ export const functionisAddress = (address) => {
  * @param {String} address the given HEX address
  * @return {Boolean}
  */
-export const  functioncheckAddressChecksum = (address) => {
+export const  checkAddressChecksum = (address) => {
   // Check each case
   address = address.replace(/^0x/i, '');
   var addressHash = sha3(address.toLowerCase());
@@ -123,7 +123,7 @@ export const isBN = (object) => {
   return (object && object.constructor && object.constructor.name === 'BN') || (object && object.constructor && object.constructor.name === 'BigNumber');
 };
 
-export const functionremove0x = (str) => {
+export const remove0x = (str) => {
   if (str.startsWith('0x'))
     return str.substring(2);
   else return str;
