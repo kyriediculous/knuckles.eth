@@ -41,22 +41,6 @@ class KnucklesWallet {
 
   static exists() {
     return new Promise(async (resolve, reject) => {
-      if (window.plugins) { //CORDOVA
-        if (window.plugins.touchid) {
-          window.plugins.touchid.has(`m/99'/66'/0'/0/0`,
-            _ => resolve("touchid"),
-            _ => NativeStorage.getItem(`m/99'/66'/0'/0/0`,
-                      res => {if (res) resolve("password")},
-                      err => reject(throw new Error(err))
-            )
-          )
-        } else {
-          NativeStorage.getItem(`m/99'/66'/0'/0/0`,
-            res => resolve("password"),
-            err => reject(throw new Error(err))
-          )
-        }
-      } else { //BROWSER
         try {
           const res = await LF.getItem(`m/99'/66'/0'/0/0`)
           if (res) {
@@ -65,9 +49,9 @@ class KnucklesWallet {
             resolve(false)
           }
         } catch (err) {
-          reject(throw new Error(err))
+          reject(err)
         }
-      }
+
     })
   }
 
@@ -81,46 +65,19 @@ class KnucklesWallet {
 
   saveMnemonic(password) {
     return new Promise(async (resolve, reject) => {
-      if (window.plugins) {
-        if (password == null && window.plugins.touchid) {
-          window.plugins.touchid.save(`m/99'/66'/0'/0/0`, this.mnemonic,
-          _ => resolve(true),
-          err => reject(new Error(err))
-          )
-        } else {
-          const encryptedMnemonic = AES.encrypt(this.mnemonic, password)
-          NativeStorage.setItem(`m/99'/66'/0'/0/0`, encryptedMnemonic.toString(), _ => resolve(true), err => reject(throw new Error(err)));
-        }
-      } else {
         try {
           const encryptedMnemonic = AES.encrypt(this.mnemonic, password)
           await LF.setItem(`m/99'/66'/0'/0/0`, encryptedMnemonic.toString())
           resolve(true)
         } catch (err) {
-          reject(throw new Error(err))
+          reject(err)
         }
-      }
+
     })
   }
 
   static getMnemonic(password) {
     return new Promise(async (resolve, reject) => {
-      if (window.plugins) {
-        if (password == null && window.plugins.touchid) {
-          window.plugins.touchid.verify(`m/99'/66'/0'/0/0`, "Please use your fingerprint to log in",
-          async mnem => resolve(recoverKnucklesWallet(mnem)),
-          err => reject(new Error(err))
-          )
-        } else {
-          NativeStorage.getItem(`m/99'/66'/0'/0/0`, async cipher => {
-            const bytes = await AES.decrypt(cipher.toString(), password)
-            const plain = bytes.toString(enc.Utf8)
-            resolve(recoverKnucklesWallet(plain))
-          },
-          err => reject(new Error(err))
-          )
-        }
-      } else {
         try {
           const cipher = await LF.getItem(`m/99'/66'/0'/0/0`)
           if (cipher) {
@@ -132,7 +89,6 @@ class KnucklesWallet {
         } catch (err) {
           reject(new Error(err.message))
         }
-      }
     })
   }
 

@@ -55,28 +55,16 @@ let KnucklesWallet = (_dec = (0, _classTransformer.Expose)(), (_class = class Kn
 
   static exists() {
     return new Promise(async (resolve, reject) => {
-      if (window.plugins) {
-        //CORDOVA
-        if (window.plugins.touchid) {
-          window.plugins.touchid.has(`m/99'/66'/0'/0/0`, _ => resolve("touchid"), _ => NativeStorage.getItem(`m/99'/66'/0'/0/0`, res => {
-            if (res) resolve("password");
-          }, err => reject(throw new Error(err))));
-        } else {
-          NativeStorage.getItem(`m/99'/66'/0'/0/0`, res => resolve("password"), err => reject(throw new Error(err)));
-        }
-      } else {
-        //BROWSER
-        try {
-          const res = await _localforage.default.getItem(`m/99'/66'/0'/0/0`);
+      try {
+        const res = await _localforage.default.getItem(`m/99'/66'/0'/0/0`);
 
-          if (res) {
-            resolve("password");
-          } else {
-            resolve(false);
-          }
-        } catch (err) {
-          reject(throw new Error(err));
+        if (res) {
+          resolve("password");
+        } else {
+          resolve(false);
         }
+      } catch (err) {
+        reject(err);
       }
     });
   }
@@ -91,52 +79,30 @@ let KnucklesWallet = (_dec = (0, _classTransformer.Expose)(), (_class = class Kn
 
   saveMnemonic(password) {
     return new Promise(async (resolve, reject) => {
-      if (window.plugins) {
-        if (password == null && window.plugins.touchid) {
-          window.plugins.touchid.save(`m/99'/66'/0'/0/0`, this.mnemonic, _ => resolve(true), err => reject(new Error(err)));
-        } else {
-          const encryptedMnemonic = _cryptoJs.AES.encrypt(this.mnemonic, password);
+      try {
+        const encryptedMnemonic = _cryptoJs.AES.encrypt(this.mnemonic, password);
 
-          NativeStorage.setItem(`m/99'/66'/0'/0/0`, encryptedMnemonic.toString(), _ => resolve(true), err => reject(throw new Error(err)));
-        }
-      } else {
-        try {
-          const encryptedMnemonic = _cryptoJs.AES.encrypt(this.mnemonic, password);
-
-          await _localforage.default.setItem(`m/99'/66'/0'/0/0`, encryptedMnemonic.toString());
-          resolve(true);
-        } catch (err) {
-          reject(throw new Error(err));
-        }
+        await _localforage.default.setItem(`m/99'/66'/0'/0/0`, encryptedMnemonic.toString());
+        resolve(true);
+      } catch (err) {
+        reject(err);
       }
     });
   }
 
   static getMnemonic(password) {
     return new Promise(async (resolve, reject) => {
-      if (window.plugins) {
-        if (password == null && window.plugins.touchid) {
-          window.plugins.touchid.verify(`m/99'/66'/0'/0/0`, "Please use your fingerprint to log in", async mnem => resolve(recoverKnucklesWallet(mnem)), err => reject(new Error(err)));
-        } else {
-          NativeStorage.getItem(`m/99'/66'/0'/0/0`, async cipher => {
-            const bytes = await _cryptoJs.AES.decrypt(cipher.toString(), password);
-            const plain = bytes.toString(_cryptoJs.enc.Utf8);
-            resolve(recoverKnucklesWallet(plain));
-          }, err => reject(new Error(err)));
-        }
-      } else {
-        try {
-          const cipher = await _localforage.default.getItem(`m/99'/66'/0'/0/0`);
+      try {
+        const cipher = await _localforage.default.getItem(`m/99'/66'/0'/0/0`);
 
-          if (cipher) {
-            const bytes = await _cryptoJs.AES.decrypt(cipher.toString(), password);
-            const plain = await bytes.toString(_cryptoJs.enc.Utf8);
-            const wallet = recoverKnucklesWallet(plain);
-            resolve(wallet);
-          }
-        } catch (err) {
-          reject(new Error(err.message));
+        if (cipher) {
+          const bytes = await _cryptoJs.AES.decrypt(cipher.toString(), password);
+          const plain = await bytes.toString(_cryptoJs.enc.Utf8);
+          const wallet = recoverKnucklesWallet(plain);
+          resolve(wallet);
         }
+      } catch (err) {
+        reject(new Error(err.message));
       }
     });
   }
