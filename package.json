@@ -1,5 +1,5 @@
 {
-  "name": "knuckles.js",
+  "name": "knucklesJS",
   "version": "1.0.0",
   "description": "A javascript package to interact with the Knuckles blockchain and swarm cluster",
   "main": "index.js",
