@@ -11,14 +11,10 @@ var _Token = _interopRequireDefault(require("../artifacts/Token.json"));
 
 var _Provider = _interopRequireDefault(require("../Provider"));
 
-var _ContractProvider = _interopRequireDefault(require("../ContractProvider"));
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const onTokenTransfer = (provider, callback) => {
-  //let event = (new Interface(Token.abi)).events.Transfer
-  let token = new _ethers.Contract(_Token.default.networks[provider.chainId].address, _Token.default.abi, provider); //let token2 = ContractProvider(Token, provider)
-
+  let event = new _ethers.Interface(_Token.default.abi).events.Transfer;
   provider.on({
     topics: [event.topics[0]],
     address: _Token.default.networks[provider.chainId].address
