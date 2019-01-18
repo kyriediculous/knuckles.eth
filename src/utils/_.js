@@ -31,16 +31,7 @@ export const sortOldest = (array) => {
 
 
 export const stringToHex = (str) => {
-  if (!str)
-    return "0x00";
-  var hex = "";
-  for (var i = 0; i < str.length; i++) {
-    var code = str.charCodeAt(i);
-    var n = code.toString(16);
-    hex += n.length < 2 ? '0' + n : n;
-  }
-
-  return ("0x" + hex).toString(hex);
+  return utils.formatBytes32String(str)
 };
 
 export const bytes32ToString = (hex) => {
