@@ -119,3 +119,8 @@ export const remove0x = (str) => {
     return str.substring(2);
   else return str;
 }
+
+
+export const parseKnuckles = (bn) => {
+  return parseFloat(utils.formatEther(utils.bigNumberify(bn))).toFixed(2)
+}

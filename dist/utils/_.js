@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.remove0x = exports.isBN = exports.toBN = exports.checkAddressChecksum = exports.isAddress = exports.isHex = exports.bytes32ToString = exports.stringToHex = exports.sortOldest = exports.sortNewest = exports.groupBy = void 0;
+exports.parseKnuckles = exports.remove0x = exports.isBN = exports.toBN = exports.checkAddressChecksum = exports.isAddress = exports.isHex = exports.bytes32ToString = exports.stringToHex = exports.sortOldest = exports.sortNewest = exports.groupBy = void 0;
 
 var _ethers = require("ethers");
 
@@ -147,3 +147,9 @@ const remove0x = str => {
 };
 
 exports.remove0x = remove0x;
+
+const parseKnuckles = bn => {
+  return parseFloat(_ethers.utils.formatEther(_ethers.utils.bigNumberify(bn))).toFixed(2);
+};
+
+exports.parseKnuckles = parseKnuckles;
