@@ -210,7 +210,9 @@ export async function rewardsFor(userAddress) {
       toBlock: 'latest',
       topics: topics
     })
-    return logs.map(log => event.decode(log.data, log.topics))
+    logs = logs.map(log => event.decode(log.data, log.topics))
+    console.log(logs)
+    return logs
   } catch (err) {
     throw new Error(err)
   }
@@ -401,7 +403,7 @@ export async function leaderboard() {
         user: _winner,
         rewards: []
       }
-      result[_winner].rewards.push(_amount)
+      result[_winner].rewards.push(bigNumberify(_amount))
       return result
     },
     {}

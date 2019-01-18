@@ -494,7 +494,10 @@ class Bounties {
     try {
       let singles = await this.eth.bounties.rewardsFor(userAddress);
       let recurring = await this.eth.recurringBounties.rewardsFor(userAddress);
-      return singles.concat(recurring);
+      return singles.concat(recurring).map(r => {
+        r._amount = (0, _utils.bigNumberify)(r._amount);
+        return r;
+      });
     } catch (err) {
       console.log(err);
     }

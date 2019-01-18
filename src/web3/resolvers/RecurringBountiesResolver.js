@@ -264,6 +264,7 @@ export async function rewardsFor(address) {
       topics: topics
     })
     logs = logs.map(log => event.decode(log.data, log.topics))
+    console.log(logs)
     return logs
   } catch (e) {
     throw new Error(e)
@@ -378,7 +379,7 @@ export async function leaderboard() {
         user: _winner,
         rewards: []
       }
-      result[_winner].rewards.push(_amount)
+      result[_winner].rewards.push(bigNumberify(_amount))
       return result
     },
     {}

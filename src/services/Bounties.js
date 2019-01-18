@@ -2,7 +2,7 @@ import {EthResolver, Swarm} from '../web3'
 import Users from './Users'
 import Timesheets from './Timesheets'
 import Token from './Token'
-import {formatEther} from 'ethers/utils'
+import {formatEther, bigNumberify} from 'ethers/utils'
 import {groupBy, sortNewest} from '../utils/_'
 
 
@@ -413,7 +413,10 @@ class Bounties {
     try {
       let singles = await this.eth.bounties.rewardsFor(userAddress)
       let recurring  = await this.eth.recurringBounties.rewardsFor(userAddress)
-      return singles.concat(recurring)
+      return singles.concat(recurring).map(r => {
+        r._amount = bigNumberify(r._amount)
+        return r
+      })
     } catch (err) {
       console.log(err)
     }

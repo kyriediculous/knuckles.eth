@@ -241,7 +241,9 @@ async function rewardsFor(userAddress) {
       toBlock: 'latest',
       topics: topics
     });
-    return logs.map(log => event.decode(log.data, log.topics));
+    logs = logs.map(log => event.decode(log.data, log.topics));
+    console.log(logs);
+    return logs;
   } catch (err) {
     throw new Error(err);
   }
@@ -443,7 +445,7 @@ async function leaderboard() {
         rewards: []
       };
 
-      result[_winner].rewards.push(_amount);
+      result[_winner].rewards.push((0, _utils.bigNumberify)(_amount));
 
       return result;
     }, {}));
