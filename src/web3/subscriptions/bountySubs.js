@@ -25,8 +25,8 @@ export const onBountyCreated = (provider, callback) => {
 
 
 export const onBountyAccepted = (provider, callback) => {
-  let event = (new Interface(BountyInterface.abi)).events.logBountyAccepted
-  let recurringEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringBountyAccepted
+  let event = (new Interface(BountyInterface.abi)).events.logAccepted
+  let recurringEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringAccepted
   provider.on({
     topics: [event.topic]
   }, raw => {
