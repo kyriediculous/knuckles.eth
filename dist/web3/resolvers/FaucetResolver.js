@@ -23,7 +23,7 @@ async function faucet(wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, wallet);
     let tx = await tokenFaucet.faucet();
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -34,7 +34,7 @@ async function setLimit(limit, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, wallet);
     let tx = await tokenFaucet.setLimit((0, _utils.parseEther)(limit.toString()));
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }

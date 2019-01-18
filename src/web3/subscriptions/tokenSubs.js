@@ -1,4 +1,4 @@
-import {Contract, Interface} from 'ethers'
+import {Interface} from 'ethers/utils'
 import Token from '../artifacts/Token.json'
 import Provider from '../Provider'
 

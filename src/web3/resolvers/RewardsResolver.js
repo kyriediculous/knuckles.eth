@@ -9,7 +9,7 @@ export async function add(reference, price, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const rewardStore = this.ContractProvider(RewardStore, wallet)
     let tx = await rewardStore.addListing('0x' + reference, parseEther(price.toString()), {gasPrice: '0x0'})
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -20,7 +20,7 @@ export async function remove(index, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const rewardStore = this.ContractProvider(RewardStore, wallet)
     let tx = await rewardStore.removeListing(index, {gasPrice: '0x0'})
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -45,7 +45,7 @@ export async function update(index, reference, price, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const org = this.ContractProvider(RewardStore, wallet)
     let tx = await org.updateListing(index, '0x'+ reference, parseEther(price.toString()), {gasPrice: '0x0'})
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -81,9 +81,9 @@ export async function purchase(item, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const rewardStore = this.ContractProvider(RewardStore, wallet)
     const spend = await approveSpend.call(this, rewardStore.address, item.price, wallet)
-    await this.provider.waitForTransaction(spend.hash)
+    await spend.wait()
     let tx =  await rewardStore.purchase(item.id)
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -94,7 +94,7 @@ export async function changeStatus(index, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const rewardStore = this.ContractProvider(RewardStore, wallet)
     let tx = await rewardStore.changeActive(index)
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }

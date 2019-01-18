@@ -4,7 +4,8 @@ import Token from '../artifacts/Token.json'
 import {approveSpend, getBalance} from './TokenResolver'
 import moment from 'moment'
 import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther} from 'ethers/utils'
-import {Contract, Interface} from 'ethers'
+import {Contract} from 'ethers'
+import {Interface} from 'ethers/utils'
 import {sortOldest} from '../../utils/_'
 
 const statusOptions = ["Active", "Completed", "Abandoned"]
@@ -44,10 +45,9 @@ export async function createBounty(reference, deadline, reward, wallet) {
     const bountyFactory = this.ContractProvider(BountyFactory, wallet)
     const token = this.ContractProvider(Token, wallet)
     const spend = await token.approve(bountyFactory.address, reward, {gasPrice: '0x0'})
-    await this.provider.waitForTransaction(spend.hash)
+    await spend.wait()
     let tx =  await bountyFactory.createBounty(reference, deadline, reward, {gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
-    return tx
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -61,9 +61,7 @@ export async function createMintable(reference, deadline, reward, wallet) {
     reward = parseEther(reward.toString())
     const bountyFactory = this.ContractProvider(BountyFactory, wallet)
     let tx =  await bountyFactory.createMintableBounty(reference, deadline, reward, {gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
-    tx = await this.provider.getTransactionReceipt(tx.hash)
-    return tx
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -272,8 +270,7 @@ export async function cancelBounty(address, wallet) {
     let tx = await bounty.cancelBounty({
       gasPrice: '0x0'
     })
-    tx = await this.provider.waitForTransaction(tx.hash)
-    return await this.provider.getTransactionReceipt(tx.hash)
+    return tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -284,8 +281,7 @@ export async function cancelMintable(address, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const bf = this.ContractProvider(BountyFactory, wallet)
     let tx = await bf.cancelMintable(address, {gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
-    return await this.provider.getTransactionReceipt(tx.hash)
+    return tx.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -296,12 +292,11 @@ export async function contribute(address, amount, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const bounty = bountyAt(address, wallet)
     let spend = await approveSpend.call(this, address, amount, wallet)
-    spend = await this.provider.waitForTransaction(spend.hash)
+    await spend.wait()
     spend = await bounty.contribute(parseEther(amount), {
       gasPrice: '0x0'
     })
-    spend =  await this.provider.waitForTransaction(spend.hash)
-    return spend
+    return await spend.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -349,8 +344,7 @@ export async function acceptCommit(address, id, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const b = bountyAt(address, wallet)
     let tx = await b.acceptCommit(id, {gasPrice: '0x0'})
-    tx =  await this.provider.waitForTransaction(tx.hash)
-    return await this.provider.getTransactionReceipt(tx.hash)
+    return await tx.wait()
     return tx
   } catch (e) {
     throw new Error(e)
@@ -362,8 +356,7 @@ export async function acceptMintable(address, id, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const bountyFactory = this.ContractProvider(BountyFactory, wallet)
     let tx = await bountyFactory.acceptMintable(address, id, {gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
-    return await this.provider.getTransactionReceipt(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err.message)
   }
@@ -375,7 +368,7 @@ export async function submitCommit(address, reference, wallet) {
     const b = bountyAt(address, wallet)
     reference = '0x' + reference
     let tx = await b.submitCommit(reference, {gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -427,7 +420,7 @@ export async function startWorking(address, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const b = bountyAt(address, wallet)
     let tx = await b.startWork({gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -438,8 +431,7 @@ export async function refundContribution(address, contributionId, amount, wallet
     if (wallet.provider === undefined) wallet.provider = this.provider
     const bounty = bountyAt(address, wallet)
     let tx = await bounty.refundContribution(contributionId, parseEther(amount.toString(10)), {gasPrice: '0x0'})
-    tx = this.provider.waitForTransaction(tx.hash)
-    return tx
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }

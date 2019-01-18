@@ -26,10 +26,10 @@ async function register(name, swarmHash, wallet) {
     let tx = await usersregistry.register((0, _.stringToHex)(name.toLowerCase()), swarmHash, {
       gasPrice: '0x0'
     });
-    await this.provider.waitForTransaction(tx.hash);
+    await tx.wait();
     const organisation = this.ContractProvider(_OrganisationContract.default, wallet);
     tx = await organisation.join();
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -42,7 +42,7 @@ async function update(newName, swarmHash, oldName, wallet) {
     let tx = await usersregistry.update((0, _.stringToHex)(newName.toLowerCase()), swarmHash, (0, _.stringToHex)(oldName.toLowerCase()), {
       gasPrice: '0x0'
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }

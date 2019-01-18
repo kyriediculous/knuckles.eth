@@ -20,7 +20,7 @@ export async function sendTokens(recipient, amount, wallet) {
     }
     amount = parseEther(amount)
     let tx = await token.transfer(recipient, amount, {gasPrice: '0x0'})
-    return await this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -35,7 +35,7 @@ export async function approveSpend(recipient, amount, wallet) {
     }
     amount = parseEther(amount)
     let tx = await token.approve(recipient, amount, {gasPrice: '0x0'})
-    return await this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }

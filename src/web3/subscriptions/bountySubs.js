@@ -1,4 +1,4 @@
-import {Interface} from 'ethers'
+import {Interface} from 'ethers/utils'
 import BountyFactory from '../artifacts/BountyFactory.json'
 import Provider from '../Provider'
 

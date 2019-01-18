@@ -19,8 +19,6 @@ var _utils = require("ethers/utils");
 
 var _OrganisationResolver = require("./OrganisationResolver");
 
-var _ethers = require("ethers");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //setreward, setperiod, getperiod, getperiods
@@ -29,7 +27,7 @@ async function setReward(reward, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const timesheets = this.ContractProvider(_Timesheets.default, wallet);
     let tx = await timesheets.setReward((0, _utils.parseEther)(reward.toString()));
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -40,7 +38,7 @@ async function setPeriod(user, startPeriod, completed, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const timesheets = this.ContractProvider(_Timesheets.default, wallet);
     let tx = await timesheets.setPeriod(user, startPeriod, completed);
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -61,7 +59,7 @@ async function getPeriod(user, index) {
 
 async function timesheet(user) {
   try {
-    let timesheetEvent = new _ethers.Interface(_Timesheets.default.abi).events.logTimesheetPeriod;
+    let timesheetEvent = new _utils.Interface(_Timesheets.default.abi).events.logTimesheetPeriod;
     let timesheetTopics = [timesheetEvent.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(user), 32))];
     let logs = await this.provider.getLogs({
       fromBlock: 0,

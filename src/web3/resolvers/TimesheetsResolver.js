@@ -2,7 +2,8 @@ import Timesheets from '../artifacts/Timesheets.json'
 import moment from 'moment'
 import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther, bigNumberify} from 'ethers/utils'
 import {members} from './OrganisationResolver'
-import {Interface} from 'ethers'
+import {Interface} from 'ethers/utils'
+
 //setreward, setperiod, getperiod, getperiods
 
 export async function setReward(reward, wallet) {
@@ -10,7 +11,7 @@ export async function setReward(reward, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const timesheets = this.ContractProvider(Timesheets, wallet)
     let tx = await timesheets.setReward(parseEther(reward.toString()))
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -21,7 +22,7 @@ export async function setPeriod(user, startPeriod, completed, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const timesheets = this.ContractProvider(Timesheets, wallet)
     let tx = await timesheets.setPeriod(user, startPeriod, completed)
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }

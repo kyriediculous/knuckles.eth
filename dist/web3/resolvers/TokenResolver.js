@@ -39,7 +39,7 @@ async function sendTokens(recipient, amount, wallet) {
     let tx = await token.transfer(recipient, amount, {
       gasPrice: '0x0'
     });
-    return await this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -58,7 +58,7 @@ async function approveSpend(recipient, amount, wallet) {
     let tx = await token.approve(recipient, amount, {
       gasPrice: '0x0'
     });
-    return await this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }

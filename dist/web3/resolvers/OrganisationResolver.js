@@ -23,8 +23,6 @@ exports.isPending = isPending;
 
 var _OrganisationContract = _interopRequireDefault(require("../artifacts/OrganisationContract.json"));
 
-var _ethers = require("ethers");
-
 var _utils = require("ethers/utils");
 
 var _ = require("../../utils/_");
@@ -41,7 +39,7 @@ async function setIdentity(name, swarmHash, wallet) {
     let tx = await organisation.setOrganisationIdentity((0, _.stringToHex)(name.toLowerCase()), swarmHash, {
       gasPrice: '0x0'
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -54,7 +52,7 @@ async function mintTokens(to, amount, wallet) {
     let tx = await organisation.mintToken(to, (0, _utils.parseEther)(amount.toString()), {
       gasPrice: '0x0'
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -67,7 +65,7 @@ async function addAdmin(address, wallet) {
     let tx = await organisation.addAdmin(address, {
       gasPrice: '0x0'
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -80,7 +78,7 @@ async function removeAdmin(address, wallet) {
     let tx = await organisation.removeAdmin(address, {
       gasPrice: '0x0'
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -91,7 +89,7 @@ async function blacklist(address, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const organisation = this.ContractProvider(_OrganisationContract.default, wallet);
     let tx = await organisation.blacklist(address);
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -102,7 +100,7 @@ async function whitelist(address, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const organisation = this.ContractProvider(_OrganisationContract.default, wallet);
     let tx = await organisation.whitelist(address);
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -110,7 +108,7 @@ async function whitelist(address, wallet) {
 
 async function adminChanges() {
   try {
-    let adminEvent = new _ethers.Interface(_OrganisationContract.default.abi).events.logAdminChange;
+    let adminEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logAdminChange;
     let adminTopics = [adminEvent.topics[0]];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
@@ -162,7 +160,7 @@ async function isBlacklist(user) {
 
 async function currentBlacklist() {
   try {
-    let blEvent = new _ethers.Interface(_OrganisationContract.default.abi).events.logBlacklist;
+    let blEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logBlacklist;
     let blTopics = [blEvent.topics[0]];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
@@ -200,7 +198,7 @@ async function isMember(address) {
 
 async function members() {
   try {
-    let joinEvent = new _ethers.Interface(_OrganisationContract.default.abi).events.logJoin;
+    let joinEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logJoin;
     let joinTopics = [joinEvent.topics[0]];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
@@ -233,7 +231,7 @@ async function requireApproval() {
 
 async function pending() {
   try {
-    let joinEvent = new _ethers.Interface(_OrganisationContract.default.abi).events.logJoin;
+    let joinEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logJoin;
     let joinTopics = [joinEvent.topics[0]];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
@@ -262,7 +260,7 @@ async function approve(user, accepted, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const org = this.ContractProvider(_OrganisationContract.default, wallet);
     let tx = await org.approve(user, accepted);
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -273,7 +271,7 @@ async function toggleApproval(wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const org = this.ContractProvider(_OrganisationContract.default, wallet);
     let tx = await org.toggleApproval();
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }

@@ -27,7 +27,7 @@ async function add(reference, price, wallet) {
     let tx = await rewardStore.addListing('0x' + reference, (0, _utils.parseEther)(price.toString()), {
       gasPrice: '0x0'
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -40,7 +40,7 @@ async function remove(index, wallet) {
     let tx = await rewardStore.removeListing(index, {
       gasPrice: '0x0'
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -67,7 +67,7 @@ async function update(index, reference, price, wallet) {
     let tx = await org.updateListing(index, '0x' + reference, (0, _utils.parseEther)(price.toString()), {
       gasPrice: '0x0'
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -105,9 +105,9 @@ async function purchase(item, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const rewardStore = this.ContractProvider(_RewardStore.default, wallet);
     const spend = await _TokenResolver.approveSpend.call(this, rewardStore.address, item.price, wallet);
-    await this.provider.waitForTransaction(spend.hash);
+    await spend.wait();
     let tx = await rewardStore.purchase(item.id);
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -118,7 +118,7 @@ async function changeStatus(index, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const rewardStore = this.ContractProvider(_RewardStore.default, wallet);
     let tx = await rewardStore.changeActive(index);
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }

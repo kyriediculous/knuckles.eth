@@ -1,5 +1,5 @@
 import Organisation from '../artifacts/OrganisationContract.json'
-import {Interface} from 'ethers'
+import {Interface} from 'ethers/utils'
 import {parseEther, formatEther} from 'ethers/utils'
 import {stringToHex} from '../../utils/_'
 import {isAdmin} from './UsersResolver'
@@ -10,7 +10,7 @@ export async function setIdentity(name, swarmHash, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const organisation = this.ContractProvider(Organisation, wallet)
     let tx =  await organisation.setOrganisationIdentity(stringToHex(name.toLowerCase()), swarmHash, {gasPrice: '0x0'})
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -21,7 +21,7 @@ export async function mintTokens(to, amount, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const organisation = this.ContractProvider(Organisation, wallet)
     let tx = await organisation.mintToken(to, parseEther(amount.toString()), {gasPrice: '0x0'})
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -32,7 +32,7 @@ export async function addAdmin(address, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const organisation = this.ContractProvider(Organisation, wallet)
     let tx = await organisation.addAdmin(address, {gasPrice: '0x0'})
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -43,7 +43,7 @@ export async function removeAdmin(address, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const organisation = this.ContractProvider(Organisation, wallet)
     let tx = await organisation.removeAdmin(address, {gasPrice: '0x0'})
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -54,7 +54,7 @@ export async function blacklist(address, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const organisation = this.ContractProvider(Organisation, wallet)
     let tx = await organisation.blacklist(address)
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -65,7 +65,7 @@ export async function whitelist(address, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const organisation = this.ContractProvider(Organisation, wallet)
     let tx = await organisation.whitelist(address)
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -218,7 +218,7 @@ export async function approve(user, accepted, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const org = this.ContractProvider(Organisation, wallet)
     let tx = await org.approve(user, accepted)
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -229,7 +229,7 @@ export async function toggleApproval(wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const org = this.ContractProvider(Organisation, wallet)
     let tx = await org.toggleApproval()
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }

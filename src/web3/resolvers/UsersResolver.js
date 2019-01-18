@@ -8,10 +8,10 @@ export async function register(name, swarmHash, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const usersregistry = this.ContractProvider(UsersRegistry, wallet)
     let tx = await usersregistry.register(stringToHex(name.toLowerCase()), swarmHash, {gasPrice: '0x0'})
-    await this.provider.waitForTransaction(tx.hash)
+    await tx.wait()
     const organisation = this.ContractProvider(Organisation, wallet)
     tx = await organisation.join()
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -22,7 +22,7 @@ export async function update(newName, swarmHash, oldName, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider
     const usersregistry = this.ContractProvider(UsersRegistry, wallet)
     let tx = await usersregistry.update(stringToHex(newName.toLowerCase()), swarmHash, stringToHex(oldName.toLowerCase()), {gasPrice: '0x0'})
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }

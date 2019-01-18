@@ -48,7 +48,7 @@ const statusOptions = ["Active", "Completed", "Abandoned"];
 
 async function allRecurringBounties() {
   try {
-    const event = new _ethers.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
+    const event = new _utils.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
@@ -67,7 +67,7 @@ async function allRecurringBounties() {
 
 async function recurringBountiesFrom(userAddress) {
   try {
-    const event = new _ethers.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
+    const event = new _utils.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
@@ -92,12 +92,11 @@ async function createRecurringBounty(reference, deadline, reward, funding, walle
     reward = (0, _utils.parseEther)(reward.toString());
     const recurringBountyFactory = this.ContractProvider(_RecurringBountyFactory.default, wallet);
     let spend = await _TokenResolver.approveSpend.call(this, recurringBountyFactory.address, funding, wallet);
-    spend = await this.provider.waitForTransaction(spend.hash);
+    await spend.wait();
     let creation = await recurringBountyFactory.createBounty(reference, deadline, reward, funding, {
       gasPrice: '0x0'
     });
-    creation = await this.provider.waitForTransaction(creation.hash);
-    return this.provider.getTransactionReceipt(creation.hash);
+    return await creation.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -152,8 +151,7 @@ async function startWork(address, wallet) {
     let tx = await b.startWork({
       gasPrice: '0x0'
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return;
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -164,8 +162,7 @@ async function cancelRecurringBounty(address, wallet) {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const b = bountyAt(address, wallet);
     let tx = await b.cancelBounty();
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return await this.provider.getTransactionReceipt(tx.hash);
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -178,8 +175,7 @@ async function cancelMintable(address, wallet) {
     let tx = await rbf.cancelMintable(address, {
       gasPrice: '0x0'
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return await this.provider.getTransactionReceipt(tx.hash);
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -216,7 +212,7 @@ async function getCommits() {
 
 async function commitsFrom(address) {
   try {
-    const event = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
+    const event = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
     const topics = [event.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
@@ -243,8 +239,7 @@ async function withdrawFunding(address, amount, token, wallet) {
     let tx = await b.withdraw(amount, token, {
       gasPrice: '0x0'
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return;
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -261,8 +256,7 @@ async function createMintable(reference, deadline, reward, funding, wallet) {
     let tx = await rbf.createMintableBounty(reference, deadline, reward, funding, {
       gasPrice: '0x0'
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return await this.provider.getTransactionReceipt(tx.hash);
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -275,8 +269,7 @@ async function acceptMintable(address, id, wallet) {
     let tx = await rbf.acceptMintable(address, id, {
       gasPrice: '0x0'
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return await this.provider.getTransactionReceipt(tx.hash);
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -299,8 +292,7 @@ async function mintFunding(address, amount, wallet) {
     let tx = await rbf.mintFunding(address, amount, {
       gasPrice: '0x0'
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return;
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -308,7 +300,7 @@ async function mintFunding(address, amount, wallet) {
 
 async function rewardsFor(address) {
   try {
-    const event = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
+    const event = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
     const topics = [event.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
@@ -329,7 +321,7 @@ async function startWorking(address, wallet) {
     let tx = await b.startWork({
       gasPrice: '0x0'
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -337,13 +329,13 @@ async function startWorking(address, wallet) {
 
 async function bountyActivityFeed(address) {
   try {
-    let startWorkEvent = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringStartWork;
+    let startWorkEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringStartWork;
     let startWorktopics = [startWorkEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let commitEvent = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
+    let commitEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
     let commitTopics = [commitEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let acceptEvent = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
+    let acceptEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
     let acceptTopics = [acceptEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let cancelEvent = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCancelled;
+    let cancelEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCancelled;
     let cancelTopics = [cancelEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
     let startWorkLogs, commitLogs, contributionLogs, acceptedLog, cancelledLog;
     [startWorkLogs, commitLogs, acceptedLog, cancelledLog] = await Promise.all([this.provider.getLogs({
@@ -407,7 +399,7 @@ async function bountyActivityFeed(address) {
 
 async function leaderboard() {
   try {
-    const event = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
+    const event = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
     const topics = [event.topics[0]];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
