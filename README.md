@@ -4,6 +4,6 @@ A javascript library to interact with bounties and organisations on the knuckles
 
 ## Installation 
 
-### Using npm (requires node >= v10.13.0 )
+#### Using npm (requires node >= v10.13.0 )
 
-$ npm i bitbucket:designisdead/knuckles.js -s
+```npm i bitbucket:designisdead/knuckles.js -s```
