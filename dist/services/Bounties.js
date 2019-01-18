@@ -499,6 +499,7 @@ class Bounties {
         let log = { ...r
         };
         log._amount = (0, _utils.bigNumberify)(log._amount);
+        return log;
       });
       return logs;
     } catch (err) {

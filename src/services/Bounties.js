@@ -417,6 +417,7 @@ class Bounties {
       logs = logs.map(r => {
         let log = {...r}
         log._amount = bigNumberify(log._amount)
+        return log
       })
       return logs
     } catch (err) {
