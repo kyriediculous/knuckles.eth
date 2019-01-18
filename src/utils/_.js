@@ -30,7 +30,7 @@ export const sortOldest = (array) => {
 }
 
 
-export functionstringToHex(str) {
+export const functionstringToHex = (str) => {
   if (!str)
     return "0x00";
   var hex = "";
@@ -43,11 +43,11 @@ export functionstringToHex(str) {
   return ("0x" + hex).toString(hex);
 };
 
-export functionbytes32ToString(hex) {
+export const functionbytes32ToString = (hex) => {
   return utils.toUtf8String(hex).replace(/\u0000/g, '')
 }
 
-export functionisHex(hex) {
+export const functionisHex = (hex) => {
   if (!/^(0x){1}[0-9a-f]*$/i.test(hex)) {
     return false;
   } else {
@@ -62,7 +62,7 @@ export functionisHex(hex) {
  * @param {String} address the given HEX address
  * @return {Boolean}
  */
-export functionisAddress(address) {
+export const functionisAddress = (address) => {
   // check if it has the basic requirements of an address
   if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
     return false;
@@ -82,7 +82,7 @@ export functionisAddress(address) {
  * @param {String} address the given HEX address
  * @return {Boolean}
  */
-export functioncheckAddressChecksum(address) {
+export const  functioncheckAddressChecksum = (address) => {
   // Check each case
   address = address.replace(/^0x/i, '');
   var addressHash = sha3(address.toLowerCase());
@@ -103,7 +103,7 @@ export functioncheckAddressChecksum(address) {
  * @param {Number|String|BN} number, string, HEX string or BN
  * @return {BN} BN
  */
-export const toBN = function(number) {
+export const toBN = (number) => {
   try {
     return utils.bigNumberify(number)
   } catch (e) {
@@ -119,11 +119,11 @@ export const toBN = function(number) {
  * @param {Object} object
  * @return {Boolean}
  */
-export const isBN = function(object) {
+export const isBN = (object) => {
   return (object && object.constructor && object.constructor.name === 'BN') || (object && object.constructor && object.constructor.name === 'BigNumber');
 };
 
-export functionremove0x(str) {
+export const functionremove0x = (str) => {
   if (str.startsWith('0x'))
     return str.substring(2);
   else return str;

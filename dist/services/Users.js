@@ -9,7 +9,7 @@ var _web = require("../web3");
 
 var _blockies = _interopRequireDefault(require("../utils/blockies"));
 
-var _conversion = require("../utils/conversion");
+var _ = require("../utils/_");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

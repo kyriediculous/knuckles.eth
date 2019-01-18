@@ -15,7 +15,7 @@ var _OrganisationContract = _interopRequireDefault(require("../artifacts/Organis
 
 var _utils = require("ethers/utils");
 
-var _conversion = require("../../utils/conversion");
+var _ = require("../../utils/_");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23,7 +23,7 @@ async function register(name, swarmHash, wallet) {
   try {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const usersregistry = this.ContractProvider(_UsersRegistry.default, wallet);
-    let tx = await usersregistry.register((0, _conversion.stringToHex)(name.toLowerCase()), swarmHash, {
+    let tx = await usersregistry.register((0, _.stringToHex)(name.toLowerCase()), swarmHash, {
       gasPrice: '0x0'
     });
     await this.provider.waitForTransaction(tx.hash);
@@ -39,7 +39,7 @@ async function update(newName, swarmHash, oldName, wallet) {
   try {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const usersregistry = this.ContractProvider(_UsersRegistry.default, wallet);
-    let tx = await usersregistry.update((0, _conversion.stringToHex)(newName.toLowerCase()), swarmHash, (0, _conversion.stringToHex)(oldName.toLowerCase()), {
+    let tx = await usersregistry.update((0, _.stringToHex)(newName.toLowerCase()), swarmHash, (0, _.stringToHex)(oldName.toLowerCase()), {
       gasPrice: '0x0'
     });
     return this.provider.waitForTransaction(tx.hash);
@@ -60,7 +60,7 @@ async function get(address) {
 async function ensLookup(name) {
   try {
     const usersregistry = this.ContractProvider(_UsersRegistry.default, this.provider);
-    return await usersregistry.ensLookup((0, _conversion.stringToHex)(name.toLowerCase()));
+    return await usersregistry.ensLookup((0, _.stringToHex)(name.toLowerCase()));
   } catch (err) {
     throw new Error(err);
   }

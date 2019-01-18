@@ -27,7 +27,7 @@ var _ethers = require("ethers");
 
 var _utils = require("ethers/utils");
 
-var _conversion = require("../../utils/conversion");
+var _ = require("../../utils/_");
 
 var _UsersResolver = require("./UsersResolver");
 
@@ -38,7 +38,7 @@ async function setIdentity(name, swarmHash, wallet) {
   try {
     if (wallet.provider === undefined) wallet.provider = this.provider;
     const organisation = this.ContractProvider(_OrganisationContract.default, wallet);
-    let tx = await organisation.setOrganisationIdentity((0, _conversion.stringToHex)(name.toLowerCase()), swarmHash, {
+    let tx = await organisation.setOrganisationIdentity((0, _.stringToHex)(name.toLowerCase()), swarmHash, {
       gasPrice: '0x0'
     });
     return this.provider.waitForTransaction(tx.hash);
