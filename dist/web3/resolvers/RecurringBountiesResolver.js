@@ -48,13 +48,13 @@ const statusOptions = ["Active", "Completed", "Abandoned"];
 
 async function allRecurringBounties() {
   try {
-    const event = (0, _utils.Interface)(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
+    const event = new _utils.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
-      topics: [event.topics[0]]
+      topics: [event.topic]
     });
-    logs = logs.map(l => event.parse(l.topics, l.data));
+    logs = logs.map(l => event.decode(l.data, l.topics));
     logs = logs.map(l => ({
       address: l.bounty,
       type: 'recurring'
@@ -67,13 +67,13 @@ async function allRecurringBounties() {
 
 async function recurringBountiesFrom(userAddress) {
   try {
-    const event = (0, _utils.Interface)(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
+    const event = new _utils.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
-      topics: [event.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(userAddress), 32))]
+      topics: [event.topic, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(userAddress), 32))]
     });
-    logs = logs.map(l => event.parse(l.topics, l.data));
+    logs = logs.map(l => event.decode(l.data, l.topics));
     return logs.map(l => ({
       address: l.bounty,
       type: 'recurring'
@@ -212,14 +212,14 @@ async function getCommits() {
 
 async function commitsFrom(address) {
   try {
-    const event = (0, _utils.Interface)(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
-    const topics = [event.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    const event = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
+    const topics = [event.topic, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     });
-    logs = logs.map(log => event.parse(log.topics, log.data));
+    logs = logs.map(log => event.decode(log.data, log.topics));
     logs = logs.map(l => {
       l.type = 'recurring';
       return l;
@@ -300,14 +300,14 @@ async function mintFunding(address, amount, wallet) {
 
 async function rewardsFor(address) {
   try {
-    const event = (0, _utils.Interface)(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
-    const topics = [event.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    const event = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
+    const topics = [event.topic, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     });
-    logs = logs.map(log => event.parse(log.topics, log.data));
+    logs = logs.map(log => event.decode(log.data, log.topics));
     return logs;
   } catch (e) {
     throw new Error(e);
@@ -329,14 +329,14 @@ async function startWorking(address, wallet) {
 
 async function bountyActivityFeed(address) {
   try {
-    let startWorkEvent = (0, _utils.Interface)(_RecurringBountyInterface.default.abi).events.logRecurringStartWork;
-    let startWorktopics = [startWorkEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let commitEvent = (0, _utils.Interface)(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
-    let commitTopics = [commitEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let acceptEvent = (0, _utils.Interface)(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
-    let acceptTopics = [acceptEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let cancelEvent = (0, _utils.Interface)(_RecurringBountyInterface.default.abi).events.logRecurringCancelled;
-    let cancelTopics = [cancelEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    let startWorkEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringStartWork;
+    let startWorktopics = [startWorkEvent.topic, null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    let commitEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
+    let commitTopics = [commitEvent.topic, null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    let acceptEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
+    let acceptTopics = [acceptEvent.topic, null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    let cancelEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCancelled;
+    let cancelTopics = [cancelEvent.topic, null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
     let startWorkLogs, commitLogs, contributionLogs, acceptedLog, cancelledLog;
     [startWorkLogs, commitLogs, acceptedLog, cancelledLog] = await Promise.all([this.provider.getLogs({
       fromBlock: 0,
@@ -356,7 +356,7 @@ async function bountyActivityFeed(address) {
       topics: cancelTopics
     })]);
     startWorkLogs = startWorkLogs.map(log => {
-      let ev = startWorkEvent.parse(log.topics, log.data);
+      let ev = startWorkEvent.decode(log.data, log.topics);
       return {
         by: ev._by,
         timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, "x"),
@@ -365,7 +365,7 @@ async function bountyActivityFeed(address) {
       };
     });
     commitLogs = commitLogs.map(log => {
-      let ev = commitEvent.parse(log.topics, log.data);
+      let ev = commitEvent.decode(log.data, log.topics);
       return {
         by: ev._by,
         timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, "x"),
@@ -374,7 +374,7 @@ async function bountyActivityFeed(address) {
       };
     });
     acceptedLog = acceptedLog.map(log => {
-      let ev = acceptEvent.parse(log.topics, log.data);
+      let ev = acceptEvent.decode(log.data, log.topics);
       return {
         by: ev._winner,
         timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, "x"),
@@ -382,7 +382,7 @@ async function bountyActivityFeed(address) {
       };
     });
     cancelledLog = cancelledLog.map(log => {
-      let ev = cancelEvent.parse(log.topics, log.data);
+      let ev = cancelEvent.decode(log.data, log.topics);
       return {
         by: ev._by,
         type: 'cancelled',
@@ -399,14 +399,14 @@ async function bountyActivityFeed(address) {
 
 async function leaderboard() {
   try {
-    const event = (0, _utils.Interface)(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
-    const topics = [event.topics[0]];
+    const event = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
+    const topics = [event.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     });
-    logs = logs.map(log => event.parse(log.topics, log.data));
+    logs = logs.map(log => event.decode(log.data, log.topics));
     let leaderboard = Object.values(logs.reduce((result, {
       _winner,
       _amount

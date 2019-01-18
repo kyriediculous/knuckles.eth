@@ -108,14 +108,14 @@ async function whitelist(address, wallet) {
 
 async function adminChanges() {
   try {
-    let adminEvent = (0, _utils.Interface)(_OrganisationContract.default.abi).events.logAdminChange;
-    let adminTopics = [adminEvent.topics[0]];
+    let adminEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logAdminChange;
+    let adminTopics = [adminEvent.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',
       topics: adminTopics
     });
-    logs = logs.map(log => adminEvent.parse(log.topics, log.data));
+    logs = logs.map(log => adminEvent.decode(log.data, log.topics));
     return logs.map(l => ({
       subject: l._changedAdmin,
       status: l._status,
@@ -160,8 +160,8 @@ async function isBlacklist(user) {
 
 async function currentBlacklist() {
   try {
-    let blEvent = (0, _utils.Interface)(_OrganisationContract.default.abi).events.logBlacklist;
-    let blTopics = [blEvent.topics[0]];
+    let blEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logBlacklist;
+    let blTopics = [blEvent.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',
@@ -198,8 +198,8 @@ async function isMember(address) {
 
 async function members() {
   try {
-    let joinEvent = (0, _utils.Interface)(_OrganisationContract.default.abi).events.logJoin;
-    let joinTopics = [joinEvent.topics[0]];
+    let joinEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logJoin;
+    let joinTopics = [joinEvent.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',
@@ -231,8 +231,8 @@ async function requireApproval() {
 
 async function pending() {
   try {
-    let joinEvent = (0, _utils.Interface)(_OrganisationContract.default.abi).events.logJoin;
-    let joinTopics = [joinEvent.topics[0]];
+    let joinEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logJoin;
+    let joinTopics = [joinEvent.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',

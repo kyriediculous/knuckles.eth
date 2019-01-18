@@ -5,9 +5,9 @@ import Provider from '../Provider'
 export const onTokenTransfer = (provider, callback) => {
     let event = (new Interface(Token.abi)).events.Transfer
     provider.on({
-      topics: [event.topics[0]],
-      address: Token.networks[provider.chainId].address
+      topics: [event.topic],
+      address: Token.networks[provider.network.chainId].address
     }, raw => {
-       callback(event.parse(raw.topics, raw.data))
+       callback(event.decode(raw.data, raw.topics))
     })
 }

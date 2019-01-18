@@ -49,14 +49,14 @@ export async function currentLimit() {
 export async function allFaucets() {
   try {
     const tokenFaucet = this.ContractProvider(TokenFaucet, this.provider)
-    let faucetEvent = (Interface(TokenFaucet.abi)).events.logFaucet
-    let faucetTopics = [faucetEvent.topics[0]]
+    let faucetEvent = (new Interface(TokenFaucet.abi)).events.logFaucet
+    let faucetTopics = [faucetEvent.topic]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: faucetTopics
     })
-    logs = logs.map(log => faucetEvent.parse(log.topics, log.data))
+    logs = logs.map(log => faucetEvent.decode(log.data, log.topics))
     return logs.map(l => ({
       user: l._user,
       amount: parseFloat(formatEther(l._amount)).toFixed(2),

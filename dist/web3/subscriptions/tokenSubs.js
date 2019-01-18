@@ -16,10 +16,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const onTokenTransfer = (provider, callback) => {
   let event = new _utils.Interface(_Token.default.abi).events.Transfer;
   provider.on({
-    topics: [event.topics[0]],
-    address: _Token.default.networks[provider.chainId].address
+    topics: [event.topic],
+    address: _Token.default.networks[provider.network.chainId].address
   }, raw => {
-    callback(event.parse(raw.topics, raw.data));
+    callback(event.decode(raw.data, raw.topics));
   });
 };
 

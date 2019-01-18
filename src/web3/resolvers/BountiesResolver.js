@@ -19,13 +19,13 @@ function bountyAt(address, walletOrProvider) {
 export async function allBounties () {
   try {
     const bountyFactory = this.ContractProvider(BountyFactory, this.provider)
-    let event = (Interface(BountyFactory.abi)).events.logBountyCreated
+    let event = (new Interface(BountyFactory.abi)).events.logBountyCreated
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
-      topics: [event.topics[0]]
+      topics: [event.topic]
     })
-    logs = logs.map(log => event.parse(log.topics, log.data))
+    logs = logs.map(log => event.decode(log.data, log.topics))
     logs = logs.map(log => ({
       address:  log.bounty,
       type: 'single'
@@ -71,13 +71,13 @@ export async function bountiesFrom(userAddress) {
   try {
     const bountyFactory = this.ContractProvider(BountyFactory, this.provider)
     const event = bountyFactory.interface.events.logBountyCreated
-    const topics = [event.topics[0], hexlify(padZeros(arrayify(userAddress), 32))]
+    const topics = [event.topic, hexlify(padZeros(arrayify(userAddress), 32))]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     })
-    logs = logs.map(log => event.parse(log.topics, log.data))
+    logs = logs.map(log => event.decode(log.data, log.topics))
     return logs.map(log => ({
       address: log.bounty,
       type: 'single'
@@ -89,16 +89,16 @@ export async function bountiesFrom(userAddress) {
 
 export async function bountyActivityFeed(address) {
   try {
-    let startWorkEvent = (Interface(BountyInterface.abi)).events.logStartWork
-    let startWorktopics = [startWorkEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
-    let commitEvent = (Interface(BountyInterface.abi)).events.logCommit
-    let commitTopics = [commitEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
-    let contributeEvent = (Interface(BountyInterface.abi)).events.logContribute
-    let contributeTopics = [contributeEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
-    let acceptEvent = (Interface(BountyInterface.abi)).events.logAccepted
-    let acceptTopics = [acceptEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
-    let cancelEvent = (Interface(BountyInterface.abi)).events.logCancelled
-    let cancelTopics = [cancelEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
+    let startWorkEvent = (new Interface(BountyInterface.abi)).events.logStartWork
+    let startWorktopics = [startWorkEvent.topic, null, hexlify(padZeros(arrayify(address), 32))]
+    let commitEvent = (new Interface(BountyInterface.abi)).events.logCommit
+    let commitTopics = [commitEvent.topic, null, hexlify(padZeros(arrayify(address), 32))]
+    let contributeEvent = (new Interface(BountyInterface.abi)).events.logContribute
+    let contributeTopics = [contributeEvent.topic, null, hexlify(padZeros(arrayify(address), 32))]
+    let acceptEvent = (new Interface(BountyInterface.abi)).events.logAccepted
+    let acceptTopics = [acceptEvent.topic, null, hexlify(padZeros(arrayify(address), 32))]
+    let cancelEvent = (new Interface(BountyInterface.abi)).events.logCancelled
+    let cancelTopics = [cancelEvent.topic, null, hexlify(padZeros(arrayify(address), 32))]
     let startWorkLogs, commitLogs, contributionLogs, acceptedLog, cancelledLog
     [startWorkLogs, commitLogs, contributionLogs, acceptedLog, cancelledLog] = await Promise.all([
       this.provider.getLogs({
@@ -129,7 +129,7 @@ export async function bountyActivityFeed(address) {
     ])
 
     startWorkLogs = startWorkLogs.map(log => {
-      let ev = startWorkEvent.parse(log.topics, log.data)
+      let ev = startWorkEvent.decode(log.data, log.topics)
       return {
         by: ev._by,
         timestamp: moment((ev._timestamp.toString(10) * 1000), "x"),
@@ -138,7 +138,7 @@ export async function bountyActivityFeed(address) {
       }
     })
 commitLogs = commitLogs.map(log => {
-      let ev = commitEvent.parse(log.topics, log.data)
+      let ev = commitEvent.decode(log.data, log.topics)
       return {
         by: ev._by,
         timestamp:moment((ev._timestamp.toString(10) * 1000), "x"),
@@ -147,7 +147,7 @@ commitLogs = commitLogs.map(log => {
       }
     })
   contributionLogs = contributionLogs.map(log => {
-      let ev = contributeEvent.parse(log.topics, log.data)
+      let ev = contributeEvent.decode(log.data, log.topics)
       return {
         by: ev._by,
         timestamp: moment((ev._timestamp.toString(10) * 1000), "x"),
@@ -157,7 +157,7 @@ commitLogs = commitLogs.map(log => {
     })
 
   acceptedLog = acceptedLog.map(log => {
-      let ev = acceptEvent.parse(log.topics, log.data)
+      let ev = acceptEvent.decode(log.data, log.topics)
       return {
         by: ev._winner,
         timestamp: moment((ev._timestamp.toString(10) * 1000), "x"),
@@ -165,7 +165,7 @@ commitLogs = commitLogs.map(log => {
       }
     })
   cancelledLog = cancelledLog.map( log => {
-      let ev = cancelEvent.parse(log.topics, log.data)
+      let ev = cancelEvent.decode(log.data, log.topics)
       return {
         by: ev._by,
         type: 'cancelled',
@@ -183,14 +183,14 @@ commitLogs = commitLogs.map(log => {
 
 export async function commitsFrom(userAddress) {
   try {
-    const event = (Interface(BountyInterface.abi)).events.logCommit
-    const topics = [event.topics[0], hexlify(padZeros(arrayify(userAddress), 32))]
+    const event = (new Interface(BountyInterface.abi)).events.logCommit
+    const topics = [event.topic, hexlify(padZeros(arrayify(userAddress), 32))]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     })
-    logs = logs.map(log => event.parse(log.topics, log.data))
+    logs = logs.map(log => event.decode(log.data, log.topics))
     logs = logs.map(l => {
       l.type = 'single'
       return l
@@ -203,14 +203,14 @@ export async function commitsFrom(userAddress) {
 
 export async function rewardsFor(userAddress) {
   try {
-    const event = (Interface(BountyInterface.abi)).events.logAccepted
-    const topics = [event.topics[0], hexlify(padZeros(arrayify(userAddress), 32))]
+    const event = (new Interface(BountyInterface.abi)).events.logAccepted
+    const topics = [event.topic, hexlify(padZeros(arrayify(userAddress), 32))]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     })
-    return logs.map(log => event.parse(log.topics, log.data))
+    return logs.map(log => event.decode(log.data, log.topics))
   } catch (err) {
     throw new Error(err)
   }
@@ -385,14 +385,14 @@ export async function proposalCount(address) {
 
 export async function leaderboard() {
   try {
-    const event = (Interface(BountyInterface.abi)).events.logAccepted
-    const topics = [event.topics[0]]
+    const event = (new Interface(BountyInterface.abi)).events.logAccepted
+    const topics = [event.topic]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     })
-    logs =  logs.map(log => event.parse(log.topics, log.data))
+    logs =  logs.map(log => event.decode(log.data, log.topics))
     let leaderboard = Object.values(logs.reduce( (result, {
       _winner,
       _amount

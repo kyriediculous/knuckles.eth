@@ -43,14 +43,14 @@ export async function getPeriod(user, index) {
 
 export async function timesheet(user) {
   try {
-    let timesheetEvent = (Interface(Timesheets.abi)).events.logTimesheetPeriod
-    let timesheetTopics = [timesheetEvent.topics[0], hexlify(padZeros(arrayify(user), 32))]
+    let timesheetEvent = (new Interface(Timesheets.abi)).events.logTimesheetPeriod
+    let timesheetTopics = [timesheetEvent.topic, hexlify(padZeros(arrayify(user), 32))]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: timesheetTopics
     })
-    logs = logs.map(log => timesheetEvent.parse(log.topics, log.data))
+    logs = logs.map(log => timesheetEvent.decode(log.data, log.topics))
     return logs.map(l => {
       return {
         user: l._user,

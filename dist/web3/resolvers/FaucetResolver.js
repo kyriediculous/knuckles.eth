@@ -63,14 +63,14 @@ async function currentLimit() {
 async function allFaucets() {
   try {
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider);
-    let faucetEvent = Interface(_TokenFaucet.default.abi).events.logFaucet;
-    let faucetTopics = [faucetEvent.topics[0]];
+    let faucetEvent = new Interface(_TokenFaucet.default.abi).events.logFaucet;
+    let faucetTopics = [faucetEvent.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: faucetTopics
     });
-    logs = logs.map(log => faucetEvent.parse(log.topics, log.data));
+    logs = logs.map(log => faucetEvent.decode(log.data, log.topics));
     return logs.map(l => ({
       user: l._user,
       amount: parseFloat((0, _utils.formatEther)(l._amount)).toFixed(2),

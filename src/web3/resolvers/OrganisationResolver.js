@@ -73,14 +73,14 @@ export async function whitelist(address, wallet) {
 
 export async function adminChanges() {
   try {
-    let adminEvent =  (Interface(Organisation.abi)).events.logAdminChange
-    let adminTopics = [adminEvent.topics[0]]
+    let adminEvent =  (new Interface(Organisation.abi)).events.logAdminChange
+    let adminTopics = [adminEvent.topic]
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',
       topics: adminTopics
     })
-    logs = logs.map(log => adminEvent.parse(log.topics, log.data))
+    logs = logs.map(log => adminEvent.decode(log.data, log.topics))
     return logs.map(l => ({
       subject: l._changedAdmin,
       status: l._status,
@@ -123,8 +123,8 @@ export async function isBlacklist(user) {
 
 export async function currentBlacklist() {
   try {
-    let blEvent = (Interface(Organisation.abi)).events.logBlacklist
-    let blTopics = [blEvent.topics[0]]
+    let blEvent = (new Interface(Organisation.abi)).events.logBlacklist
+    let blTopics = [blEvent.topic]
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',
@@ -159,8 +159,8 @@ export async function isMember(address) {
 
 export async function members() {
   try {
-    let joinEvent = (Interface(Organisation.abi)).events.logJoin
-    let joinTopics = [joinEvent.topics[0]]
+    let joinEvent = (new Interface(Organisation.abi)).events.logJoin
+    let joinTopics = [joinEvent.topic]
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',
@@ -189,8 +189,8 @@ export async function requireApproval() {
 
 export async function pending() {
   try {
-    let joinEvent = (Interface(Organisation.abi)).events.logJoin
-    let joinTopics = [joinEvent.topics[0]]
+    let joinEvent = (new Interface(Organisation.abi)).events.logJoin
+    let joinTopics = [joinEvent.topic]
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',

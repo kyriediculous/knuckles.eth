@@ -16,9 +16,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const onBountyCreated = (provider, callback) => {
   let event = new _utils.Interface(_BountyFactory.default.abi).events.logBountyCreated;
   provider.on({
-    topics: [event.topics[0]]
+    topics: [event.topic]
   }, raw => {
-    callback(event.parse(raw.topics, raw.data));
+    callback(event.decode(raw.data, raw.topics));
   });
 };
 
