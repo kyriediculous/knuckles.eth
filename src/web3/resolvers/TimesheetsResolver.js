@@ -43,7 +43,7 @@ export async function getPeriod(user, index) {
 
 export async function timesheet(user) {
   try {
-    let timesheetEvent = (new Interface(Timesheets.abi)).events.logTimesheetPeriod
+    let timesheetEvent = (Interface(Timesheets.abi)).events.logTimesheetPeriod
     let timesheetTopics = [timesheetEvent.topics[0], hexlify(padZeros(arrayify(user), 32))]
     let logs = await this.provider.getLogs({
       fromBlock: 0,

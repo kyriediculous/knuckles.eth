@@ -59,7 +59,7 @@ async function getPeriod(user, index) {
 
 async function timesheet(user) {
   try {
-    let timesheetEvent = new _utils.Interface(_Timesheets.default.abi).events.logTimesheetPeriod;
+    let timesheetEvent = (0, _utils.Interface)(_Timesheets.default.abi).events.logTimesheetPeriod;
     let timesheetTopics = [timesheetEvent.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(user), 32))];
     let logs = await this.provider.getLogs({
       fromBlock: 0,

@@ -49,7 +49,7 @@ export async function currentLimit() {
 export async function allFaucets() {
   try {
     const tokenFaucet = this.ContractProvider(TokenFaucet, this.provider)
-    let faucetEvent = (new Interface(TokenFaucet.abi)).events.logFaucet
+    let faucetEvent = (Interface(TokenFaucet.abi)).events.logFaucet
     let faucetTopics = [faucetEvent.topics[0]]
     let logs = await this.provider.getLogs({
       fromBlock: 0,

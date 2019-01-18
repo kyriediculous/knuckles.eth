@@ -53,7 +53,7 @@ function bountyAt(address, walletOrProvider) {
 async function allBounties() {
   try {
     const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider);
-    let event = new _utils.Interface(_BountyFactory.default.abi).events.logBountyCreated;
+    let event = (0, _utils.Interface)(_BountyFactory.default.abi).events.logBountyCreated;
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
@@ -129,15 +129,15 @@ async function bountiesFrom(userAddress) {
 
 async function bountyActivityFeed(address) {
   try {
-    let startWorkEvent = new _utils.Interface(_BountyInterface.default.abi).events.logStartWork;
+    let startWorkEvent = (0, _utils.Interface)(_BountyInterface.default.abi).events.logStartWork;
     let startWorktopics = [startWorkEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let commitEvent = new _utils.Interface(_BountyInterface.default.abi).events.logCommit;
+    let commitEvent = (0, _utils.Interface)(_BountyInterface.default.abi).events.logCommit;
     let commitTopics = [commitEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let contributeEvent = new _utils.Interface(_BountyInterface.default.abi).events.logContribute;
+    let contributeEvent = (0, _utils.Interface)(_BountyInterface.default.abi).events.logContribute;
     let contributeTopics = [contributeEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let acceptEvent = new _utils.Interface(_BountyInterface.default.abi).events.logAccepted;
+    let acceptEvent = (0, _utils.Interface)(_BountyInterface.default.abi).events.logAccepted;
     let acceptTopics = [acceptEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let cancelEvent = new _utils.Interface(_BountyInterface.default.abi).events.logCancelled;
+    let cancelEvent = (0, _utils.Interface)(_BountyInterface.default.abi).events.logCancelled;
     let cancelTopics = [cancelEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
     let startWorkLogs, commitLogs, contributionLogs, acceptedLog, cancelledLog;
     [startWorkLogs, commitLogs, contributionLogs, acceptedLog, cancelledLog] = await Promise.all([this.provider.getLogs({
@@ -214,7 +214,7 @@ async function bountyActivityFeed(address) {
 
 async function commitsFrom(userAddress) {
   try {
-    const event = new _utils.Interface(_BountyInterface.default.abi).events.logCommit;
+    const event = (0, _utils.Interface)(_BountyInterface.default.abi).events.logCommit;
     const topics = [event.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(userAddress), 32))];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
@@ -234,7 +234,7 @@ async function commitsFrom(userAddress) {
 
 async function rewardsFor(userAddress) {
   try {
-    const event = new _utils.Interface(_BountyInterface.default.abi).events.logAccepted;
+    const event = (0, _utils.Interface)(_BountyInterface.default.abi).events.logAccepted;
     const topics = [event.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(userAddress), 32))];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
@@ -426,7 +426,7 @@ async function proposalCount(address) {
 
 async function leaderboard() {
   try {
-    const event = new _utils.Interface(_BountyInterface.default.abi).events.logAccepted;
+    const event = (0, _utils.Interface)(_BountyInterface.default.abi).events.logAccepted;
     const topics = [event.topics[0]];
     let logs = await this.provider.getLogs({
       fromBlock: 0,

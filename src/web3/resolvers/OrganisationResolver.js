@@ -73,7 +73,7 @@ export async function whitelist(address, wallet) {
 
 export async function adminChanges() {
   try {
-    let adminEvent =  (new Interface(Organisation.abi)).events.logAdminChange
+    let adminEvent =  (Interface(Organisation.abi)).events.logAdminChange
     let adminTopics = [adminEvent.topics[0]]
     let logs = await this.provider.getLogs({
       fromBlock: 1,
@@ -123,7 +123,7 @@ export async function isBlacklist(user) {
 
 export async function currentBlacklist() {
   try {
-    let blEvent = (new Interface(Organisation.abi)).events.logBlacklist
+    let blEvent = (Interface(Organisation.abi)).events.logBlacklist
     let blTopics = [blEvent.topics[0]]
     let logs = await this.provider.getLogs({
       fromBlock: 1,
@@ -159,7 +159,7 @@ export async function isMember(address) {
 
 export async function members() {
   try {
-    let joinEvent = (new Interface(Organisation.abi)).events.logJoin
+    let joinEvent = (Interface(Organisation.abi)).events.logJoin
     let joinTopics = [joinEvent.topics[0]]
     let logs = await this.provider.getLogs({
       fromBlock: 1,
@@ -189,7 +189,7 @@ export async function requireApproval() {
 
 export async function pending() {
   try {
-    let joinEvent = (new Interface(Organisation.abi)).events.logJoin
+    let joinEvent = (Interface(Organisation.abi)).events.logJoin
     let joinTopics = [joinEvent.topics[0]]
     let logs = await this.provider.getLogs({
       fromBlock: 1,

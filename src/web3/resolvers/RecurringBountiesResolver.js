@@ -17,7 +17,7 @@ const statusOptions = ["Active", "Completed", "Abandoned"]
 
 export async function allRecurringBounties() {
   try {
-    const event = (new Interface(RecurringBountyFactory.abi)).events.logRecurringBountyCreated
+    const event = (Interface(RecurringBountyFactory.abi)).events.logRecurringBountyCreated
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
@@ -36,7 +36,7 @@ export async function allRecurringBounties() {
 
 export async function recurringBountiesFrom(userAddress)  {
   try {
-    const event = (new Interface(RecurringBountyFactory.abi)).events.logRecurringBountyCreated
+    const event = (Interface(RecurringBountyFactory.abi)).events.logRecurringBountyCreated
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
@@ -173,7 +173,7 @@ export async function getCommits() {
 
 export async function commitsFrom(address) {
   try {
-    const event = (new Interface(RecurringBountyInterface.abi)).events.logRecurringCommit
+    const event = (Interface(RecurringBountyInterface.abi)).events.logRecurringCommit
     const topics = [event.topics[0], hexlify(padZeros(arrayify(address), 32))]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
@@ -254,7 +254,7 @@ export async function mintFunding(address, amount, wallet) {
 
 export async function rewardsFor(address) {
   try {
-    const event = (new Interface(RecurringBountyInterface.abi)).events.logRecurringAccepted
+    const event = (Interface(RecurringBountyInterface.abi)).events.logRecurringAccepted
     const topics = [event.topics[0], hexlify(padZeros(arrayify(address), 32))]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
@@ -281,13 +281,13 @@ export async function startWorking(address, wallet) {
 
 export async function bountyActivityFeed(address) {
   try {
-    let startWorkEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringStartWork
+    let startWorkEvent = (Interface(RecurringBountyInterface.abi)).events.logRecurringStartWork
     let startWorktopics = [startWorkEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
-    let commitEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringCommit
+    let commitEvent = (Interface(RecurringBountyInterface.abi)).events.logRecurringCommit
     let commitTopics = [commitEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
-    let acceptEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringAccepted
+    let acceptEvent = (Interface(RecurringBountyInterface.abi)).events.logRecurringAccepted
     let acceptTopics = [acceptEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
-    let cancelEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringCancelled
+    let cancelEvent = (Interface(RecurringBountyInterface.abi)).events.logRecurringCancelled
     let cancelTopics = [cancelEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
     let startWorkLogs, commitLogs, contributionLogs, acceptedLog, cancelledLog
     [startWorkLogs, commitLogs, acceptedLog, cancelledLog] = await Promise.all([
@@ -360,7 +360,7 @@ commitLogs = commitLogs.map(log => {
 
 export async function leaderboard() {
   try {
-    const event = (new Interface(RecurringBountyInterface.abi)).events.logRecurringAccepted
+    const event = (Interface(RecurringBountyInterface.abi)).events.logRecurringAccepted
     const topics = [event.topics[0]]
     let logs = await this.provider.getLogs({
       fromBlock: 0,

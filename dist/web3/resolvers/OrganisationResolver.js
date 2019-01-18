@@ -108,7 +108,7 @@ async function whitelist(address, wallet) {
 
 async function adminChanges() {
   try {
-    let adminEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logAdminChange;
+    let adminEvent = (0, _utils.Interface)(_OrganisationContract.default.abi).events.logAdminChange;
     let adminTopics = [adminEvent.topics[0]];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
@@ -160,7 +160,7 @@ async function isBlacklist(user) {
 
 async function currentBlacklist() {
   try {
-    let blEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logBlacklist;
+    let blEvent = (0, _utils.Interface)(_OrganisationContract.default.abi).events.logBlacklist;
     let blTopics = [blEvent.topics[0]];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
@@ -198,7 +198,7 @@ async function isMember(address) {
 
 async function members() {
   try {
-    let joinEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logJoin;
+    let joinEvent = (0, _utils.Interface)(_OrganisationContract.default.abi).events.logJoin;
     let joinTopics = [joinEvent.topics[0]];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
@@ -231,7 +231,7 @@ async function requireApproval() {
 
 async function pending() {
   try {
-    let joinEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logJoin;
+    let joinEvent = (0, _utils.Interface)(_OrganisationContract.default.abi).events.logJoin;
     let joinTopics = [joinEvent.topics[0]];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
