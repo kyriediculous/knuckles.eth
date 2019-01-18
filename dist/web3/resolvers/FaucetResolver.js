@@ -45,7 +45,6 @@ async function setLimit(limit, wallet) {
 async function received(wallet) {
   try {
     const provider = this.provider;
-    if (wallet.provider === undefined) wallet.provider = provider;
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider);
     return await tokenFaucet.received(wallet.address);
   } catch (err) {

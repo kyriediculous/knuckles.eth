@@ -221,9 +221,9 @@ async function commitsFrom(address) {
     });
     logs = logs.map(log => event.decode(log.data, log.topics));
     logs = logs.map(l => {
-      let log = l;
-      log.type = 'recurring';
-      return log;
+      return { ...l,
+        type: 'recurring'
+      };
     });
     return logs;
   } catch (e) {

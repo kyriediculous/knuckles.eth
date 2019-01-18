@@ -6,7 +6,7 @@ import moment from 'moment'
 
 export async function faucet(wallet) {
   try {
-    const provider = this.provider 
+    const provider = this.provider
     if (wallet.provider === undefined) wallet.provider = provider
     const tokenFaucet = this.ContractProvider(TokenFaucet, wallet)
     let tx =  await tokenFaucet.faucet()
@@ -31,7 +31,6 @@ export async function setLimit(limit, wallet) {
 export async function received(wallet) {
   try {
     const provider = this.provider
-    if (wallet.provider === undefined) wallet.provider = provider
     const tokenFaucet = this.ContractProvider(TokenFaucet, this.provider)
     return await tokenFaucet.received(wallet.address)
   } catch (err) {
