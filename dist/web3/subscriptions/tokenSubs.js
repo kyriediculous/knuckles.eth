@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.onTokenTransfer = onTokenTransfer;
+exports.onTokenTransfer = void 0;
 
 var _ethers = require("ethers");
 
@@ -13,7 +13,7 @@ var _Provider = _interopRequireDefault(require("../Provider"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function onTokenTransfer(provider, callback) {
+const onTokenTransfer = (provider, callback) => {
   let event = new _ethers.Interface(_Token.default.abi).events.Transfer;
   provider.on({
     topics: [event.topics[0]],
@@ -21,4 +21,6 @@ function onTokenTransfer(provider, callback) {
   }, raw => {
     callback(raw.map(log => event.parse(log.topics, log.data)));
   });
-}
+};
+
+exports.onTokenTransfer = onTokenTransfer;

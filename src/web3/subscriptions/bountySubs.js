@@ -3,7 +3,7 @@ import BountyFactory from '../artifacts/BountyFactory.json'
 import Provider from '../Provider'
 
 
-export function onBountyCreated(provider, callback) {
+export const onBountyCreated = (provider, callback) => {
     let event = (new Interface(BountyFactory.abi)).events.logBountyCreated
 
     provider.on({

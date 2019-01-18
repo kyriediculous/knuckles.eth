@@ -3,7 +3,7 @@ import Token from '../artifacts/Token.json'
 import Provider from '../Provider'
 
 
-export function onTokenTransfer(provider, callback) {
+export const onTokenTransfer = (provider, callback) => {
     let event = (new Interface(Token.abi)).events.Transfer
 
     provider.on({
