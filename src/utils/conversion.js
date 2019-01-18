@@ -1,9 +1,7 @@
 import {
   utils
 } from 'ethers'
-import bs58 from 'bs58'
 import sha3 from 'crypto-js/sha3'
-import bs64 from 'bs64'
 
 function stringToHex(str) {
   if (!str)

@@ -11,7 +11,7 @@ exports.timesheetRewards = timesheetRewards;
 exports.getLast = getLast;
 exports.reward = reward;
 
-var _Timesheets = _interopRequireDefault(require("../../../../../contracts/build/contracts/Timesheets.json"));
+var _Timesheets = _interopRequireDefault(require("../artifacts/Timesheets.json"));
 
 var _moment = _interopRequireDefault(require("moment"));
 

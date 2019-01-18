@@ -24,9 +24,9 @@ exports.startWorking = startWorking;
 exports.bountyActivityFeed = bountyActivityFeed;
 exports.leaderboard = leaderboard;
 
-var _RecurringBountyFactory = _interopRequireDefault(require("../../../../../contracts/build/contracts/RecurringBountyFactory.json"));
+var _RecurringBountyFactory = _interopRequireDefault(require("../artifacts/RecurringBountyFactory.json"));
 
-var _RecurringBountyInterface = _interopRequireDefault(require("../../../../../contracts/build/contracts/RecurringBountyInterface.json"));
+var _RecurringBountyInterface = _interopRequireDefault(require("../artifacts/RecurringBountyInterface.json"));
 
 var _TokenResolver = require("./TokenResolver");
 

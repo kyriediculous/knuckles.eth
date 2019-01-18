@@ -7,7 +7,7 @@ exports.onBountyCreated = onBountyCreated;
 
 var _ethers = require("ethers");
 
-var _BountyFactory = _interopRequireDefault(require("../../../../../contracts/build/contracts/BountyFactory.json"));
+var _BountyFactory = _interopRequireDefault(require("../artifacts/BountyFactory.json"));
 
 var _Provider = _interopRequireDefault(require("../Provider"));
 

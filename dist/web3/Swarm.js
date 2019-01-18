@@ -7,8 +7,6 @@ exports.default = void 0;
 
 var _swarm = require("@erebos/swarm");
 
-const request = require('request');
-
 const toUtf8String = require('ethers/utils').toUtf8String;
 
 const clients = {

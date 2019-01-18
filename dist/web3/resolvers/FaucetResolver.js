@@ -9,7 +9,7 @@ exports.received = received;
 exports.currentLimit = currentLimit;
 exports.allFaucets = allFaucets;
 
-var _TokenFaucet = _interopRequireDefault(require("../../../../../contracts/build/contracts/TokenFaucet.json"));
+var _TokenFaucet = _interopRequireDefault(require("../artifacts/TokenFaucet.json"));
 
 var _utils = require("ethers/utils");
 

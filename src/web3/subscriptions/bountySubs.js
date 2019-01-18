@@ -1,5 +1,5 @@
 import {Interface} from 'ethers'
-import BountyFactory from '../../../../../contracts/build/contracts/BountyFactory.json'
+import BountyFactory from '../artifacts/BountyFactory.json'
 import Provider from '../Provider'
 
 

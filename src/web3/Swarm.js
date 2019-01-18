@@ -1,4 +1,3 @@
-const request = require('request')
 const toUtf8String = require('ethers/utils').toUtf8String
 
 const clients = {
