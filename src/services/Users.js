@@ -1,6 +1,6 @@
 import {EthResolver, Swarm} from '../web3'
 import blockies from '../utils/blockies'
-import {bytes32ToString} from '../utils/conversion'
+import {bytes32ToString} from '../utils/_'
 
 class Users {
   //Default ganache & localhost

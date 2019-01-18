@@ -1,7 +1,7 @@
 import Organisation from '../artifacts/OrganisationContract.json'
 import {Interface} from 'ethers'
 import {parseEther, formatEther} from 'ethers/utils'
-import {stringToHex} from '../../utils/conversion'
+import {stringToHex} from '../../utils/_'
 import {isAdmin} from './UsersResolver'
 
 //identity , minttokens , addAdmin , removeAdmin , blacklistMember , removeBlacklistMember
