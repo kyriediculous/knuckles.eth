@@ -103,11 +103,7 @@ class Users {
     try {
       const address = await this.eth.users.lookup(name);
       const user = await this.get(address);
-      const avatar = user.avatar ? user.avatar : blockies.create({
-        seed: address,
-        size: 25,
-        scale: 4
-      });
+      const avatar = user.avatar ? user.avatar : '';
       return {
         address,
         avatar,
