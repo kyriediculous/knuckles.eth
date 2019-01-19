@@ -25,7 +25,7 @@ export const onTokenTransfer = callback => {
     })
 }
 */
-const onTokenTransfer = new Promise((resolve, reject) => {
+const onTokenTransfer = () => new Promise((resolve, reject) => {
   const provider = (0, _Provider.default)(process.env.CLIENT);
   let event = new _utils.Interface(_Token.default.abi).events.Transfer;
   provider.on({
@@ -35,4 +35,5 @@ const onTokenTransfer = new Promise((resolve, reject) => {
     if (raw !== undefined) resolve(raw);
   });
 });
+
 exports.onTokenTransfer = onTokenTransfer;
