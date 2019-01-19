@@ -37,7 +37,7 @@ async function sendTokens(recipient, amount, wallet) {
 
     amount = (0, _utils.parseEther)(amount);
     let tx = await token.transfer(recipient, amount, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (err) {
@@ -56,7 +56,7 @@ async function approveSpend(recipient, amount, wallet) {
 
     amount = (0, _utils.parseEther)(amount);
     let tx = await token.approve(recipient, amount, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (err) {

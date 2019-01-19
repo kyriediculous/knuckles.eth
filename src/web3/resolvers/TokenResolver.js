@@ -19,7 +19,7 @@ export async function sendTokens(recipient, amount, wallet) {
       amount = amount.toString()
     }
     amount = parseEther(amount)
-    let tx = await token.transfer(recipient, amount, {gasPrice: '0x0'})
+    let tx = await token.transfer(recipient, amount, {gasPrice: parseEther('0')})
     return await tx.wait()
   } catch (err) {
     throw new Error(err)
@@ -34,7 +34,7 @@ export async function approveSpend(recipient, amount, wallet) {
       amount = amount.toString()
     }
     amount = parseEther(amount)
-    let tx = await token.approve(recipient, amount, {gasPrice: '0x0'})
+    let tx = await token.approve(recipient, amount, {gasPrice: parseEther('0')})
     return await tx.wait()
   } catch (err) {
     throw new Error(err)
