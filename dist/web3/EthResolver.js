@@ -149,9 +149,7 @@ class EthResolver {
   static init(provider = process.env.CLIENT) {
     try {
       const ethResolver = new EthResolver();
-      console.log(provider);
       ethResolver.provider = (0, _Provider.default)(provider);
-      console.log(ethResolver.provider);
       ethResolver.ContractProvider = _ContractProvider.default;
       return ethResolver;
     } catch (err) {

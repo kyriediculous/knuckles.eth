@@ -20,9 +20,7 @@ class EthResolver {
   static init(provider = process.env.CLIENT) {
     try {
       const ethResolver = new EthResolver()
-      console.log(provider)
       ethResolver.provider = Provider(provider)
-      console.log(ethResolver.provider)
       ethResolver.ContractProvider = ContractProvider
       return ethResolver
     } catch (err) {
