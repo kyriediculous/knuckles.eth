@@ -17,13 +17,21 @@ export const onBountyCreated = callback => {
   provider.on({
     topics: [event.topic]
   }, raw => {
-    callback(event.decode(raw.data, raw.topics))
+    let decoded = {
+      ...event.decode(raw.data, raw.topics),
+      type: 'single'
+    }
+    callback(decoded)
   })
 
   provider.on({
     topics: [recurringEvent.topic]
   }, raw => {
-    callback(recurringEvent.decode(raw.data, raw.topics))
+    let decoded = {
+      ...recurringEvent.decode(raw.data, raw.topics),
+      type: 'recurring'
+    }
+    callback(decoded)
   })
 }
 
@@ -36,13 +44,21 @@ export const onBountyAccepted = callback => {
   provider.on({
     topics: [event.topic]
   }, raw => {
-    callback(event.decode(raw.data, raw.topics))
+    let decoded = {
+      ...event.decode(raw.data, raw.topics),
+      type: 'single'
+    }
+    callback(decoded)
   })
 
   provider.on({
     topics: [recurringEvent.topic]
   }, raw => {
-    callback(recurringEvent.decode(raw.data, raw.topics))
+    let decoded = {
+      ...recurringEvent.decode(raw.data, raw.topics),
+      type: 'recurring'
+    }
+    callback(decoded)
   })
 }
 
@@ -54,12 +70,20 @@ export const onBountyCommit = callback => {
   provider.on({
     topics: [event.topic]
   }, raw => {
-    callback(event.decode(raw.data, raw.topics))
+    let decoded = {
+      ...event.decode(raw.data, raw.topics),
+      type: 'single'
+    }
+    callback(decoded)
   })
 
   provider.on({
     topics: [recurringEvent.topic]
   }, raw => {
-    callback(recurringEvent.decode(raw.data, raw.topics))
+    let decoded = {
+      ...recurringEvent.decode(raw.data, raw.topics),
+      type: 'recurring'
+    }
+    callback(decoded)
   })
 }
