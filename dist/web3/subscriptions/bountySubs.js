@@ -19,7 +19,8 @@ var _Provider = _interopRequireDefault(require("../Provider"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const onBountyCreated = (provider, callback) => {
+const onBountyCreated = callback => {
+  const provider = (0, _Provider.default)(process.env.CLIENT);
   let event = new _utils.Interface(_BountyFactory.default.abi).events.logBountyCreated;
   let recurringEvent = new _utils.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
   provider.on({
@@ -36,7 +37,8 @@ const onBountyCreated = (provider, callback) => {
 
 exports.onBountyCreated = onBountyCreated;
 
-const onBountyAccepted = (provider, callback) => {
+const onBountyAccepted = callback => {
+  const provider = (0, _Provider.default)(process.env.CLIENT);
   let event = new _utils.Interface(_BountyInterface.default.abi).events.logAccepted;
   let recurringEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
   provider.on({
@@ -53,7 +55,8 @@ const onBountyAccepted = (provider, callback) => {
 
 exports.onBountyAccepted = onBountyAccepted;
 
-const onBountyCommit = (provider, callback) => {
+const onBountyCommit = callback => {
+  const provider = (0, _Provider.default)(process.env.CLIENT);
   let event = new _utils.Interface(_BountyInterface.default.abi).events.logCommit;
   let recurringEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
   provider.on({

@@ -13,7 +13,8 @@ var _Provider = _interopRequireDefault(require("../Provider"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const onTokenTransfer = (provider, callback) => {
+const onTokenTransfer = callback => {
+  const provider = (0, _Provider.default)(process.env.CLIENT);
   let event = new _utils.Interface(_Token.default.abi).events.Transfer;
   provider.on({
     topics: [event.topic],

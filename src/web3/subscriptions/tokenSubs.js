@@ -2,7 +2,8 @@ import {Interface} from 'ethers/utils'
 import Token from '../artifacts/Token.json'
 import Provider from '../Provider'
 
-export const onTokenTransfer = (provider, callback) => {
+export const onTokenTransfer = callback => {
+    const provider = Provider(process.env.CLIENT)
     let event = (new Interface(Token.abi)).events.Transfer
     provider.on({
       topics: [event.topic],
