@@ -8,7 +8,7 @@ import BountyInterface from '../../../contracts/build/contracts/BountyInterface.
 import RecurringBountyInterface from '../../../contracts/build/contracts/RecurringBountyInterface.json'
 import Provider from '../Provider'
 
-export const onBountyCreated = () => new Promise( (resolve, reject) => {
+export const onBountyCreated = () => callback =>  {
   const provider = Provider(process.env.CLIENT)
 
   let event = (new Interface(BountyFactory.abi)).events.logBountyCreated
@@ -20,7 +20,7 @@ export const onBountyCreated = () => new Promise( (resolve, reject) => {
       ...event.decode(raw.data, raw.topics),
       type: 'single'
     }
-    resolve(decoded)
+    callback(decoded)
   })
 
   provider.on({
@@ -30,12 +30,12 @@ export const onBountyCreated = () => new Promise( (resolve, reject) => {
       ...recurringEvent.decode(raw.data, raw.topics),
       type: 'recurring'
     }
-    resolve(decoded)
+    callback(decoded)
   })
-})
+}
 
 
-export const onBountyAccepted =  () => new Promise( (resolve, reject) => {
+export const onBountyAccepted =  () => callback =>  {
   const provider = Provider(process.env.CLIENT)
 
   let event = (new Interface(BountyInterface.abi)).events.logAccepted
@@ -47,7 +47,7 @@ export const onBountyAccepted =  () => new Promise( (resolve, reject) => {
       ...event.decode(raw.data, raw.topics),
       type: 'single'
     }
-    resolve(decoded)
+    callback(decoded)
   })
 
   provider.on({
@@ -57,11 +57,11 @@ export const onBountyAccepted =  () => new Promise( (resolve, reject) => {
       ...recurringEvent.decode(raw.data, raw.topics),
       type: 'recurring'
     }
-    resolve(decoded)
+    callback(decoded)
   })
-})
+}
 
-export const onBountyCommit = () => new Promise( (resolve, reject) => {
+export const onBountyCommit = () => callback =>  {
   const provider = Provider(process.env.CLIENT)
 
   let event = (new Interface(BountyInterface.abi)).events.logCommit
@@ -73,7 +73,7 @@ export const onBountyCommit = () => new Promise( (resolve, reject) => {
       ...event.decode(raw.data, raw.topics),
       type: 'single'
     }
-    resolve(decoded)
+    callback(decoded)
   })
 
   provider.on({
@@ -83,6 +83,6 @@ export const onBountyCommit = () => new Promise( (resolve, reject) => {
       ...recurringEvent.decode(raw.data, raw.topics),
       type: 'recurring'
     }
-    resolve(decoded)
+    callback(decoded)
   })
-})
+}

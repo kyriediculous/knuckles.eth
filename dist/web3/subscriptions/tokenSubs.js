@@ -13,15 +13,15 @@ var _Provider = _interopRequireDefault(require("../Provider"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const onTokenTransfer = () => new Promise((resolve, reject) => {
+const onTokenTransfer = () => callback => {
   const provider = (0, _Provider.default)(process.env.CLIENT);
   let event = new _utils.Interface(_Token.default.abi).events.Transfer;
   provider.on({
     topics: [event.topic],
     address: _Token.default.networks[provider.network.chainId].address
   }, raw => {
-    if (raw !== undefined) resolve(event.decode(raw.data, raw.topics));
+    if (raw !== undefined) callback(event.decode(raw.data, raw.topics));
   });
-});
+};
 
 exports.onTokenTransfer = onTokenTransfer;
