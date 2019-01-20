@@ -11,7 +11,7 @@ exports.getAll = getAll;
 exports.purchase = purchase;
 exports.changeStatus = changeStatus;
 
-var _RewardStore = _interopRequireDefault(require("../artifacts/RewardStore.json"));
+var _RewardStore = _interopRequireDefault(require("../../../contracts/build/contracts/RewardStore.json"));
 
 var _TokenResolver = require("./TokenResolver");
 

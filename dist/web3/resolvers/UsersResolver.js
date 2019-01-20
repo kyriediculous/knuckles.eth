@@ -9,9 +9,9 @@ exports.get = get;
 exports.ensLookup = ensLookup;
 exports.isAdmin = isAdmin;
 
-var _UsersRegistry = _interopRequireDefault(require("../artifacts/UsersRegistry.json"));
+var _UsersRegistry = _interopRequireDefault(require("../../../contracts/build/contracts/UsersRegistry.json"));
 
-var _OrganisationContract = _interopRequireDefault(require("../artifacts/OrganisationContract.json"));
+var _OrganisationContract = _interopRequireDefault(require("../../../contracts/build/contracts/OrganisationContract.json"));
 
 var _utils = require("ethers/utils");
 

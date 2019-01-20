@@ -1,4 +1,4 @@
-import Token from '../artifacts/Token.json'
+import Token from '../../../contracts/build/contracts/Token.json'
 import {formatEther, parseEther, bigNumberify} from 'ethers/utils'
 
 export async function getBalance(address) {

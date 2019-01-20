@@ -1,4 +1,4 @@
-import Organisation from '../artifacts/OrganisationContract.json'
+import Organisation from '../../../contracts/build/contracts/OrganisationContract.json'
 import {Interface} from 'ethers/utils'
 import {parseEther, formatEther} from 'ethers/utils'
 import {stringToHex} from '../../utils/_'

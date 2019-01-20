@@ -7,13 +7,13 @@ exports.onBountyCommit = exports.onBountyAccepted = exports.onBountyCreated = vo
 
 var _utils = require("ethers/utils");
 
-var _BountyFactory = _interopRequireDefault(require("../artifacts/BountyFactory.json"));
+var _BountyFactory = _interopRequireDefault(require("../../../contracts/build/contracts/BountyFactory.json"));
 
-var _RecurringBountyFactory = _interopRequireDefault(require("../artifacts/RecurringBountyFactory.json"));
+var _RecurringBountyFactory = _interopRequireDefault(require("../../../contracts/build/contracts/RecurringBountyFactory.json"));
 
-var _BountyInterface = _interopRequireDefault(require("../artifacts/BountyInterface.json"));
+var _BountyInterface = _interopRequireDefault(require("../../../contracts/build/contracts/BountyInterface.json"));
 
-var _RecurringBountyInterface = _interopRequireDefault(require("../artifacts/RecurringBountyInterface.json"));
+var _RecurringBountyInterface = _interopRequireDefault(require("../../../contracts/build/contracts/RecurringBountyInterface.json"));
 
 var _Provider = _interopRequireDefault(require("../Provider"));
 

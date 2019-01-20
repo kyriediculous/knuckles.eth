@@ -1,5 +1,5 @@
 {
-  "name": "knucklesJS",
+  "name": "knuckles-eth",
   "version": "1.0.0",
   "description": "A javascript package to interact with the Knuckles blockchain and swarm cluster",
   "main": "dist/index.js",
@@ -34,6 +34,7 @@
     "localforage": "^1.7.3",
     "moment": "^2.23.0",
     "reflect-metadata": "^0.1.13",
-    "secp256k1": "^3.6.1"
+    "secp256k1": "^3.6.1",
+    "truffle-hdwallet-provider": "^1.0.2"
   }
 }

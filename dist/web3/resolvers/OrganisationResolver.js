@@ -21,7 +21,7 @@ exports.approve = approve;
 exports.toggleApproval = toggleApproval;
 exports.isPending = isPending;
 
-var _OrganisationContract = _interopRequireDefault(require("../artifacts/OrganisationContract.json"));
+var _OrganisationContract = _interopRequireDefault(require("../../../contracts/build/contracts/OrganisationContract.json"));
 
 var _utils = require("ethers/utils");
 

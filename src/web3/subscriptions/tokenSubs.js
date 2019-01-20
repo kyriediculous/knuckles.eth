@@ -1,5 +1,5 @@
 import {Interface} from 'ethers/utils'
-import Token from '../artifacts/Token.json'
+import Token from '../../../contracts/build/contracts/Token.json'
 import Provider from '../Provider'
 
 /*

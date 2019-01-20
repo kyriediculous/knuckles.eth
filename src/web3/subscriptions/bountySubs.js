@@ -2,10 +2,10 @@ import {
   Interface
 } from 'ethers/utils'
 
-import BountyFactory from '../artifacts/BountyFactory.json'
-import RecurringBountyFactory from '../artifacts/RecurringBountyFactory.json'
-import BountyInterface from '../artifacts/BountyInterface.json'
-import RecurringBountyInterface from '../artifacts/RecurringBountyInterface.json'
+import BountyFactory from '../../../contracts/build/contracts/BountyFactory.json'
+import RecurringBountyFactory from '../../../contracts/build/contracts/RecurringBountyFactory.json'
+import BountyInterface from '../../../contracts/build/contracts/BountyInterface.json'
+import RecurringBountyInterface from '../../../contracts/build/contracts/RecurringBountyInterface.json'
 import Provider from '../Provider'
 
 

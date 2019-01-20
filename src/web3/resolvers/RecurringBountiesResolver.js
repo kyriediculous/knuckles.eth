@@ -1,5 +1,5 @@
-import RecurringBountyFactory from '../artifacts/RecurringBountyFactory.json'
-import RecurringBountyInterface from '../artifacts/RecurringBountyInterface.json'
+import RecurringBountyFactory from '../../../contracts/build/contracts/RecurringBountyFactory.json'
+import RecurringBountyInterface from '../../../contracts/build/contracts/RecurringBountyInterface.json'
 import {approveSpend, getBalance, sendTokens} from './TokenResolver'
 import moment from 'moment'
 import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther, bigNumberify} from 'ethers/utils'

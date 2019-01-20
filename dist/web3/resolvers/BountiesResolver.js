@@ -25,11 +25,11 @@ exports.leaderboard = leaderboard;
 exports.startWorking = startWorking;
 exports.refundContribution = refundContribution;
 
-var _BountyFactory = _interopRequireDefault(require("../artifacts/BountyFactory.json"));
+var _BountyFactory = _interopRequireDefault(require("../../../contracts/build/contracts/BountyFactory.json"));
 
-var _BountyInterface = _interopRequireDefault(require("../artifacts/BountyInterface.json"));
+var _BountyInterface = _interopRequireDefault(require("../../../contracts/build/contracts/BountyInterface.json"));
 
-var _Token = _interopRequireDefault(require("../artifacts/Token.json"));
+var _Token = _interopRequireDefault(require("../../../contracts/build/contracts/Token.json"));
 
 var _TokenResolver = require("./TokenResolver");
 

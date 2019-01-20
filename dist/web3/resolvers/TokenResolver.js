@@ -10,7 +10,7 @@ exports.getAllowance = getAllowance;
 exports.tokenInfo = tokenInfo;
 exports.address = address;
 
-var _Token = _interopRequireDefault(require("../artifacts/Token.json"));
+var _Token = _interopRequireDefault(require("../../../contracts/build/contracts/Token.json"));
 
 var _utils = require("ethers/utils");
 

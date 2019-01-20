@@ -7,7 +7,7 @@ exports.onTokenTransfer = void 0;
 
 var _utils = require("ethers/utils");
 
-var _Token = _interopRequireDefault(require("../artifacts/Token.json"));
+var _Token = _interopRequireDefault(require("../../../contracts/build/contracts/Token.json"));
 
 var _Provider = _interopRequireDefault(require("../Provider"));
 

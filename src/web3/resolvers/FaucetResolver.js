@@ -1,4 +1,4 @@
-import TokenFaucet from '../artifacts/TokenFaucet.json'
+import TokenFaucet from '../../../contracts/build/contracts/TokenFaucet.json'
 import {formatEther, parseEther, bigNumberify} from 'ethers/utils'
 import moment from 'moment'
 

@@ -1,4 +1,4 @@
-import RewardStore from '../artifacts/RewardStore.json'
+import RewardStore from '../../../contracts/build/contracts/RewardStore.json'
 import {approveSpend, getBalance} from './TokenResolver'
 import {parseEther, formatEther, bigNumberify} from 'ethers/utils'
 
