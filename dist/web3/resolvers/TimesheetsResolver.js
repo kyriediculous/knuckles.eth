@@ -26,7 +26,9 @@ async function setReward(reward, wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const timesheets = this.ContractProvider(_Timesheets.default, this.provider, wallet);
-    let tx = await timesheets.setReward((0, _utils.parseEther)(reward.toString()));
+    let tx = await timesheets.setReward((0, _utils.parseEther)(reward.toString()), {
+      gasPrice: (0, _utils.parseEther)('0')
+    });
     return await tx.wait();
   } catch (err) {
     throw new Error(err);
@@ -37,7 +39,9 @@ async function setPeriod(user, startPeriod, completed, wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const timesheets = this.ContractProvider(_Timesheets.default, this.provider, wallet);
-    let tx = await timesheets.setPeriod(user, startPeriod, completed);
+    let tx = await timesheets.setPeriod(user, startPeriod, completed, {
+      gasPrice: (0, _utils.parseEther)('0')
+    });
     return await tx.wait();
   } catch (err) {
     throw new Error(err);

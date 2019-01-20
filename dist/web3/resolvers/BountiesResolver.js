@@ -80,11 +80,11 @@ async function createBounty(reference, deadline, reward, wallet) {
     const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
     const token = this.ContractProvider(_Token.default, this.provider, wallet);
     const spend = await token.approve(bountyFactory.address, reward, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     await spend.wait();
     let tx = await bountyFactory.createBounty(reference, deadline, reward, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (err) {
@@ -100,7 +100,7 @@ async function createMintable(reference, deadline, reward, wallet) {
     reward = (0, _utils.parseEther)(reward.toString());
     const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
     let tx = await bountyFactory.createMintableBounty(reference, deadline, reward, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (err) {
@@ -304,7 +304,7 @@ async function cancelBounty(address, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const bounty = bountyAt(address, this.provider, wallet);
     let tx = await bounty.cancelBounty({
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return tx.wait();
   } catch (err) {
@@ -317,7 +317,7 @@ async function cancelMintable(address, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const bf = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
     let tx = await bf.cancelMintable(address, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return tx.wait();
   } catch (e) {
@@ -332,7 +332,7 @@ async function contribute(address, amount, wallet) {
     let spend = await _TokenResolver.approveSpend.call(this, address, amount, wallet);
     await spend.wait();
     spend = await bounty.contribute((0, _utils.parseEther)(amount), {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await spend.wait();
   } catch (err) {
@@ -382,7 +382,7 @@ async function acceptCommit(address, id, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const b = bountyAt(address, this.provider, wallet);
     let tx = await b.acceptCommit(id, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
     return tx;
@@ -396,7 +396,7 @@ async function acceptMintable(address, id, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
     let tx = await bountyFactory.acceptMintable(address, id, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (err) {
@@ -410,7 +410,7 @@ async function submitCommit(address, reference, wallet) {
     const b = bountyAt(address, this.provider, wallet);
     reference = '0x' + reference;
     let tx = await b.submitCommit(reference, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (e) {
@@ -464,7 +464,7 @@ async function startWorking(address, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const b = bountyAt(address, this.provider, wallet);
     let tx = await b.startWork({
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (e) {
@@ -477,7 +477,7 @@ async function refundContribution(address, contributionId, amount, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const bounty = bountyAt(address, this.provider, wallet);
     let tx = await bounty.refundContribution(contributionId, (0, _utils.parseEther)(amount.toString(10)), {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (err) {

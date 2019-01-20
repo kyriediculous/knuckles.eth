@@ -37,7 +37,7 @@ async function setIdentity(name, swarmHash, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.setOrganisationIdentity((0, _.stringToHex)(name.toLowerCase()), swarmHash, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (err) {
@@ -50,7 +50,7 @@ async function mintTokens(to, amount, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.mintToken(to, (0, _utils.parseEther)(amount.toString()), {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (err) {
@@ -63,7 +63,7 @@ async function addAdmin(address, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.addAdmin(address, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (err) {
@@ -76,7 +76,7 @@ async function removeAdmin(address, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.removeAdmin(address, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (err) {
@@ -88,7 +88,9 @@ async function blacklist(address, wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
-    let tx = await organisation.blacklist(address);
+    let tx = await organisation.blacklist(address, {
+      gasPrice: (0, _utils.parseEther)('0')
+    });
     return await tx.wait();
   } catch (err) {
     throw new Error(err);
@@ -99,7 +101,9 @@ async function whitelist(address, wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
-    let tx = await organisation.whitelist(address);
+    let tx = await organisation.whitelist(address, {
+      gasPrice: (0, _utils.parseEther)('0')
+    });
     return await tx.wait();
   } catch (err) {
     throw new Error(err);
@@ -259,7 +263,9 @@ async function approve(user, accepted, wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const org = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
-    let tx = await org.approve(user, accepted);
+    let tx = await org.approve(user, accepted, {
+      gasPrice: (0, _utils.parseEther)('0')
+    });
     return await tx.wait();
   } catch (err) {
     throw new Error(err);
@@ -270,7 +276,9 @@ async function toggleApproval(wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const org = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
-    let tx = await org.toggleApproval();
+    let tx = await org.toggleApproval({
+      gasPrice: (0, _utils.parseEther)('0')
+    });
     return await tx.wait();
   } catch (err) {
     throw new Error(err);

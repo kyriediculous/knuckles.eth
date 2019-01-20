@@ -8,8 +8,7 @@ import BountyInterface from '../../../contracts/build/contracts/BountyInterface.
 import RecurringBountyInterface from '../../../contracts/build/contracts/RecurringBountyInterface.json'
 import Provider from '../Provider'
 
-
-export const onBountyCreated = callback => {
+export const onBountyCreated = () => new Promise( (resolve, reject) => {
   const provider = Provider(process.env.CLIENT)
 
   let event = (new Interface(BountyFactory.abi)).events.logBountyCreated
@@ -21,7 +20,7 @@ export const onBountyCreated = callback => {
       ...event.decode(raw.data, raw.topics),
       type: 'single'
     }
-    callback(decoded)
+    resolve(decoded)
   })
 
   provider.on({
@@ -31,12 +30,12 @@ export const onBountyCreated = callback => {
       ...recurringEvent.decode(raw.data, raw.topics),
       type: 'recurring'
     }
-    callback(decoded)
+    resolve(decoded)
   })
-}
+})
 
 
-export const onBountyAccepted = callback => {
+export const onBountyAccepted =  () => new Promise( (resolve, reject) => {
   const provider = Provider(process.env.CLIENT)
 
   let event = (new Interface(BountyInterface.abi)).events.logAccepted
@@ -48,7 +47,7 @@ export const onBountyAccepted = callback => {
       ...event.decode(raw.data, raw.topics),
       type: 'single'
     }
-    callback(decoded)
+    resolve(decoded)
   })
 
   provider.on({
@@ -58,11 +57,11 @@ export const onBountyAccepted = callback => {
       ...recurringEvent.decode(raw.data, raw.topics),
       type: 'recurring'
     }
-    callback(decoded)
+    resolve(decoded)
   })
-}
+})
 
-export const onBountyCommit = callback => {
+export const onBountyCommit = () => new Promise( (resolve, reject) => {
   const provider = Provider(process.env.CLIENT)
 
   let event = (new Interface(BountyInterface.abi)).events.logCommit
@@ -74,7 +73,7 @@ export const onBountyCommit = callback => {
       ...event.decode(raw.data, raw.topics),
       type: 'single'
     }
-    callback(decoded)
+    resolve(decoded)
   })
 
   provider.on({
@@ -84,6 +83,6 @@ export const onBountyCommit = callback => {
       ...recurringEvent.decode(raw.data, raw.topics),
       type: 'recurring'
     }
-    callback(decoded)
+    resolve(decoded)
   })
-}
+})

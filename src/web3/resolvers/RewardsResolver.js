@@ -8,7 +8,7 @@ export async function add(reference, price, wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer")
     const rewardStore = this.ContractProvider(RewardStore, this.provider, wallet)
-    let tx = await rewardStore.addListing('0x' + reference, parseEther(price.toString()), {gasPrice: '0x0'})
+    let tx = await rewardStore.addListing('0x' + reference, parseEther(price.toString()), {gasPrice: parseEther('0')})
     return await tx.wait()
   } catch (err) {
     throw new Error(err)
@@ -19,7 +19,7 @@ export async function remove(index, wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer")
     const rewardStore = this.ContractProvider(RewardStore, this.provider, wallet)
-    let tx = await rewardStore.removeListing(index, {gasPrice: '0x0'})
+    let tx = await rewardStore.removeListing(index, {gasPrice: parseEther('0')})
     return await tx.wait()
   } catch (err) {
     throw new Error(err)
@@ -44,7 +44,7 @@ export async function update(index, reference, price, wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer")
     const org = this.ContractProvider(RewardStore, this.provider, wallet)
-    let tx = await org.updateListing(index, '0x'+ reference, parseEther(price.toString()), {gasPrice: '0x0'})
+    let tx = await org.updateListing(index, '0x'+ reference, parseEther(price.toString()), {gasPrice: parseEther('0')})
     return await tx.wait()
   } catch (err) {
     throw new Error(err)

@@ -22,7 +22,9 @@ async function faucet(wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider, wallet);
-    let tx = await tokenFaucet.faucet();
+    let tx = await tokenFaucet.faucet({
+      gasPrice: (0, _utils.parseEther)('0')
+    });
     return await tx.wait();
   } catch (err) {
     throw new Error(err);
@@ -33,7 +35,9 @@ async function setLimit(limit, wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider, wallet);
-    let tx = await tokenFaucet.setLimit((0, _utils.parseEther)(limit.toString()));
+    let tx = await tokenFaucet.setLimit((0, _utils.parseEther)(limit.toString()), {
+      gasPrice: (0, _utils.parseEther)('0')
+    });
     return await tx.wait();
   } catch (err) {
     throw new Error(err);

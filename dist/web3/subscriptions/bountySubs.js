@@ -19,7 +19,7 @@ var _Provider = _interopRequireDefault(require("../Provider"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const onBountyCreated = callback => {
+const onBountyCreated = () => new Promise((resolve, reject) => {
   const provider = (0, _Provider.default)(process.env.CLIENT);
   let event = new _utils.Interface(_BountyFactory.default.abi).events.logBountyCreated;
   let recurringEvent = new _utils.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
@@ -29,7 +29,7 @@ const onBountyCreated = callback => {
     let decoded = { ...event.decode(raw.data, raw.topics),
       type: 'single'
     };
-    callback(decoded);
+    resolve(decoded);
   });
   provider.on({
     topics: [recurringEvent.topic]
@@ -37,13 +37,13 @@ const onBountyCreated = callback => {
     let decoded = { ...recurringEvent.decode(raw.data, raw.topics),
       type: 'recurring'
     };
-    callback(decoded);
+    resolve(decoded);
   });
-};
+});
 
 exports.onBountyCreated = onBountyCreated;
 
-const onBountyAccepted = callback => {
+const onBountyAccepted = () => new Promise((resolve, reject) => {
   const provider = (0, _Provider.default)(process.env.CLIENT);
   let event = new _utils.Interface(_BountyInterface.default.abi).events.logAccepted;
   let recurringEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
@@ -53,7 +53,7 @@ const onBountyAccepted = callback => {
     let decoded = { ...event.decode(raw.data, raw.topics),
       type: 'single'
     };
-    callback(decoded);
+    resolve(decoded);
   });
   provider.on({
     topics: [recurringEvent.topic]
@@ -61,13 +61,13 @@ const onBountyAccepted = callback => {
     let decoded = { ...recurringEvent.decode(raw.data, raw.topics),
       type: 'recurring'
     };
-    callback(decoded);
+    resolve(decoded);
   });
-};
+});
 
 exports.onBountyAccepted = onBountyAccepted;
 
-const onBountyCommit = callback => {
+const onBountyCommit = () => new Promise((resolve, reject) => {
   const provider = (0, _Provider.default)(process.env.CLIENT);
   let event = new _utils.Interface(_BountyInterface.default.abi).events.logCommit;
   let recurringEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
@@ -77,7 +77,7 @@ const onBountyCommit = callback => {
     let decoded = { ...event.decode(raw.data, raw.topics),
       type: 'single'
     };
-    callback(decoded);
+    resolve(decoded);
   });
   provider.on({
     topics: [recurringEvent.topic]
@@ -85,8 +85,8 @@ const onBountyCommit = callback => {
     let decoded = { ...recurringEvent.decode(raw.data, raw.topics),
       type: 'recurring'
     };
-    callback(decoded);
+    resolve(decoded);
   });
-};
+});
 
 exports.onBountyCommit = onBountyCommit;

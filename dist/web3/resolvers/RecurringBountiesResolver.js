@@ -95,7 +95,7 @@ async function createRecurringBounty(reference, deadline, reward, funding, walle
     let spend = await _TokenResolver.approveSpend.call(this, recurringBountyFactory.address, funding, wallet);
     await spend.wait();
     let creation = await recurringBountyFactory.createBounty(reference, deadline, reward, funding, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await creation.wait();
   } catch (e) {
@@ -150,7 +150,7 @@ async function startWork(address, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const b = bountyAt(address, this.provider, wallet);
     let tx = await b.startWork({
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (e) {
@@ -174,7 +174,7 @@ async function cancelMintable(address, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.cancelMintable(address, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (e) {
@@ -239,7 +239,7 @@ async function withdrawFunding(address, amount, token, wallet) {
     amount = (0, _utils.parseEther)(amount.toString());
     const b = bountyAt(address, this.provider, wallet);
     let tx = await b.withdraw(amount, token, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (e) {
@@ -256,7 +256,7 @@ async function createMintable(reference, deadline, reward, funding, wallet) {
     reward = (0, _utils.parseEther)(reward.toString());
     const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.createMintableBounty(reference, deadline, reward, funding, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (e) {
@@ -269,7 +269,7 @@ async function acceptMintable(address, id, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.acceptMintable(address, id, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (e) {
@@ -292,7 +292,7 @@ async function mintFunding(address, amount, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.mintFunding(address, amount, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (e) {
@@ -322,7 +322,7 @@ async function startWorking(address, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const b = bountyAt(address, this.provider, wallet);
     let tx = await b.startWork({
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (e) {
