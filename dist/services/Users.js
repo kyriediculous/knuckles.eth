@@ -7,12 +7,9 @@ exports.default = void 0;
 
 var _web = require("../web3");
 
-var _blockies = _interopRequireDefault(require("../utils/blockies"));
+var _ = require("../utils/_");
 
-var _conversion = require("../utils/conversion");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+//import blockies from '../utils/blockies'
 class Users {
   //Default ganache & localhost
   static init({
@@ -85,11 +82,7 @@ class Users {
       profile = JSON.parse((await profile.text()));
 
       if (!profile.avatar) {
-        profile.avatar = _blockies.default.create({
-          seed: userAddress,
-          size: 25,
-          scale: 4
-        });
+        profile.avatar = ''; //blockies.create({seed: userAddress, size:25, scale:4})
       }
 
       profile.isAdmin = await this.eth.users.isAdmin(userAddress);
@@ -110,11 +103,7 @@ class Users {
     try {
       const address = await this.eth.users.lookup(name);
       const user = await this.get(address);
-      const avatar = user.avatar ? user.avatar : _blockies.default.create({
-        seed: address,
-        size: 25,
-        scale: 4
-      });
+      const avatar = user.avatar ? user.avatar : '';
       return {
         address,
         avatar,

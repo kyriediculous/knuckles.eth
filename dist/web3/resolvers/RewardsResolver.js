@@ -11,7 +11,7 @@ exports.getAll = getAll;
 exports.purchase = purchase;
 exports.changeStatus = changeStatus;
 
-var _RewardStore = _interopRequireDefault(require("../artifacts/RewardStore.json"));
+var _RewardStore = _interopRequireDefault(require("../../../contracts/build/contracts/RewardStore.json"));
 
 var _TokenResolver = require("./TokenResolver");
 
@@ -22,12 +22,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //add remove get purchase
 async function add(reference, price, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const rewardStore = this.ContractProvider(_RewardStore.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const rewardStore = this.ContractProvider(_RewardStore.default, this.provider, wallet);
     let tx = await rewardStore.addListing('0x' + reference, (0, _utils.parseEther)(price.toString()), {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -35,12 +35,12 @@ async function add(reference, price, wallet) {
 
 async function remove(index, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const rewardStore = this.ContractProvider(_RewardStore.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const rewardStore = this.ContractProvider(_RewardStore.default, this.provider, wallet);
     let tx = await rewardStore.removeListing(index, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -52,7 +52,7 @@ async function get(index) {
     let reward = await rewardStore.listings(index);
     return {
       reference: reward[0],
-      price: parseFloat((0, _utils.formatEther)(reward[1])).toFixed(2),
+      price: parseFloat((0, _utils.formatEther)((0, _utils.bigNumberify)(reward[1]))).toFixed(2),
       active: reward[2]
     };
   } catch (err) {
@@ -62,12 +62,12 @@ async function get(index) {
 
 async function update(index, reference, price, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const org = this.ContractProvider(_RewardStore.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const org = this.ContractProvider(_RewardStore.default, this.provider, wallet);
     let tx = await org.updateListing(index, '0x' + reference, (0, _utils.parseEther)(price.toString()), {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -102,12 +102,12 @@ async function getAll() {
 
 async function purchase(item, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const rewardStore = this.ContractProvider(_RewardStore.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const rewardStore = this.ContractProvider(_RewardStore.default, this.provider, wallet);
     const spend = await _TokenResolver.approveSpend.call(this, rewardStore.address, item.price, wallet);
-    await this.provider.waitForTransaction(spend.hash);
+    await spend.wait();
     let tx = await rewardStore.purchase(item.id);
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -115,10 +115,10 @@ async function purchase(item, wallet) {
 
 async function changeStatus(index, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const rewardStore = this.ContractProvider(_RewardStore.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const rewardStore = this.ContractProvider(_RewardStore.default, this.provider, wallet);
     let tx = await rewardStore.changeActive(index);
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }

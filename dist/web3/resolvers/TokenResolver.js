@@ -10,7 +10,7 @@ exports.getAllowance = getAllowance;
 exports.tokenInfo = tokenInfo;
 exports.address = address;
 
-var _Token = _interopRequireDefault(require("../artifacts/Token.json"));
+var _Token = _interopRequireDefault(require("../../../contracts/build/contracts/Token.json"));
 
 var _utils = require("ethers/utils");
 
@@ -20,7 +20,7 @@ async function getBalance(address) {
   try {
     const token = this.ContractProvider(_Token.default, this.provider);
     let balance = await token.balanceOf(address);
-    return (0, _utils.formatEther)(balance);
+    return (0, _utils.formatEther)((0, _utils.bigNumberify)(balance));
   } catch (err) {
     throw new Error('Unable to retrieve token balance' + err);
   }
@@ -28,8 +28,8 @@ async function getBalance(address) {
 
 async function sendTokens(recipient, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const token = this.ContractProvider(_Token.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const token = this.ContractProvider(_Token.default, this.provider, wallet);
 
     if (typeof amount != 'string') {
       amount = amount.toString();
@@ -37,9 +37,9 @@ async function sendTokens(recipient, amount, wallet) {
 
     amount = (0, _utils.parseEther)(amount);
     let tx = await token.transfer(recipient, amount, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    return await this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -47,8 +47,8 @@ async function sendTokens(recipient, amount, wallet) {
 
 async function approveSpend(recipient, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const token = this.ContractProvider(_Token.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const token = this.ContractProvider(_Token.default, this.provider, wallet);
 
     if (typeof amount != 'string') {
       amount = amount.toString();
@@ -56,9 +56,9 @@ async function approveSpend(recipient, amount, wallet) {
 
     amount = (0, _utils.parseEther)(amount);
     let tx = await token.approve(recipient, amount, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    return await this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -68,7 +68,7 @@ async function getAllowance(approver, spender) {
   try {
     const token = this.ContractProvider(_Token.default, this.provider);
     let balance = await token.allowance(approver, spender);
-    return (0, _utils.formatEther)(balance);
+    return (0, _utils.formatEther)((0, _utils.bigNumberify)(balance));
   } catch (err) {
     throw new Error('Unable to retrieve token allowance', err);
   }

@@ -9,27 +9,27 @@ exports.get = get;
 exports.ensLookup = ensLookup;
 exports.isAdmin = isAdmin;
 
-var _UsersRegistry = _interopRequireDefault(require("../artifacts/UsersRegistry.json"));
+var _UsersRegistry = _interopRequireDefault(require("../../../contracts/build/contracts/UsersRegistry.json"));
 
-var _OrganisationContract = _interopRequireDefault(require("../artifacts/OrganisationContract.json"));
+var _OrganisationContract = _interopRequireDefault(require("../../../contracts/build/contracts/OrganisationContract.json"));
 
 var _utils = require("ethers/utils");
 
-var _conversion = require("../../utils/conversion");
+var _ = require("../../utils/_");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 async function register(name, swarmHash, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const usersregistry = this.ContractProvider(_UsersRegistry.default, wallet);
-    let tx = await usersregistry.register((0, _conversion.stringToHex)(name.toLowerCase()), swarmHash, {
-      gasPrice: '0x0'
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const usersregistry = this.ContractProvider(_UsersRegistry.default, this.provider, wallet);
+    let tx = await usersregistry.register((0, _.stringToHex)(name.toLowerCase()), swarmHash, {
+      gasPrice: parseEther('0')
     });
-    await this.provider.waitForTransaction(tx.hash);
-    const organisation = this.ContractProvider(_OrganisationContract.default, wallet);
+    await tx.wait();
+    const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     tx = await organisation.join();
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -37,12 +37,12 @@ async function register(name, swarmHash, wallet) {
 
 async function update(newName, swarmHash, oldName, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const usersregistry = this.ContractProvider(_UsersRegistry.default, wallet);
-    let tx = await usersregistry.update((0, _conversion.stringToHex)(newName.toLowerCase()), swarmHash, (0, _conversion.stringToHex)(oldName.toLowerCase()), {
-      gasPrice: '0x0'
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const usersregistry = this.ContractProvider(_UsersRegistry.default, this.provider, wallet);
+    let tx = await usersregistry.update((0, _.stringToHex)(newName.toLowerCase()), swarmHash, (0, _.stringToHex)(oldName.toLowerCase()), {
+      gasPrice: parseEther('0')
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -60,7 +60,7 @@ async function get(address) {
 async function ensLookup(name) {
   try {
     const usersregistry = this.ContractProvider(_UsersRegistry.default, this.provider);
-    return await usersregistry.ensLookup((0, _conversion.stringToHex)(name.toLowerCase()));
+    return await usersregistry.ensLookup((0, _.stringToHex)(name.toLowerCase()));
   } catch (err) {
     throw new Error(err);
   }

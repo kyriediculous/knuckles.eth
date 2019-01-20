@@ -1,11 +1,11 @@
-import Token from '../artifacts/Token.json'
-import {formatEther, parseEther} from 'ethers/utils'
+import Token from '../../../contracts/build/contracts/Token.json'
+import {formatEther, parseEther, bigNumberify} from 'ethers/utils'
 
 export async function getBalance(address) {
   try {
     const token = this.ContractProvider(Token, this.provider)
     let balance = await token.balanceOf(address)
-    return formatEther(balance)
+    return formatEther(bigNumberify(balance))
   } catch (err) {
     throw new Error('Unable to retrieve token balance' + err)
   }
@@ -13,14 +13,14 @@ export async function getBalance(address) {
 
 export async function sendTokens(recipient, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const token = this.ContractProvider(Token, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const token = this.ContractProvider(Token, this.provider, wallet)
     if (typeof amount != 'string') {
       amount = amount.toString()
     }
     amount = parseEther(amount)
-    let tx = await token.transfer(recipient, amount, {gasPrice: '0x0'})
-    return await this.provider.waitForTransaction(tx.hash)
+    let tx = await token.transfer(recipient, amount, {gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -28,14 +28,14 @@ export async function sendTokens(recipient, amount, wallet) {
 
 export async function approveSpend(recipient, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const token = this.ContractProvider(Token, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const token = this.ContractProvider(Token, this.provider, wallet)
     if (typeof amount != 'string') {
       amount = amount.toString()
     }
     amount = parseEther(amount)
-    let tx = await token.approve(recipient, amount, {gasPrice: '0x0'})
-    return await this.provider.waitForTransaction(tx.hash)
+    let tx = await token.approve(recipient, amount, {gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -45,7 +45,7 @@ export async function getAllowance(approver, spender) {
   try {
     const token = this.ContractProvider(Token, this.provider)
     let balance = await token.allowance(approver, spender)
-    return formatEther(balance)
+    return formatEther(bigNumberify(balance))
   } catch (err) {
     throw new Error('Unable to retrieve token allowance', err)
   }

@@ -1,16 +1,17 @@
-import Timesheets from '../artifacts/Timesheets.json'
+import Timesheets from '../../../contracts/build/contracts/Timesheets.json'
 import moment from 'moment'
 import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther, bigNumberify} from 'ethers/utils'
 import {members} from './OrganisationResolver'
-import {Interface} from 'ethers'
+import {Interface} from 'ethers/utils'
+
 //setreward, setperiod, getperiod, getperiods
 
 export async function setReward(reward, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const timesheets = this.ContractProvider(Timesheets, wallet)
-    let tx = await timesheets.setReward(parseEther(reward.toString()))
-    return this.provider.waitForTransaction(tx.hash)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const timesheets = this.ContractProvider(Timesheets, this.provider, wallet)
+    let tx = await timesheets.setReward(parseEther(reward.toString()), {gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -18,10 +19,10 @@ export async function setReward(reward, wallet) {
 
 export async function setPeriod(user, startPeriod, completed, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const timesheets = this.ContractProvider(Timesheets, wallet)
-    let tx = await timesheets.setPeriod(user, startPeriod, completed)
-    return this.provider.waitForTransaction(tx.hash)
+  if (wallet === undefined) throw new Error("Must supply a signer")
+    const timesheets = this.ContractProvider(Timesheets, this.provider, wallet)
+    let tx = await timesheets.setPeriod(user, startPeriod, completed, {gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -43,13 +44,13 @@ export async function getPeriod(user, index) {
 export async function timesheet(user) {
   try {
     let timesheetEvent = (new Interface(Timesheets.abi)).events.logTimesheetPeriod
-    let timesheetTopics = [timesheetEvent.topics[0], hexlify(padZeros(arrayify(user), 32))]
+    let timesheetTopics = [timesheetEvent.topic, hexlify(padZeros(arrayify(user), 32))]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: timesheetTopics
     })
-    logs = logs.map(log => timesheetEvent.parse(log.topics, log.data))
+    logs = logs.map(log => timesheetEvent.decode(log.data, log.topics))
     return logs.map(l => {
       return {
         user: l._user,
@@ -107,7 +108,7 @@ export async function getLast(user) {
 export async function reward() {
   try {
     const org = this.ContractProvider(Timesheets, this.provider)
-    return parseFloat(formatEther(await org.reward())).toFixed(2)
+    return parseFloat(formatEther(bigNumberify(await org.reward()))).toFixed(2)
   } catch (err) {
     throw new Error(err)
   }

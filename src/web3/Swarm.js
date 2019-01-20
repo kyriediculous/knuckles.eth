@@ -9,7 +9,7 @@ import {SwarmClient} from '@erebos/swarm'
 class Swarm {
   static init(host = clients[process.env.CLIENT]) {
     const swarm = new Swarm()
-    swarm.bzz = ( new SwarmClient({bzz: host})).bzz
+    swarm.bzz = ( new SwarmClient({bzz: {url: host}})).bzz
     swarm.host = host
     return swarm
   }

@@ -18,7 +18,9 @@ class Swarm {
   static init(host = clients[process.env.CLIENT]) {
     const swarm = new Swarm();
     swarm.bzz = new _swarm.SwarmClient({
-      bzz: host
+      bzz: {
+        url: host
+      }
     }).bzz;
     swarm.host = host;
     return swarm;

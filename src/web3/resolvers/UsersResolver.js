@@ -1,17 +1,17 @@
-import UsersRegistry from '../artifacts/UsersRegistry.json'
-import Organisation from '../artifacts/OrganisationContract.json'
+import UsersRegistry from '../../../contracts/build/contracts/UsersRegistry.json'
+import Organisation from '../../../contracts/build/contracts/OrganisationContract.json'
 import {solidityKeccak256 as keccak256} from 'ethers/utils'
-import {stringToHex} from '../../utils/conversion'
+import {stringToHex} from '../../utils/_'
 
 export async function register(name, swarmHash, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const usersregistry = this.ContractProvider(UsersRegistry, wallet)
-    let tx = await usersregistry.register(stringToHex(name.toLowerCase()), swarmHash, {gasPrice: '0x0'})
-    await this.provider.waitForTransaction(tx.hash)
-    const organisation = this.ContractProvider(Organisation, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const usersregistry = this.ContractProvider(UsersRegistry, this.provider, wallet)
+    let tx = await usersregistry.register(stringToHex(name.toLowerCase()), swarmHash, {gasPrice: parseEther('0')})
+    await tx.wait()
+    const organisation = this.ContractProvider(Organisation, this.provider, wallet)
     tx = await organisation.join()
-    return this.provider.waitForTransaction(tx.hash)
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }
@@ -19,10 +19,10 @@ export async function register(name, swarmHash, wallet) {
 
 export async function update(newName, swarmHash, oldName, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const usersregistry = this.ContractProvider(UsersRegistry, wallet)
-    let tx = await usersregistry.update(stringToHex(newName.toLowerCase()), swarmHash, stringToHex(oldName.toLowerCase()), {gasPrice: '0x0'})
-    return this.provider.waitForTransaction(tx.hash)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const usersregistry = this.ContractProvider(UsersRegistry, this.provider, wallet)
+    let tx = await usersregistry.update(stringToHex(newName.toLowerCase()), swarmHash, stringToHex(oldName.toLowerCase()), {gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (err) {
     throw new Error(err)
   }

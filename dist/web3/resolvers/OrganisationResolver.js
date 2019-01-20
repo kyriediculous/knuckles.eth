@@ -21,13 +21,11 @@ exports.approve = approve;
 exports.toggleApproval = toggleApproval;
 exports.isPending = isPending;
 
-var _OrganisationContract = _interopRequireDefault(require("../artifacts/OrganisationContract.json"));
-
-var _ethers = require("ethers");
+var _OrganisationContract = _interopRequireDefault(require("../../../contracts/build/contracts/OrganisationContract.json"));
 
 var _utils = require("ethers/utils");
 
-var _conversion = require("../../utils/conversion");
+var _ = require("../../utils/_");
 
 var _UsersResolver = require("./UsersResolver");
 
@@ -36,12 +34,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //identity , minttokens , addAdmin , removeAdmin , blacklistMember , removeBlacklistMember
 async function setIdentity(name, swarmHash, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const organisation = this.ContractProvider(_OrganisationContract.default, wallet);
-    let tx = await organisation.setOrganisationIdentity((0, _conversion.stringToHex)(name.toLowerCase()), swarmHash, {
-      gasPrice: '0x0'
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
+    let tx = await organisation.setOrganisationIdentity((0, _.stringToHex)(name.toLowerCase()), swarmHash, {
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -49,12 +47,12 @@ async function setIdentity(name, swarmHash, wallet) {
 
 async function mintTokens(to, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const organisation = this.ContractProvider(_OrganisationContract.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.mintToken(to, (0, _utils.parseEther)(amount.toString()), {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -62,12 +60,12 @@ async function mintTokens(to, amount, wallet) {
 
 async function addAdmin(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const organisation = this.ContractProvider(_OrganisationContract.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.addAdmin(address, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -75,12 +73,12 @@ async function addAdmin(address, wallet) {
 
 async function removeAdmin(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const organisation = this.ContractProvider(_OrganisationContract.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.removeAdmin(address, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    return this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -88,10 +86,12 @@ async function removeAdmin(address, wallet) {
 
 async function blacklist(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const organisation = this.ContractProvider(_OrganisationContract.default, wallet);
-    let tx = await organisation.blacklist(address);
-    return this.provider.waitForTransaction(tx.hash);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
+    let tx = await organisation.blacklist(address, {
+      gasPrice: (0, _utils.parseEther)('0')
+    });
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -99,10 +99,12 @@ async function blacklist(address, wallet) {
 
 async function whitelist(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const organisation = this.ContractProvider(_OrganisationContract.default, wallet);
-    let tx = await organisation.whitelist(address);
-    return this.provider.waitForTransaction(tx.hash);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
+    let tx = await organisation.whitelist(address, {
+      gasPrice: (0, _utils.parseEther)('0')
+    });
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -110,14 +112,14 @@ async function whitelist(address, wallet) {
 
 async function adminChanges() {
   try {
-    let adminEvent = new _ethers.Interface(_OrganisationContract.default.abi).events.logAdminChange;
-    let adminTopics = [adminEvent.topics[0]];
+    let adminEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logAdminChange;
+    let adminTopics = [adminEvent.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',
       topics: adminTopics
     });
-    logs = logs.map(log => adminEvent.parse(log.topics, log.data));
+    logs = logs.map(log => adminEvent.decode(log.data, log.topics));
     return logs.map(l => ({
       subject: l._changedAdmin,
       status: l._status,
@@ -162,15 +164,15 @@ async function isBlacklist(user) {
 
 async function currentBlacklist() {
   try {
-    let blEvent = new _ethers.Interface(_OrganisationContract.default.abi).events.logBlacklist;
-    let blTopics = [blEvent.topics[0]];
+    let blEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logBlacklist;
+    let blTopics = [blEvent.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',
       topics: blTopics
     });
     logs = logs.map(l => {
-      l = blEvent.parse(l.topics, l.data);
+      l = blEvent.decode(l.data, l.topics);
       return l._subject;
     });
     logs = Array.from(new Set(logs));
@@ -200,14 +202,14 @@ async function isMember(address) {
 
 async function members() {
   try {
-    let joinEvent = new _ethers.Interface(_OrganisationContract.default.abi).events.logJoin;
-    let joinTopics = [joinEvent.topics[0]];
+    let joinEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logJoin;
+    let joinTopics = [joinEvent.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',
       topics: joinTopics
     });
-    logs = logs.map(l => joinEvent.parse(l.topics, l.data));
+    logs = logs.map(l => joinEvent.decode(l.data, l.topics));
     logs = logs.map(l => l._user);
     logs = Array.from(new Set(logs));
     let isMembers = await Promise.all(logs.map(l => isMember.call(this, l)));
@@ -233,14 +235,14 @@ async function requireApproval() {
 
 async function pending() {
   try {
-    let joinEvent = new _ethers.Interface(_OrganisationContract.default.abi).events.logJoin;
-    let joinTopics = [joinEvent.topics[0]];
+    let joinEvent = new _utils.Interface(_OrganisationContract.default.abi).events.logJoin;
+    let joinTopics = [joinEvent.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 1,
       toBlock: 'latest',
       topics: joinTopics
     });
-    logs = logs.map(l => joinEvent.parse(l.topics, l.data));
+    logs = logs.map(l => joinEvent.decode(l.data, l.topics));
     logs = logs.map(l => l._user);
     logs = Array.from(new Set(logs));
     const org = this.ContractProvider(_OrganisationContract.default, this.provider);
@@ -259,10 +261,12 @@ async function pending() {
 
 async function approve(user, accepted, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const org = this.ContractProvider(_OrganisationContract.default, wallet);
-    let tx = await org.approve(user, accepted);
-    return this.provider.waitForTransaction(tx.hash);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const org = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
+    let tx = await org.approve(user, accepted, {
+      gasPrice: (0, _utils.parseEther)('0')
+    });
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -270,10 +274,12 @@ async function approve(user, accepted, wallet) {
 
 async function toggleApproval(wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const org = this.ContractProvider(_OrganisationContract.default, wallet);
-    let tx = await org.toggleApproval();
-    return this.provider.waitForTransaction(tx.hash);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const org = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
+    let tx = await org.toggleApproval({
+      gasPrice: (0, _utils.parseEther)('0')
+    });
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }

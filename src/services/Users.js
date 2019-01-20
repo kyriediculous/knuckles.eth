@@ -1,6 +1,6 @@
 import {EthResolver, Swarm} from '../web3'
-import blockies from '../utils/blockies'
-import {bytes32ToString} from '../utils/conversion'
+//import blockies from '../utils/blockies'
+import {bytes32ToString} from '../utils/_'
 
 class Users {
   //Default ganache & localhost
@@ -61,7 +61,7 @@ class Users {
       let profile = await this.bzz.download(swarmHash.substring(2))
       profile = JSON.parse(await profile.text())
       if(!profile.avatar) {
-        profile.avatar = blockies.create({seed: userAddress, size:25, scale:4})
+        profile.avatar = '' //blockies.create({seed: userAddress, size:25, scale:4})
       }
       profile.isAdmin = await this.eth.users.isAdmin(userAddress)
       profile.address = userAddress
@@ -81,7 +81,7 @@ class Users {
     try {
       const address = await this.eth.users.lookup(name)
       const user = await this.get(address)
-      const avatar = user.avatar ? user.avatar :  blockies.create({seed: address, size:25, scale:4})
+      const avatar = user.avatar ? user.avatar : ''
       return {address, avatar, name}
     } catch (err) {
       throw new Error(err)

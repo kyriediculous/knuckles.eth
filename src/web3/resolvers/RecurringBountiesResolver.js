@@ -1,15 +1,19 @@
-import RecurringBountyFactory from '../artifacts/RecurringBountyFactory.json'
-import RecurringBountyInterface from '../artifacts/RecurringBountyInterface.json'
+import RecurringBountyFactory from '../../../contracts/build/contracts/RecurringBountyFactory.json'
+import RecurringBountyInterface from '../../../contracts/build/contracts/RecurringBountyInterface.json'
 import {approveSpend, getBalance, sendTokens} from './TokenResolver'
 import moment from 'moment'
-import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther} from 'ethers/utils'
-import {Contract, Interface} from 'ethers'
+import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther, bigNumberify} from 'ethers/utils'
+import {Contract} from 'ethers'
+import {Interface} from 'ethers/utils'
+
 
 import {sortOldest} from '../../utils/_'
 
-function bountyAt(address, walletOrProvider) {
-  return new Contract(address, RecurringBountyInterface.abi, walletOrProvider);
+function bountyAt(address, provider, wallet = undefined) {
+  if (!wallet) return new Contract(address, RecurringBountyInterface.abi, provider);
+  return new Contract(address, RecurringBountyInterface.abi, wallet.connect(provider))
 }
+
 
 const statusOptions = ["Active", "Completed", "Abandoned"]
 
@@ -19,9 +23,9 @@ export async function allRecurringBounties() {
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
-      topics: [event.topics[0]]
+      topics: [event.topic]
     })
-    logs = logs.map(l => event.parse(l.topics, l.data))
+    logs = logs.map(l => event.decode(l.data, l.topics))
     logs = logs.map(l =>( {
       address: l.bounty,
       type: 'recurring'
@@ -38,9 +42,9 @@ export async function recurringBountiesFrom(userAddress)  {
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
-      topics: [event.topics[0], hexlify(padZeros(arrayify(userAddress), 32))]
+      topics: [event.topic, hexlify(padZeros(arrayify(userAddress), 32))]
     })
-    logs = logs.map(l => event.parse(l.topics, l.data))
+    logs = logs.map(l => event.decode(l.data, l.topics))
     return logs.map(l => ({
       address: l.bounty,
       type: 'recurring'
@@ -52,17 +56,16 @@ export async function recurringBountiesFrom(userAddress)  {
 
 export async function createRecurringBounty(reference, deadline, reward, funding, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet === undefined) throw new Error("Must supply a signer")
     reference = '0x' + reference
     deadline = Date.parse(deadline) / 1000
     funding = parseEther(funding.toString())
     reward = parseEther(reward.toString())
-    const recurringBountyFactory = this.ContractProvider(RecurringBountyFactory, wallet)
+    const recurringBountyFactory = this.ContractProvider(RecurringBountyFactory, this.provider, wallet)
     let spend = await approveSpend.call(this, recurringBountyFactory.address, funding, wallet)
-    spend = await this.provider.waitForTransaction(spend.hash)
-    let creation = await recurringBountyFactory.createBounty(reference, deadline, reward, funding, {gasPrice: '0x0'})
-    creation = await this.provider.waitForTransaction(creation.hash)
-    return this.provider.getTransactionReceipt(creation.hash)
+    await spend.wait()
+    let creation = await recurringBountyFactory.createBounty(reference, deadline, reward, funding, {gasPrice: parseEther('0')})
+    return await creation.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -95,7 +98,7 @@ export async function getRecurringBountyMeta(address) {
       issuer: data[1],
       timestamp: moment((data[2].toString(10) * 1000), "x"),
       deadline: moment((data[3].toString(10) * 1000), "x"),
-      reward: parseFloat(formatEther(data[4])).toFixed(2),
+      reward: parseFloat(formatEther(bigNumberify(data[4]))).toFixed(2),
       status: statusOptions[data[5]],
       commits: Number(await b.getCommits()),
       token: data[6],
@@ -110,11 +113,10 @@ export async function getRecurringBountyMeta(address) {
 
 export async function startWork(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const b = bountyAt(address, wallet)
-    let tx = await b.startWork({gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
-    return
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const b = bountyAt(address, this.provider, wallet)
+    let tx = await b.startWork({gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -122,11 +124,10 @@ export async function startWork(address, wallet) {
 
 export async function cancelRecurringBounty(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const b = bountyAt(address, wallet)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const b = bountyAt(address, this.provider, wallet)
     let tx = await b.cancelBounty()
-    tx = await this.provider.waitForTransaction(tx.hash)
-    return await this.provider.getTransactionReceipt(tx.hash)
+    return await tx.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -134,11 +135,10 @@ export async function cancelRecurringBounty(address, wallet) {
 
 export async function cancelMintable(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const rbf = this.ContractProvider(RecurringBountyFactory, wallet)
-    let tx = await rbf.cancelMintable(address, {gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
-    return await this.provider.getTransactionReceipt(tx.hash)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const rbf = this.ContractProvider(RecurringBountyFactory, this.provider, wallet)
+    let tx = await rbf.cancelMintable(address, {gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -176,16 +176,18 @@ export async function getCommits() {
 export async function commitsFrom(address) {
   try {
     const event = (new Interface(RecurringBountyInterface.abi)).events.logRecurringCommit
-    const topics = [event.topics[0], hexlify(padZeros(arrayify(address), 32))]
+    const topics = [event.topic, hexlify(padZeros(arrayify(address), 32))]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     })
-    logs = logs.map(log => event.parse(log.topics, log.data))
+    logs = logs.map(log => event.decode(log.data, log.topics))
     logs = logs.map(l => {
-      l.type = 'recurring'
-      return l
+      return {
+        ...l,
+        type: 'recurring'
+      }
     })
     return logs
   } catch (e) {
@@ -196,12 +198,11 @@ export async function commitsFrom(address) {
 export async function withdrawFunding(address, amount, token, wallet) {
   try {
     if (token == '') token = hexlify(0);
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet === undefined) throw new Error("Must supply a signer")
     amount = parseEther(amount.toString())
-    const b = bountyAt(address, wallet)
-    let tx = await b.withdraw(amount, token, {gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
-    return
+    const b = bountyAt(address, this.provider, wallet)
+    let tx = await b.withdraw(amount, token, {gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -209,15 +210,14 @@ export async function withdrawFunding(address, amount, token, wallet) {
 
 export async function createMintable(reference, deadline, reward, funding, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet === undefined) throw new Error("Must supply a signer")
     reference = '0x' + reference
     deadline = Date.parse(deadline) / 1000
     funding = parseEther(funding.toString())
     reward = parseEther(reward.toString())
-    const rbf = this.ContractProvider(RecurringBountyFactory, wallet)
-    let tx = await rbf.createMintableBounty(reference, deadline, reward, funding, {gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
-    return await this.provider.getTransactionReceipt(tx.hash)
+    const rbf = this.ContractProvider(RecurringBountyFactory, this.provider, wallet)
+    let tx = await rbf.createMintableBounty(reference, deadline, reward, funding, {gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -225,11 +225,10 @@ export async function createMintable(reference, deadline, reward, funding, walle
 
 export async function acceptMintable(address, id , wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const rbf = this.ContractProvider(RecurringBountyFactory, wallet)
-    let tx = await rbf.acceptMintable(address, id, {gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
-    return await this.provider.getTransactionReceipt(tx.hash)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const rbf = this.ContractProvider(RecurringBountyFactory, this.provider, wallet)
+    let tx = await rbf.acceptMintable(address, id, {gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -237,7 +236,7 @@ export async function acceptMintable(address, id , wallet) {
 
 export async function addFunding(address, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
+    if (wallet === undefined) throw new Error("Must supply a signer")
     await sendTokens.call(this, address, amount, wallet)
     return
   } catch (e) {
@@ -247,11 +246,10 @@ export async function addFunding(address, amount, wallet) {
 
 export async function mintFunding(address, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const rbf = this.ContractProvider(RecurringBountyFactory, wallet)
-    let tx = await rbf.mintFunding(address, amount, {gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
-    return
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const rbf = this.ContractProvider(RecurringBountyFactory, this.provider, wallet)
+    let tx = await rbf.mintFunding(address, amount, {gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -261,13 +259,14 @@ export async function mintFunding(address, amount, wallet) {
 export async function rewardsFor(address) {
   try {
     const event = (new Interface(RecurringBountyInterface.abi)).events.logRecurringAccepted
-    const topics = [event.topics[0], hexlify(padZeros(arrayify(address), 32))]
+    const topics = [event.topic, hexlify(padZeros(arrayify(address), 32))]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     })
-    logs = logs.map(log => event.parse(log.topics, log.data))
+    logs = logs.map(log => event.decode(log.data, log.topics))
+    console.log(logs)
     return logs
   } catch (e) {
     throw new Error(e)
@@ -276,10 +275,10 @@ export async function rewardsFor(address) {
 
 export async function startWorking(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider
-    const b = bountyAt(address, wallet)
-    let tx = await b.startWork({gasPrice: '0x0'})
-    tx = await this.provider.waitForTransaction(tx.hash)
+    if (wallet === undefined) throw new Error("Must supply a signer")
+    const b = bountyAt(address, this.provider, wallet)
+    let tx = await b.startWork({gasPrice: parseEther('0')})
+    return await tx.wait()
   } catch (e) {
     throw new Error(e)
   }
@@ -288,13 +287,13 @@ export async function startWorking(address, wallet) {
 export async function bountyActivityFeed(address) {
   try {
     let startWorkEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringStartWork
-    let startWorktopics = [startWorkEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
+    let startWorktopics = [startWorkEvent.topic, null, hexlify(padZeros(arrayify(address), 32))]
     let commitEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringCommit
-    let commitTopics = [commitEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
+    let commitTopics = [commitEvent.topic, null, hexlify(padZeros(arrayify(address), 32))]
     let acceptEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringAccepted
-    let acceptTopics = [acceptEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
+    let acceptTopics = [acceptEvent.topic, null, hexlify(padZeros(arrayify(address), 32))]
     let cancelEvent = (new Interface(RecurringBountyInterface.abi)).events.logRecurringCancelled
-    let cancelTopics = [cancelEvent.topics[0], null, hexlify(padZeros(arrayify(address), 32))]
+    let cancelTopics = [cancelEvent.topic, null, hexlify(padZeros(arrayify(address), 32))]
     let startWorkLogs, commitLogs, contributionLogs, acceptedLog, cancelledLog
     [startWorkLogs, commitLogs, acceptedLog, cancelledLog] = await Promise.all([
       this.provider.getLogs({
@@ -320,7 +319,7 @@ export async function bountyActivityFeed(address) {
     ])
 
     startWorkLogs = startWorkLogs.map(log => {
-      let ev = startWorkEvent.parse(log.topics, log.data)
+      let ev = startWorkEvent.decode(log.data, log.topics)
       return {
         by: ev._by,
         timestamp: moment((ev._timestamp.toString(10) * 1000), "x"),
@@ -329,7 +328,7 @@ export async function bountyActivityFeed(address) {
       }
     })
 commitLogs = commitLogs.map(log => {
-      let ev = commitEvent.parse(log.topics, log.data)
+      let ev = commitEvent.decode(log.data, log.topics)
       return {
         by: ev._by,
         timestamp:moment((ev._timestamp.toString(10) * 1000), "x"),
@@ -339,7 +338,7 @@ commitLogs = commitLogs.map(log => {
     })
 
   acceptedLog = acceptedLog.map(log => {
-      let ev = acceptEvent.parse(log.topics, log.data)
+      let ev = acceptEvent.decode(log.data, log.topics)
       return {
         by: ev._winner,
         timestamp: moment((ev._timestamp.toString(10) * 1000), "x"),
@@ -347,7 +346,7 @@ commitLogs = commitLogs.map(log => {
       }
     })
   cancelledLog = cancelledLog.map( log => {
-      let ev = cancelEvent.parse(log.topics, log.data)
+      let ev = cancelEvent.decode(log.data, log.topics)
       return {
         by: ev._by,
         type: 'cancelled',
@@ -367,13 +366,13 @@ commitLogs = commitLogs.map(log => {
 export async function leaderboard() {
   try {
     const event = (new Interface(RecurringBountyInterface.abi)).events.logRecurringAccepted
-    const topics = [event.topics[0]]
+    const topics = [event.topic]
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     })
-    logs =  logs.map(log => event.parse(log.topics, log.data))
+    logs =  logs.map(log => event.decode(log.data, log.topics))
     let leaderboard = Object.values(logs.reduce( (result, {
       _winner,
       _amount
@@ -382,7 +381,7 @@ export async function leaderboard() {
         user: _winner,
         rewards: []
       }
-      result[_winner].rewards.push(_amount)
+      result[_winner].rewards.push(bigNumberify(_amount))
       return result
     },
     {}

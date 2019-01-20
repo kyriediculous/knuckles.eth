@@ -1,15 +1,14 @@
-import {Interface} from 'ethers'
-import Token from '../artifacts/Token.json'
+import {Interface} from 'ethers/utils'
+import Token from '../../../contracts/build/contracts/Token.json'
 import Provider from '../Provider'
 
-
-export function onTokenTransfer(provider, callback) {
-    let event = (new Interface(Token.abi)).events.Transfer
-
-    provider.on({
-      topics: [event.topics[0]],
-      address: Token.networks[provider.chainId].address
-    }, raw => {
-       callback(raw.map(log => event.parse(log.topics, log.data)))
-    })
+export const onTokenTransfer = () =>  callback =>  {
+  const provider = Provider(process.env.CLIENT)
+  let event = (new Interface(Token.abi)).events.Transfer
+  provider.on({
+    topics: [event.topic],
+    address: Token.networks[provider.network.chainId].address
+  }, raw => {
+     if ( raw !== undefined ) callback(event.decode(raw.data, raw.topics));
+  })
 }

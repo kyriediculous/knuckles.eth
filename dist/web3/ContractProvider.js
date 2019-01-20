@@ -7,20 +7,11 @@ exports.default = void 0;
 
 var _ethers = require("ethers");
 
-const ContractProvider = (artifact, walletOrProvider) => {
-  if (walletOrProvider.chainId) {
-    if (!artifact.networks[walletOrProvider.chainId]) {
-      throw new Error('Contract not deployed on provided network');
-    }
-
-    return new _ethers.Contract(artifact.networks[walletOrProvider.chainId].address, artifact.abi, walletOrProvider);
-  } else {
-    if (!artifact.networks[walletOrProvider.provider.chainId]) {
-      throw new Error('Contract not deployed on provided network');
-    }
-
-    return new _ethers.Contract(artifact.networks[walletOrProvider.provider.chainId].address, artifact.abi, walletOrProvider);
-  }
+const ContractProvider = (artifact, provider, wallet = undefined) => {
+  if (!provider) throw new Error("Must supply a provider");
+  if (!artifact.networks[provider.network.chainId]) throw new Error('Contract not deployed on provided network');
+  if (!wallet) return new _ethers.Contract(artifact.networks[provider.network.chainId].address, artifact.abi, provider);
+  return new _ethers.Contract(artifact.networks[provider.network.chainId].address, artifact.abi, wallet.connect(provider));
 };
 
 var _default = ContractProvider;

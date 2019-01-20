@@ -130,13 +130,10 @@ class Bounties {
         attachments: bounty.attachments,
         tags: bounty.tags.map(t => t.toLowerCase())
       };
-      console.log("Uploading to swarm");
       const swarmHash = await this.bzz.upload(JSON.stringify(swarmBounty), {
         contentType: "application/json"
       });
-      console.log("Done uploading to swarm", swarmHash);
       let tx;
-      console.log("start to create bounty");
 
       switch (bounty.type) {
         case 'single':
@@ -151,7 +148,6 @@ class Bounties {
           throw new Error("Bounty type not valid or undefined");
       }
 
-      console.log("Done sending transaction", tx);
       return tx;
     } catch (err) {
       throw new Error(err);
@@ -498,7 +494,14 @@ class Bounties {
     try {
       let singles = await this.eth.bounties.rewardsFor(userAddress);
       let recurring = await this.eth.recurringBounties.rewardsFor(userAddress);
-      return singles.concat(recurring);
+      let logs = singles.concat(recurring);
+      logs = logs.map(r => {
+        let log = { ...r
+        };
+        log._amount = (0, _utils.bigNumberify)(log._amount);
+        return log;
+      });
+      return logs;
     } catch (err) {
       console.log(err);
     }

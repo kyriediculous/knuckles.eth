@@ -24,9 +24,9 @@ exports.startWorking = startWorking;
 exports.bountyActivityFeed = bountyActivityFeed;
 exports.leaderboard = leaderboard;
 
-var _RecurringBountyFactory = _interopRequireDefault(require("../artifacts/RecurringBountyFactory.json"));
+var _RecurringBountyFactory = _interopRequireDefault(require("../../../contracts/build/contracts/RecurringBountyFactory.json"));
 
-var _RecurringBountyInterface = _interopRequireDefault(require("../artifacts/RecurringBountyInterface.json"));
+var _RecurringBountyInterface = _interopRequireDefault(require("../../../contracts/build/contracts/RecurringBountyInterface.json"));
 
 var _TokenResolver = require("./TokenResolver");
 
@@ -40,21 +40,22 @@ var _ = require("../../utils/_");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function bountyAt(address, walletOrProvider) {
-  return new _ethers.Contract(address, _RecurringBountyInterface.default.abi, walletOrProvider);
+function bountyAt(address, provider, wallet = undefined) {
+  if (!wallet) return new _ethers.Contract(address, _RecurringBountyInterface.default.abi, provider);
+  return new _ethers.Contract(address, _RecurringBountyInterface.default.abi, wallet.connect(provider));
 }
 
 const statusOptions = ["Active", "Completed", "Abandoned"];
 
 async function allRecurringBounties() {
   try {
-    const event = new _ethers.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
+    const event = new _utils.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
-      topics: [event.topics[0]]
+      topics: [event.topic]
     });
-    logs = logs.map(l => event.parse(l.topics, l.data));
+    logs = logs.map(l => event.decode(l.data, l.topics));
     logs = logs.map(l => ({
       address: l.bounty,
       type: 'recurring'
@@ -67,13 +68,13 @@ async function allRecurringBounties() {
 
 async function recurringBountiesFrom(userAddress) {
   try {
-    const event = new _ethers.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
+    const event = new _utils.Interface(_RecurringBountyFactory.default.abi).events.logRecurringBountyCreated;
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
-      topics: [event.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(userAddress), 32))]
+      topics: [event.topic, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(userAddress), 32))]
     });
-    logs = logs.map(l => event.parse(l.topics, l.data));
+    logs = logs.map(l => event.decode(l.data, l.topics));
     return logs.map(l => ({
       address: l.bounty,
       type: 'recurring'
@@ -85,19 +86,18 @@ async function recurringBountiesFrom(userAddress) {
 
 async function createRecurringBounty(reference, deadline, reward, funding, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet === undefined) throw new Error("Must supply a signer");
     reference = '0x' + reference;
     deadline = Date.parse(deadline) / 1000;
     funding = (0, _utils.parseEther)(funding.toString());
     reward = (0, _utils.parseEther)(reward.toString());
-    const recurringBountyFactory = this.ContractProvider(_RecurringBountyFactory.default, wallet);
+    const recurringBountyFactory = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let spend = await _TokenResolver.approveSpend.call(this, recurringBountyFactory.address, funding, wallet);
-    spend = await this.provider.waitForTransaction(spend.hash);
+    await spend.wait();
     let creation = await recurringBountyFactory.createBounty(reference, deadline, reward, funding, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    creation = await this.provider.waitForTransaction(creation.hash);
-    return this.provider.getTransactionReceipt(creation.hash);
+    return await creation.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -132,7 +132,7 @@ async function getRecurringBountyMeta(address) {
       issuer: data[1],
       timestamp: (0, _moment.default)(data[2].toString(10) * 1000, "x"),
       deadline: (0, _moment.default)(data[3].toString(10) * 1000, "x"),
-      reward: parseFloat((0, _utils.formatEther)(data[4])).toFixed(2),
+      reward: parseFloat((0, _utils.formatEther)((0, _utils.bigNumberify)(data[4]))).toFixed(2),
       status: statusOptions[data[5]],
       commits: Number((await b.getCommits())),
       token: data[6],
@@ -147,13 +147,12 @@ async function getRecurringBountyMeta(address) {
 
 async function startWork(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const b = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const b = bountyAt(address, this.provider, wallet);
     let tx = await b.startWork({
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return;
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -161,11 +160,10 @@ async function startWork(address, wallet) {
 
 async function cancelRecurringBounty(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const b = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const b = bountyAt(address, this.provider, wallet);
     let tx = await b.cancelBounty();
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return await this.provider.getTransactionReceipt(tx.hash);
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -173,13 +171,12 @@ async function cancelRecurringBounty(address, wallet) {
 
 async function cancelMintable(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const rbf = this.ContractProvider(_RecurringBountyFactory.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.cancelMintable(address, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return await this.provider.getTransactionReceipt(tx.hash);
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -216,17 +213,18 @@ async function getCommits() {
 
 async function commitsFrom(address) {
   try {
-    const event = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
-    const topics = [event.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    const event = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
+    const topics = [event.topic, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     });
-    logs = logs.map(log => event.parse(log.topics, log.data));
+    logs = logs.map(log => event.decode(log.data, log.topics));
     logs = logs.map(l => {
-      l.type = 'recurring';
-      return l;
+      return { ...l,
+        type: 'recurring'
+      };
     });
     return logs;
   } catch (e) {
@@ -237,14 +235,13 @@ async function commitsFrom(address) {
 async function withdrawFunding(address, amount, token, wallet) {
   try {
     if (token == '') token = (0, _utils.hexlify)(0);
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet === undefined) throw new Error("Must supply a signer");
     amount = (0, _utils.parseEther)(amount.toString());
-    const b = bountyAt(address, wallet);
+    const b = bountyAt(address, this.provider, wallet);
     let tx = await b.withdraw(amount, token, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return;
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -252,17 +249,16 @@ async function withdrawFunding(address, amount, token, wallet) {
 
 async function createMintable(reference, deadline, reward, funding, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet === undefined) throw new Error("Must supply a signer");
     reference = '0x' + reference;
     deadline = Date.parse(deadline) / 1000;
     funding = (0, _utils.parseEther)(funding.toString());
     reward = (0, _utils.parseEther)(reward.toString());
-    const rbf = this.ContractProvider(_RecurringBountyFactory.default, wallet);
+    const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.createMintableBounty(reference, deadline, reward, funding, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return await this.provider.getTransactionReceipt(tx.hash);
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -270,13 +266,12 @@ async function createMintable(reference, deadline, reward, funding, wallet) {
 
 async function acceptMintable(address, id, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const rbf = this.ContractProvider(_RecurringBountyFactory.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.acceptMintable(address, id, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return await this.provider.getTransactionReceipt(tx.hash);
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -284,7 +279,7 @@ async function acceptMintable(address, id, wallet) {
 
 async function addFunding(address, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
+    if (wallet === undefined) throw new Error("Must supply a signer");
     await _TokenResolver.sendTokens.call(this, address, amount, wallet);
     return;
   } catch (e) {
@@ -294,13 +289,12 @@ async function addFunding(address, amount, wallet) {
 
 async function mintFunding(address, amount, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const rbf = this.ContractProvider(_RecurringBountyFactory.default, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const rbf = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let tx = await rbf.mintFunding(address, amount, {
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
-    return;
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -308,14 +302,15 @@ async function mintFunding(address, amount, wallet) {
 
 async function rewardsFor(address) {
   try {
-    const event = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
-    const topics = [event.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    const event = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
+    const topics = [event.topic, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     });
-    logs = logs.map(log => event.parse(log.topics, log.data));
+    logs = logs.map(log => event.decode(log.data, log.topics));
+    console.log(logs);
     return logs;
   } catch (e) {
     throw new Error(e);
@@ -324,12 +319,12 @@ async function rewardsFor(address) {
 
 async function startWorking(address, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const b = bountyAt(address, wallet);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const b = bountyAt(address, this.provider, wallet);
     let tx = await b.startWork({
-      gasPrice: '0x0'
+      gasPrice: (0, _utils.parseEther)('0')
     });
-    tx = await this.provider.waitForTransaction(tx.hash);
+    return await tx.wait();
   } catch (e) {
     throw new Error(e);
   }
@@ -337,14 +332,14 @@ async function startWorking(address, wallet) {
 
 async function bountyActivityFeed(address) {
   try {
-    let startWorkEvent = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringStartWork;
-    let startWorktopics = [startWorkEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let commitEvent = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
-    let commitTopics = [commitEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let acceptEvent = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
-    let acceptTopics = [acceptEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
-    let cancelEvent = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCancelled;
-    let cancelTopics = [cancelEvent.topics[0], null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    let startWorkEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringStartWork;
+    let startWorktopics = [startWorkEvent.topic, null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    let commitEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCommit;
+    let commitTopics = [commitEvent.topic, null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    let acceptEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
+    let acceptTopics = [acceptEvent.topic, null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
+    let cancelEvent = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringCancelled;
+    let cancelTopics = [cancelEvent.topic, null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(address), 32))];
     let startWorkLogs, commitLogs, contributionLogs, acceptedLog, cancelledLog;
     [startWorkLogs, commitLogs, acceptedLog, cancelledLog] = await Promise.all([this.provider.getLogs({
       fromBlock: 0,
@@ -364,7 +359,7 @@ async function bountyActivityFeed(address) {
       topics: cancelTopics
     })]);
     startWorkLogs = startWorkLogs.map(log => {
-      let ev = startWorkEvent.parse(log.topics, log.data);
+      let ev = startWorkEvent.decode(log.data, log.topics);
       return {
         by: ev._by,
         timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, "x"),
@@ -373,7 +368,7 @@ async function bountyActivityFeed(address) {
       };
     });
     commitLogs = commitLogs.map(log => {
-      let ev = commitEvent.parse(log.topics, log.data);
+      let ev = commitEvent.decode(log.data, log.topics);
       return {
         by: ev._by,
         timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, "x"),
@@ -382,7 +377,7 @@ async function bountyActivityFeed(address) {
       };
     });
     acceptedLog = acceptedLog.map(log => {
-      let ev = acceptEvent.parse(log.topics, log.data);
+      let ev = acceptEvent.decode(log.data, log.topics);
       return {
         by: ev._winner,
         timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, "x"),
@@ -390,7 +385,7 @@ async function bountyActivityFeed(address) {
       };
     });
     cancelledLog = cancelledLog.map(log => {
-      let ev = cancelEvent.parse(log.topics, log.data);
+      let ev = cancelEvent.decode(log.data, log.topics);
       return {
         by: ev._by,
         type: 'cancelled',
@@ -407,14 +402,14 @@ async function bountyActivityFeed(address) {
 
 async function leaderboard() {
   try {
-    const event = new _ethers.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
-    const topics = [event.topics[0]];
+    const event = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
+    const topics = [event.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: topics
     });
-    logs = logs.map(log => event.parse(log.topics, log.data));
+    logs = logs.map(log => event.decode(log.data, log.topics));
     let leaderboard = Object.values(logs.reduce((result, {
       _winner,
       _amount
@@ -424,7 +419,7 @@ async function leaderboard() {
         rewards: []
       };
 
-      result[_winner].rewards.push(_amount);
+      result[_winner].rewards.push((0, _utils.bigNumberify)(_amount));
 
       return result;
     }, {}));

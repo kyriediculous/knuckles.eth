@@ -11,7 +11,7 @@ exports.timesheetRewards = timesheetRewards;
 exports.getLast = getLast;
 exports.reward = reward;
 
-var _Timesheets = _interopRequireDefault(require("../artifacts/Timesheets.json"));
+var _Timesheets = _interopRequireDefault(require("../../../contracts/build/contracts/Timesheets.json"));
 
 var _moment = _interopRequireDefault(require("moment"));
 
@@ -19,17 +19,17 @@ var _utils = require("ethers/utils");
 
 var _OrganisationResolver = require("./OrganisationResolver");
 
-var _ethers = require("ethers");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //setreward, setperiod, getperiod, getperiods
 async function setReward(reward, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const timesheets = this.ContractProvider(_Timesheets.default, wallet);
-    let tx = await timesheets.setReward((0, _utils.parseEther)(reward.toString()));
-    return this.provider.waitForTransaction(tx.hash);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const timesheets = this.ContractProvider(_Timesheets.default, this.provider, wallet);
+    let tx = await timesheets.setReward((0, _utils.parseEther)(reward.toString()), {
+      gasPrice: (0, _utils.parseEther)('0')
+    });
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -37,10 +37,12 @@ async function setReward(reward, wallet) {
 
 async function setPeriod(user, startPeriod, completed, wallet) {
   try {
-    if (wallet.provider === undefined) wallet.provider = this.provider;
-    const timesheets = this.ContractProvider(_Timesheets.default, wallet);
-    let tx = await timesheets.setPeriod(user, startPeriod, completed);
-    return this.provider.waitForTransaction(tx.hash);
+    if (wallet === undefined) throw new Error("Must supply a signer");
+    const timesheets = this.ContractProvider(_Timesheets.default, this.provider, wallet);
+    let tx = await timesheets.setPeriod(user, startPeriod, completed, {
+      gasPrice: (0, _utils.parseEther)('0')
+    });
+    return await tx.wait();
   } catch (err) {
     throw new Error(err);
   }
@@ -61,14 +63,14 @@ async function getPeriod(user, index) {
 
 async function timesheet(user) {
   try {
-    let timesheetEvent = new _ethers.Interface(_Timesheets.default.abi).events.logTimesheetPeriod;
-    let timesheetTopics = [timesheetEvent.topics[0], (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(user), 32))];
+    let timesheetEvent = new _utils.Interface(_Timesheets.default.abi).events.logTimesheetPeriod;
+    let timesheetTopics = [timesheetEvent.topic, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(user), 32))];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
       toBlock: 'latest',
       topics: timesheetTopics
     });
-    logs = logs.map(log => timesheetEvent.parse(log.topics, log.data));
+    logs = logs.map(log => timesheetEvent.decode(log.data, log.topics));
     return logs.map(l => {
       return {
         user: l._user,
@@ -126,7 +128,7 @@ async function getLast(user) {
 async function reward() {
   try {
     const org = this.ContractProvider(_Timesheets.default, this.provider);
-    return parseFloat((0, _utils.formatEther)((await org.reward()))).toFixed(2);
+    return parseFloat((0, _utils.formatEther)((0, _utils.bigNumberify)((await org.reward())))).toFixed(2);
   } catch (err) {
     throw new Error(err);
   }

@@ -42,8 +42,7 @@ class Token {
 
   async send(to, amount, wallet) {
     try {
-      const tx = await this.eth.token.send(to, amount, wallet);
-      return await wallet.provider.waitForTransaction(tx.hash);
+      return await this.eth.token.send(to, amount, wallet);
     } catch (err) {
       console.log(err);
       throw new Error(err);
@@ -52,8 +51,7 @@ class Token {
 
   async approve(to, amount, wallet) {
     try {
-      const tx = await this.eth.token.approveSpend(to, amount, wallet);
-      return await wallet.provider.waitForTransaction(tx.hash);
+      return await this.eth.token.approveSpend(to, amount, wallet);
     } catch (err) {
       throw new Error(err);
     }
