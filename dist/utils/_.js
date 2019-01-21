@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.parseKnuckles = exports.remove0x = exports.isBN = exports.toBN = exports.checkAddressChecksum = exports.isAddress = exports.isHex = exports.bytes32ToString = exports.stringToHex = exports.sortOldest = exports.sortNewest = exports.groupBy = void 0;
+exports.parseKnuckles = exports.remove0x = exports.isBN = exports.toBN = exports.checkAddressChecksum = exports.isAddress = exports.isHex = exports.bytes32ToString = exports.stringToHex = exports.formatName = exports.sortOldest = exports.sortNewest = exports.groupBy = void 0;
 
 var _ethers = require("ethers");
 
@@ -38,9 +38,14 @@ const sortOldest = array => {
       return 1;
     }
   });
-};
+}; //parse all lowercase to first letter uppercase eg: john doe --> John Doe
+
 
 exports.sortOldest = sortOldest;
+
+const formatName = text => text.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
+
+exports.formatName = formatName;
 
 const stringToHex = str => {
   return _ethers.utils.formatBytes32String(str);
