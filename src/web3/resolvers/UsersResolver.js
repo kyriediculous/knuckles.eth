@@ -1,6 +1,6 @@
 import UsersRegistry from '../../../contracts/build/contracts/UsersRegistry.json'
 import Organisation from '../../../contracts/build/contracts/OrganisationContract.json'
-import {solidityKeccak256 as keccak256} from 'ethers/utils'
+import {solidityKeccak256 as keccak256, parseEther} from 'ethers/utils'
 import {stringToHex} from '../../utils/_'
 
 export async function register(name, swarmHash, wallet) {
