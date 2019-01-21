@@ -223,10 +223,10 @@ async function commitsFrom(userAddress) {
       topics: topics
     });
     logs = logs.map(log => event.decode(log.data, log.topics));
-    logs = logs.map(l => {
-      l.type = 'single';
-      return l;
-    });
+    logs = logs.map(l => ({
+      type: 'single',
+      ...l
+    }));
     return logs;
   } catch (err) {
     throw new Error(err);

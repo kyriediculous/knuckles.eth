@@ -310,7 +310,6 @@ async function rewardsFor(address) {
       topics: topics
     });
     logs = logs.map(log => event.decode(log.data, log.topics));
-    console.log(logs);
     return logs;
   } catch (e) {
     throw new Error(e);
