@@ -287,9 +287,9 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.4.23;\r\n\r\nimport './RecurringBountyContract.sol';\r\n\r\ncontract RecurringBountyInterface {\r\n  event logRecurringStartWork(address indexed _by, address indexed _bounty, uint _timestamp);\r\n  event logRecurringCommit(address indexed _by, address indexed _bounty, uint _id, uint _timestamp);\r\n  event logRecurringAccepted(address indexed _winner, address indexed _bounty, uint _id, uint _amount, uint _timestamp);\r\n  event logRecurringCancelled(address indexed _by, address indexed _bounty, uint _timestamp);\r\n\r\n  enum statusOptions {ACTIVE, COMPLETED, ABANDONED}\r\n\r\n  function createBounty(\r\n    bytes32 _reference,\r\n    address _issuer,\r\n    uint _deadline,\r\n    uint _reward,\r\n    address _token) external;\r\n\r\n  function getBounty() external view\r\n      returns (\r\n        bytes32,\r\n        address,\r\n        uint,\r\n        uint,\r\n        uint,\r\n        RecurringBountyContract.statusOptions,\r\n        address\r\n        );\r\n\r\n  function startWork() external;\r\n\r\n  function getCommits() external view returns (uint);\r\n\r\n  function cancelBounty() external;\r\n\r\n  function submitCommit(bytes32 _reference) external;\r\n\r\n  function getCommit(uint _id)\r\n    external\r\n    view\r\n    returns (\r\n      bytes32,\r\n      address,\r\n      bool,\r\n      uint\r\n    );\r\n\r\n  function acceptCommit(uint _id) external;\r\n\r\n  function withdraw(uint _amount, address _token) external;\r\n}\r\n",
-  "sourcePath": "C:\\Users\\N.vergauwen\\Desktop\\knuckles.js\\contracts\\contracts\\recurring-bounties\\RecurringBountyInterface.sol",
+  "sourcePath": "C:\\Users\\N.vergauwen\\Desktop\\knuckles.eth\\contracts\\contracts\\recurring-bounties\\RecurringBountyInterface.sol",
   "ast": {
-    "absolutePath": "/C/Users/N.vergauwen/Desktop/knuckles.js/contracts/contracts/recurring-bounties/RecurringBountyInterface.sol",
+    "absolutePath": "/C/Users/N.vergauwen/Desktop/knuckles.eth/contracts/contracts/recurring-bounties/RecurringBountyInterface.sol",
     "exportedSymbols": {
       "RecurringBountyInterface": [
         3784
@@ -310,7 +310,7 @@
         "src": "0:24:9"
       },
       {
-        "absolutePath": "/C/Users/N.vergauwen/Desktop/knuckles.js/contracts/contracts/recurring-bounties/RecurringBountyContract.sol",
+        "absolutePath": "/C/Users/N.vergauwen/Desktop/knuckles.eth/contracts/contracts/recurring-bounties/RecurringBountyContract.sol",
         "file": "./RecurringBountyContract.sol",
         "id": 3670,
         "nodeType": "ImportDirective",
@@ -1676,7 +1676,7 @@
     "src": "0:1378:9"
   },
   "legacyAST": {
-    "absolutePath": "/C/Users/N.vergauwen/Desktop/knuckles.js/contracts/contracts/recurring-bounties/RecurringBountyInterface.sol",
+    "absolutePath": "/C/Users/N.vergauwen/Desktop/knuckles.eth/contracts/contracts/recurring-bounties/RecurringBountyInterface.sol",
     "exportedSymbols": {
       "RecurringBountyInterface": [
         3784
@@ -1697,7 +1697,7 @@
         "src": "0:24:9"
       },
       {
-        "absolutePath": "/C/Users/N.vergauwen/Desktop/knuckles.js/contracts/contracts/recurring-bounties/RecurringBountyContract.sol",
+        "absolutePath": "/C/Users/N.vergauwen/Desktop/knuckles.eth/contracts/contracts/recurring-bounties/RecurringBountyContract.sol",
         "file": "./RecurringBountyContract.sol",
         "id": 3670,
         "nodeType": "ImportDirective",
@@ -3068,5 +3068,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.2",
-  "updatedAt": "2019-01-20T00:18:31.063Z"
+  "updatedAt": "2019-01-21T10:13:15.535Z"
 }
