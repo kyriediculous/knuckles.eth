@@ -29,6 +29,8 @@ export const sortOldest = (array) => {
   })
 }
 
+//parse all lowercase to first letter uppercase eg: john doe --> John Doe
+export const formatName = text => text.toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
 
 export const stringToHex = (str) => {
   return utils.formatBytes32String(str)
