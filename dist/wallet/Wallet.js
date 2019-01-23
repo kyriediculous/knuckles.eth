@@ -62,7 +62,7 @@ let KnucklesWallet = (_dec = (0, _classTransformer.Expose)(), (_class = class Kn
           resolve(false);
         }
       } catch (err) {
-        reject(throw new Error(err));
+        reject(new Error(err));
       }
     });
   }

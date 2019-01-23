@@ -47,7 +47,7 @@ class KnucklesWallet {
             resolve(false)
           }
         } catch (err) {
-          reject(throw new Error(err))
+          reject(new Error(err))
         }
 
     })
