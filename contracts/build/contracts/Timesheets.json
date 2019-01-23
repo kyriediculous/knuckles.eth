@@ -36373,13 +36373,8 @@
     "6660001": {
       "events": {},
       "links": {},
-<<<<<<< HEAD
-      "address": "0x26a37e49125418db052efa05e87c882b53a95572",
-      "transactionHash": "0x8ac7cd478e0cd98753c802eb049717025284441e3bae668389de7e2a83879b6d"
-=======
-      "address": "0x1945c03e5015f645de01fbcb2d2c2177704ad5c7",
-      "transactionHash": "0x67022862bc31a2f5b0b6c4f5a227847bd3bd3d2834097c21ce6db1d02a85b0a4"
->>>>>>> 88c623d209748aee74c821818616efadb0dd4272
+      "address": "0x3cd3638f693d271087ed0bd67d6d26c7d15dbbff",
+      "transactionHash": "0xeb86e25f3344b0173641c39a506298f21fb3768d0df8e6615e11670adaa325e1"
     },
     "326432352": {
       "events": {},
@@ -36389,9 +36384,5 @@
     }
   },
   "schemaVersion": "2.0.2",
-<<<<<<< HEAD
-  "updatedAt": "2019-01-23T12:22:16.489Z"
-=======
-  "updatedAt": "2019-01-21T10:45:16.337Z"
->>>>>>> 88c623d209748aee74c821818616efadb0dd4272
+  "updatedAt": "2019-01-23T17:59:41.928Z"
 }
