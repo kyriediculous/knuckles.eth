@@ -24,7 +24,7 @@ async function register(name, swarmHash, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const usersregistry = this.ContractProvider(_UsersRegistry.default, this.provider, wallet);
     let tx = await usersregistry.register((0, _.stringToHex)(name.toLowerCase()), swarmHash, {
-      gasPrice: parseEther('0')
+      gasPrice: (0, _utils.parseEther)('0')
     });
     await tx.wait();
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
@@ -40,7 +40,7 @@ async function update(newName, swarmHash, oldName, wallet) {
     if (wallet === undefined) throw new Error("Must supply a signer");
     const usersregistry = this.ContractProvider(_UsersRegistry.default, this.provider, wallet);
     let tx = await usersregistry.update((0, _.stringToHex)(newName.toLowerCase()), swarmHash, (0, _.stringToHex)(oldName.toLowerCase()), {
-      gasPrice: parseEther('0')
+      gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
   } catch (err) {
