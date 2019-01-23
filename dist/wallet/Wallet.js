@@ -90,7 +90,7 @@ class KnucklesWallet {
 
         if (secretStorage) {
           console.log(secretStorage);
-          resolve((await _ethers.Wallet.fromEncryptedWallet(secretStorage, password)));
+          resolve((await _ethers.Wallet.fromEncryptedJson(secretStorage, password)));
         }
       } catch (e) {
         reject(new Error(e.message));

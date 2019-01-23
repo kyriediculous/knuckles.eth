@@ -79,7 +79,7 @@ class KnucklesWallet {
         const secretStorage = await LF.getItem(`m/99'/66'/0'/0/0`)
         if (secretStorage) {
           console.log(secretStorage)
-          resolve(await Wallet.fromEncryptedWallet(secretStorage, password))
+          resolve(await Wallet.fromEncryptedJson(secretStorage, password))
         }
       } catch (e) {
         reject(new Error(e.message))
