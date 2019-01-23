@@ -36333,8 +36333,8 @@
     "6660001": {
       "events": {},
       "links": {},
-      "address": "0xaad79ad5f59cfa4b4047ae33903aad370954abbf",
-      "transactionHash": "0x505fb785c4bb42090533d13a07fb52bf2895823abd6fcfd55aa0a084b35b0a63"
+      "address": "0x1b338b1600773f4eab7e07672667a1932eeb56c5",
+      "transactionHash": "0x22785914ceaa6e13c1e6852e20062bb10a3e88cf9f99a5cb0b8ea1fe3a89b6c3"
     },
     "326432352": {
       "events": {},
@@ -36344,5 +36344,5 @@
     }
   },
   "schemaVersion": "2.0.2",
-  "updatedAt": "2019-01-21T10:13:15.776Z"
+  "updatedAt": "2019-01-23T12:22:56.287Z"
 }
