@@ -5,6 +5,7 @@ import {stringToHex} from '../../utils/_'
 
 export async function register(name, swarmHash, wallet) {
   try {
+    console.log(parseEther)
     if (wallet === undefined) throw new Error("Must supply a signer")
     const usersregistry = this.ContractProvider(UsersRegistry, this.provider, wallet)
     let tx = await usersregistry.register(stringToHex(name.toLowerCase()), swarmHash, {gasPrice: parseEther('0')})

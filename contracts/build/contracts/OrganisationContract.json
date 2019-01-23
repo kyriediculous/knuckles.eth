@@ -37006,8 +37006,13 @@
         }
       },
       "links": {},
+<<<<<<< HEAD
       "address": "0x4f19b08d168d5c8d38b8d10b6397f155e0b7b519",
       "transactionHash": "0x260991f4590f760b68467c5f443476a447598d05b8e757b95825204b9d539c3c"
+=======
+      "address": "0xf7cc6b6edc03503b5e6fa9972636bb61c85dfeb0",
+      "transactionHash": "0x780eb40a25033ee71a26be710b08daf141a847297f941677ef21f2481dcc8886"
+>>>>>>> 88c623d209748aee74c821818616efadb0dd4272
     },
     "326432352": {
       "events": {
@@ -37155,5 +37160,9 @@
     }
   },
   "schemaVersion": "2.0.2",
+<<<<<<< HEAD
   "updatedAt": "2019-01-23T12:23:11.290Z"
+=======
+  "updatedAt": "2019-01-21T10:46:11.050Z"
+>>>>>>> 88c623d209748aee74c821818616efadb0dd4272
 }

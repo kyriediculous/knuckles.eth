@@ -8,7 +8,7 @@ import BountyInterface from '../../../contracts/build/contracts/BountyInterface.
 import RecurringBountyInterface from '../../../contracts/build/contracts/RecurringBountyInterface.json'
 import Provider from '../Provider'
 
-export const onBountyCreated = () => callback =>  {
+export const onBountyCreated = callback =>  {
   const provider = Provider(process.env.CLIENT)
 
   let event = (new Interface(BountyFactory.abi)).events.logBountyCreated
@@ -35,7 +35,7 @@ export const onBountyCreated = () => callback =>  {
 }
 
 
-export const onBountyAccepted =  () => callback =>  {
+export const onBountyAccepted =  callback =>  {
   const provider = Provider(process.env.CLIENT)
 
   let event = (new Interface(BountyInterface.abi)).events.logAccepted
@@ -61,7 +61,7 @@ export const onBountyAccepted =  () => callback =>  {
   })
 }
 
-export const onBountyCommit = () => callback =>  {
+export const onBountyCommit = callback =>  {
   const provider = Provider(process.env.CLIENT)
 
   let event = (new Interface(BountyInterface.abi)).events.logCommit

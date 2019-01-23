@@ -16122,8 +16122,13 @@
     "6660001": {
       "events": {},
       "links": {},
+<<<<<<< HEAD
       "address": "0xe1e1321858e5509be625ce70e5ed0c4bcc94f603",
       "transactionHash": "0x79078efb91e8284ae6f35ab8b64bcd145932edfe2f32db82f35a8690370ec698"
+=======
+      "address": "0xcc4a973b0e2667f12f21661148920581307e189e",
+      "transactionHash": "0x732f4e247d5bc1c5626d8d7c34ee28aa17e8440e42111cf8920c28ec16f49343"
+>>>>>>> 88c623d209748aee74c821818616efadb0dd4272
     },
     "326432352": {
       "events": {},
@@ -16133,5 +16138,9 @@
     }
   },
   "schemaVersion": "2.0.2",
+<<<<<<< HEAD
   "updatedAt": "2019-01-23T12:22:56.267Z"
+=======
+  "updatedAt": "2019-01-21T10:45:56.837Z"
+>>>>>>> 88c623d209748aee74c821818616efadb0dd4272
 }
