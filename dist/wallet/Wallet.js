@@ -19,13 +19,9 @@ var _localforage = _interopRequireDefault(require("localforage"));
 
 var _cryptoJs = require("crypto-js");
 
-var _dec, _class;
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object['ke' + 'ys'](descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object['define' + 'Property'](target, property, desc); desc = null; } return desc; }
-
-let KnucklesWallet = (_dec = (0, _classTransformer.Expose)(), (_class = class KnucklesWallet {
+class KnucklesWallet {
   static async create(password = null) {
     try {
       const knucklesWallet = new KnucklesWallet();
@@ -122,7 +118,7 @@ let KnucklesWallet = (_dec = (0, _classTransformer.Expose)(), (_class = class Kn
     return this.wallet.mnemonic;
   }
 
-}, (_applyDecoratedDescriptor(_class.prototype, "mnemonic", [_dec], Object.getOwnPropertyDescriptor(_class.prototype, "mnemonic"), _class.prototype)), _class));
+}
 
 function recoverKnucklesWallet(mnemonic) {
   try {

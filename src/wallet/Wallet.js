@@ -101,7 +101,6 @@ class KnucklesWallet {
     return plainToClass(KnucklesWallet, json)
   }
 
-  @Expose()
   mnemonic() {
     return this.wallet.mnemonic
   }
