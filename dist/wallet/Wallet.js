@@ -32,9 +32,8 @@ let KnucklesWallet = (_dec = (0, _classTransformer.Expose)(), (_class = class Kn
 
       const mnemonic = _bip.default.generateMnemonic();
 
-      knucklesWallet.mnemonic = mnemonic;
-      knucklesWallet.wallet = knucklesWallet.recoverWallet();
-      await knucklesWallet.saveMnemonic(password);
+      knucklesWallet.wallet = _ethers.Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`);
+      await knucklesWallet.saveWallet(password);
       return knucklesWallet;
     } catch (err) {
       throw new Error(err);
@@ -44,9 +43,8 @@ let KnucklesWallet = (_dec = (0, _classTransformer.Expose)(), (_class = class Kn
   static async restore(mnemonic, password) {
     try {
       const knucklesWallet = new KnucklesWallet();
-      knucklesWallet.mnemonic = mnemonic;
       knucklesWallet.wallet = knucklesWallet.recoverWallet();
-      await knucklesWallet.saveMnemonic(password);
+      await knucklesWallet.saveWallet(password);
       return knucklesWallet;
     } catch (err) {
       throw new Error(err);
@@ -64,7 +62,7 @@ let KnucklesWallet = (_dec = (0, _classTransformer.Expose)(), (_class = class Kn
           resolve(false);
         }
       } catch (err) {
-        reject(err);
+        reject(throw new Error(err));
       }
     });
   }
@@ -77,32 +75,29 @@ let KnucklesWallet = (_dec = (0, _classTransformer.Expose)(), (_class = class Kn
     }
   }
 
-  saveMnemonic(password) {
+  saveWallet(password) {
     return new Promise(async (resolve, reject) => {
       try {
-        const encryptedMnemonic = _cryptoJs.AES.encrypt(this.mnemonic, password);
-
-        await _localforage.default.setItem(`m/99'/66'/0'/0/0`, encryptedMnemonic.toString());
+        const encrypted = await this.wallet.encrypt(password);
+        await _localforage.default.setItem(`m/99'/66'/0'/0/0`, encrypted);
         resolve(true);
-      } catch (err) {
-        reject(err);
+      } catch (e) {
+        reject(new Error(err));
       }
     });
   }
 
-  static getMnemonic(password) {
+  static getWallet(password) {
     return new Promise(async (resolve, reject) => {
       try {
-        const cipher = await _localforage.default.getItem(`m/99'/66'/0'/0/0`);
+        const secretStorage = await _localforage.default.getItem(`m/99'/66'/0'/0/0`);
 
-        if (cipher) {
-          const bytes = await _cryptoJs.AES.decrypt(cipher.toString(), password);
-          const plain = await bytes.toString(_cryptoJs.enc.Utf8);
-          const wallet = recoverKnucklesWallet(plain);
-          resolve(wallet);
+        if (secretStorage) {
+          console.log(secretStorage);
+          resolve((await _ethers.Wallet.fromEncryptedWallet(secretStorage, password)));
         }
-      } catch (err) {
-        reject(new Error(err.message));
+      } catch (e) {
+        reject(new Error(e.message));
       }
     });
   }
@@ -124,7 +119,7 @@ let KnucklesWallet = (_dec = (0, _classTransformer.Expose)(), (_class = class Kn
   }
 
   mnemonic() {
-    return this.mnemonic;
+    return this.wallet.mnemonic;
   }
 
 }, (_applyDecoratedDescriptor(_class.prototype, "mnemonic", [_dec], Object.getOwnPropertyDescriptor(_class.prototype, "mnemonic"), _class.prototype)), _class));
@@ -132,7 +127,6 @@ let KnucklesWallet = (_dec = (0, _classTransformer.Expose)(), (_class = class Kn
 function recoverKnucklesWallet(mnemonic) {
   try {
     const knucklesWallet = new KnucklesWallet();
-    knucklesWallet.mnemonic = mnemonic;
     knucklesWallet.wallet = knucklesWallet.recoverWallet(); //delete knucklesWallet.mnemonic
 
     return knucklesWallet;
