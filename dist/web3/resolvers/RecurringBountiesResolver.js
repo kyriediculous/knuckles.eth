@@ -401,6 +401,21 @@ async function bountyActivityFeed(address) {
 
 async function leaderboard() {
   try {
+    let fromBlock = await this.provider.getBlockNumber();
+
+    switch (period) {
+      case 'all':
+        fromBlock = 0;
+        break;
+
+      case '30':
+        fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0;
+        break;
+
+      case '90':
+        fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0;
+    }
+
     const event = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
     const topics = [event.topic];
     let logs = await this.provider.getLogs({

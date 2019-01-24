@@ -394,10 +394,10 @@ export async function leaderboard(period) {
         fromBlock = 0
         break;
       case '30':
-        fromBlock = fromBlock - 518400
+        fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0
         break;
       case '90':
-        fromBlock = fromBlock - 1555200
+        fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0
     }
     const event = (new Interface(BountyInterface.abi)).events.logAccepted
     const topics = [event.topic]
