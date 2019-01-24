@@ -83,7 +83,8 @@ class KnucklesWallet {
     return new Promise(async (resolve, reject) => {
       try {
         const secretStorage = await LF.getItem(`m/99'/66'/0'/0/0`)
-        if (secretStorage) {
+        if (!secretStorage.startsWith('{"address":')) reject(new Error("Wallet is in old format, please recover your wallet"))
+        if (secretStorage ) {
           console.log(secretStorage)
           resolve(await Wallet.fromEncryptedJson(secretStorage, password))
         }
