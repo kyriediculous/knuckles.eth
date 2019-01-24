@@ -427,12 +427,27 @@ async function proposalCount(address) {
   }
 }
 
-async function leaderboard() {
+async function leaderboard(period) {
   try {
+    let fromBlock = await this.provider.getBlockNumber();
+
+    switch (period) {
+      case 'all':
+        fromBlock = 0;
+        break;
+
+      case '30':
+        fromBlock = fromBlock - 518400;
+        break;
+
+      case '90':
+        fromBlock = fromBlock - 1555200;
+    }
+
     const event = new _utils.Interface(_BountyInterface.default.abi).events.logAccepted;
     const topics = [event.topic];
     let logs = await this.provider.getLogs({
-      fromBlock: 0,
+      fromBlock: fromBlock,
       toBlock: 'latest',
       topics: topics
     });

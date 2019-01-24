@@ -64,7 +64,13 @@ class KnucklesWallet {
   saveWallet(password) {
     return new Promise(async (resolve, reject) => {
       try {
-        const encrypted = await this.wallet.encrypt(password)
+        //Options to change the speed (this is linear with security)!!!!
+        let options = {
+          scrypt: {
+            N: (1 << 16)
+          }
+        }
+        const encrypted = await this.wallet.encrypt(password, options)
         await LF.setItem(`m/99'/66'/0'/0/0`, encrypted)
         resolve(true)
       } catch (e) {

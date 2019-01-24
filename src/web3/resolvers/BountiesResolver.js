@@ -386,12 +386,23 @@ export async function proposalCount(address) {
   }
 }
 
-export async function leaderboard() {
+export async function leaderboard(period) {
   try {
+    let fromBlock = await this.provider.getBlockNumber()
+    switch (period) {
+      case 'all':
+        fromBlock = 0
+        break;
+      case '30':
+        fromBlock = fromBlock - 518400
+        break;
+      case '90':
+        fromBlock = fromBlock - 1555200
+    }
     const event = (new Interface(BountyInterface.abi)).events.logAccepted
     const topics = [event.topic]
     let logs = await this.provider.getLogs({
-      fromBlock: 0,
+      fromBlock: fromBlock,
       toBlock: 'latest',
       topics: topics
     })

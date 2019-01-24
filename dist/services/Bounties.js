@@ -549,10 +549,10 @@ class Bounties {
   */
 
 
-  async leaderboard() {
+  async leaderboard(period) {
     try {
       let leaderboard, singlesLead, recurringLead, timesheetRewards;
-      [singlesLead, recurringLead, timesheetRewards] = await Promise.all([this.eth.bounties.leaderboard(), this.eth.recurringBounties.leaderboard(), this.eth.timesheets.rewards()]);
+      [singlesLead, recurringLead, timesheetRewards] = await Promise.all([this.eth.bounties.leaderboard(period), this.eth.recurringBounties.leaderboard(period), this.eth.timesheets.rewards(period)]);
       leaderboard = [...singlesLead, ...recurringLead, ...timesheetRewards];
       leaderboard = (0, _.groupBy)(leaderboard, 'user');
       let output = [];

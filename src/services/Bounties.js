@@ -456,13 +456,13 @@ class Bounties {
   * Get the leaderboard of earned tokens
   * @returns {Array} contains objects with the user profile and his total reward earned
   */
-  async leaderboard() {
+  async leaderboard(period) {
     try {
       let leaderboard, singlesLead, recurringLead, timesheetRewards
       [singlesLead, recurringLead, timesheetRewards] = await Promise.all([
-         this.eth.bounties.leaderboard(),
-         this.eth.recurringBounties.leaderboard(),
-         this.eth.timesheets.rewards()
+         this.eth.bounties.leaderboard(period),
+         this.eth.recurringBounties.leaderboard(period),
+         this.eth.timesheets.rewards(period)
       ])
       leaderboard = [...singlesLead, ...recurringLead, ...timesheetRewards]
       leaderboard = groupBy(leaderboard, 'user')
