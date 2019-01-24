@@ -388,6 +388,7 @@ export async function proposalCount(address) {
 
 export async function leaderboard(period) {
   try {
+    console.log("Period from resolver: ", period)
     let fromBlock = await this.provider.getBlockNumber()
     switch (period) {
       case 'all':

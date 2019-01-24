@@ -362,7 +362,7 @@ commitLogs = commitLogs.map(log => {
 }
 
 
-export async function leaderboard() {
+export async function leaderboard(period) {
   try {
     let fromBlock = await this.provider.getBlockNumber()
     switch (period) {

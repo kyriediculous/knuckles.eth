@@ -429,6 +429,7 @@ async function proposalCount(address) {
 
 async function leaderboard(period) {
   try {
+    console.log("Period from resolver: ", period);
     let fromBlock = await this.provider.getBlockNumber();
 
     switch (period) {

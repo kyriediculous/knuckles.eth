@@ -399,7 +399,7 @@ async function bountyActivityFeed(address) {
   }
 }
 
-async function leaderboard() {
+async function leaderboard(period) {
   try {
     let fromBlock = await this.provider.getBlockNumber();
 

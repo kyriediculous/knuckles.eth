@@ -41,12 +41,23 @@ export async function getPeriod(user, index) {
   }
 }
 
-export async function timesheet(user) {
+export async function timesheet(user, period) {
   try {
+    let fromBlock = await this.provider.getBlockNumber()
+    switch (period) {
+      case 'all':
+        fromBlock = 0
+        break;
+      case '30':
+        fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0
+        break;
+      case '90':
+        fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0
+    }
     let timesheetEvent = (new Interface(Timesheets.abi)).events.logTimesheetPeriod
     let timesheetTopics = [timesheetEvent.topic, hexlify(padZeros(arrayify(user), 32))]
     let logs = await this.provider.getLogs({
-      fromBlock: 0,
+      fromBlock: fromBlock,
       toBlock: 'latest',
       topics: timesheetTopics
     })
@@ -65,10 +76,10 @@ export async function timesheet(user) {
   }
 }
 
-export async function timesheetRewards() {
+export async function timesheetRewards(period) {
   try {
     let allMembers = await members.call(this)
-    let timesheets = await Promise.all(allMembers.map(m => timesheet.call(this, m.user)))
+    let timesheets = await Promise.all(allMembers.map(m => timesheet.call(this, m.user, period)))
     return timesheets.map((ts, i) => {
       if (ts.length == 1 ) {
         return {
