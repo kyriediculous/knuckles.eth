@@ -457,6 +457,7 @@ class Bounties {
   * @returns {Array} contains objects with the user profile and his total reward earned
   */
   async leaderboard(period) {
+    console.log("Fetching leaderboard with period: ", period)
     try {
       let leaderboard, singlesLead, recurringLead, timesheetRewards
       [singlesLead, recurringLead, timesheetRewards] = await Promise.all([

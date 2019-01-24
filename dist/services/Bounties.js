@@ -550,6 +550,8 @@ class Bounties {
 
 
   async leaderboard(period) {
+    console.log("Fetching leaderboard with period: ", period);
+
     try {
       let leaderboard, singlesLead, recurringLead, timesheetRewards;
       [singlesLead, recurringLead, timesheetRewards] = await Promise.all([this.eth.bounties.leaderboard(period), this.eth.recurringBounties.leaderboard(period), this.eth.timesheets.rewards(period)]);
