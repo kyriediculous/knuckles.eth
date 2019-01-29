@@ -6,7 +6,7 @@ export const onTokenTransfer = (to, callback) =>  {
   const provider = Provider(process.env.CLIENT)
   let event = (new Interface(Token.abi)).events.Transfer
   let topics = [event.topic]
-  if (to) topics.push(hexlify(padZeros(arrayify(userAddress), 32)))
+  if (to) topics.push(hexlify(padZeros(arrayify(to), 32)))
   provider.on({
     topics: topics,
     address: Token.networks[provider.network.chainId].address
