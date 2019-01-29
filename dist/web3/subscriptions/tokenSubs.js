@@ -17,7 +17,7 @@ const onTokenTransfer = (to, callback) => {
   const provider = (0, _Provider.default)(process.env.CLIENT);
   let event = new _utils.Interface(_Token.default.abi).events.Transfer;
   let topics = [event.topic];
-  if (to) topics.push((0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(to), 32)));
+  if (to) topics.push(null, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(to), 32)));
   provider.on({
     topics: topics,
     address: _Token.default.networks[provider.network.chainId].address
