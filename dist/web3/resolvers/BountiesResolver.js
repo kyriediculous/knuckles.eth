@@ -79,10 +79,7 @@ async function createBounty(reference, deadline, reward, wallet) {
     reward = (0, _utils.parseEther)(reward.toString());
     const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
     const token = this.ContractProvider(_Token.default, this.provider, wallet);
-    const spend = await token.approve(bountyFactory.address, reward, {
-      gasPrice: (0, _utils.parseEther)('0')
-    });
-    await spend.wait();
+    let spend = await _TokenResolver.approveSpend.call(this, bountyFactory.address, reward, wallet);
     let tx = await bountyFactory.createBounty(reference, deadline, reward, {
       gasPrice: (0, _utils.parseEther)('0')
     });

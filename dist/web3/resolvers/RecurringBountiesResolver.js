@@ -93,7 +93,6 @@ async function createRecurringBounty(reference, deadline, reward, funding, walle
     reward = (0, _utils.parseEther)(reward.toString());
     const recurringBountyFactory = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let spend = await _TokenResolver.approveSpend.call(this, recurringBountyFactory.address, funding, wallet);
-    await spend.wait();
     let creation = await recurringBountyFactory.createBounty(reference, deadline, reward, funding, {
       gasPrice: (0, _utils.parseEther)('0')
     });

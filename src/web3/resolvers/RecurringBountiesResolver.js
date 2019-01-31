@@ -63,7 +63,6 @@ export async function createRecurringBounty(reference, deadline, reward, funding
     reward = parseEther(reward.toString())
     const recurringBountyFactory = this.ContractProvider(RecurringBountyFactory, this.provider, wallet)
     let spend = await approveSpend.call(this, recurringBountyFactory.address, funding, wallet)
-    await spend.wait()
     let creation = await recurringBountyFactory.createBounty(reference, deadline, reward, funding, {gasPrice: parseEther('0')})
     return await creation.wait()
   } catch (e) {

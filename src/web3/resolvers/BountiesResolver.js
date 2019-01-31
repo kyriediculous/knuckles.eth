@@ -45,8 +45,7 @@ export async function createBounty(reference, deadline, reward, wallet) {
     reward = parseEther(reward.toString())
     const bountyFactory = this.ContractProvider(BountyFactory, this.provider, wallet)
     const token = this.ContractProvider(Token, this.provider, wallet)
-    const spend = await token.approve(bountyFactory.address, reward, {gasPrice: parseEther('0')})
-    await spend.wait()
+    let spend = await approveSpend.call(this, bountyFactory.address, reward, wallet)
     let tx =  await bountyFactory.createBounty(reference, deadline, reward, {gasPrice: parseEther('0')})
     return await tx.wait()
   } catch (err) {
