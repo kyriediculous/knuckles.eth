@@ -61,7 +61,7 @@ class Timesheets {
 
   async timesheet(user) {
     try {
-      let timesheets = await this.eth.timesheets.timesheet(user);
+      let timesheets = await this.eth.timesheets.timesheet(user, 'all');
       const users = await _Users.default.init();
       let approvers = await Promise.all(timesheets.map(t => users.get(t.approver)));
       return timesheets.map((t, i) => t.approver = approvers[i]);
@@ -72,7 +72,7 @@ class Timesheets {
 
   async timesheetRewardsFor(user) {
     try {
-      let timesheets = await this.eth.timesheets.timesheet(user);
+      let timesheets = await this.eth.timesheets.timesheet(user, 'all');
       return timesheets.map(ts => ({
         user: ts.user,
         reward: ts.reward
@@ -92,7 +92,7 @@ class Timesheets {
 
   async totalRewards(user) {
     try {
-      let ts = await this.eth.timesheets.timesheet(user);
+      let ts = await this.eth.timesheets.timesheet(user, 'all');
 
       if (ts.length == 1) {
         ts = ts[0].reward;

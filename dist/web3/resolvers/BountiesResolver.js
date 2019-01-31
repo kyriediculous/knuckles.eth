@@ -79,10 +79,7 @@ async function createBounty(reference, deadline, reward, wallet) {
     reward = (0, _utils.parseEther)(reward.toString());
     const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
     const token = this.ContractProvider(_Token.default, this.provider, wallet);
-    const spend = await token.approve(bountyFactory.address, reward, {
-      gasPrice: (0, _utils.parseEther)('0')
-    });
-    await spend.wait();
+    let spend = await _TokenResolver.approveSpend.call(this, bountyFactory.address, reward, wallet);
     let tx = await bountyFactory.createBounty(reference, deadline, reward, {
       gasPrice: (0, _utils.parseEther)('0')
     });
@@ -427,12 +424,28 @@ async function proposalCount(address) {
   }
 }
 
-async function leaderboard() {
+async function leaderboard(period) {
   try {
+    console.log("Period from resolver: ", period);
+    let fromBlock = await this.provider.getBlockNumber();
+
+    switch (period) {
+      case 'all':
+        fromBlock = 0;
+        break;
+
+      case '30':
+        fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0;
+        break;
+
+      case '90':
+        fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0;
+    }
+
     const event = new _utils.Interface(_BountyInterface.default.abi).events.logAccepted;
     const topics = [event.topic];
     let logs = await this.provider.getLogs({
-      fromBlock: 0,
+      fromBlock: fromBlock,
       toBlock: 'latest',
       topics: topics
     });

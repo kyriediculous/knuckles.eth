@@ -18,9 +18,8 @@ class KnucklesWallet {
     try {
       const knucklesWallet = new KnucklesWallet()
       const mnemonic = bip39.generateMnemonic()
-      knucklesWallet.mnemonic = mnemonic
-      knucklesWallet.wallet = knucklesWallet.recoverWallet()
-      await knucklesWallet.saveMnemonic(password)
+      knucklesWallet.wallet = Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`)
+      await knucklesWallet.saveWallet(password)
       return knucklesWallet
     } catch (err) {
       throw new Error(err)
@@ -30,9 +29,8 @@ class KnucklesWallet {
   static async restore (mnemonic, password) {
     try {
       const knucklesWallet = new KnucklesWallet()
-      knucklesWallet.mnemonic = mnemonic
       knucklesWallet.wallet = knucklesWallet.recoverWallet()
-      await knucklesWallet.saveMnemonic(password)
+      await knucklesWallet.saveWallet(password)
       return knucklesWallet
     } catch (err) {
       throw new Error(err)
@@ -49,7 +47,7 @@ class KnucklesWallet {
             resolve(false)
           }
         } catch (err) {
-          reject(err)
+          reject(new Error(err))
         }
 
     })
@@ -63,32 +61,36 @@ class KnucklesWallet {
     }
   }
 
-  saveMnemonic(password) {
+  saveWallet(password) {
     return new Promise(async (resolve, reject) => {
-        try {
-          const encryptedMnemonic = AES.encrypt(this.mnemonic, password)
-          await LF.setItem(`m/99'/66'/0'/0/0`, encryptedMnemonic.toString())
-          resolve(true)
-        } catch (err) {
-          reject(err)
+      try {
+        //Options to change the speed (this is linear with security)!!!!
+        let options = {
+          scrypt: {
+            N: (1 << 16)
+          }
         }
-
+        const encrypted = await this.wallet.encrypt(password, options)
+        await LF.setItem(`m/99'/66'/0'/0/0`, encrypted)
+        resolve(true)
+      } catch (e) {
+        reject(new Error(err))
+      }
     })
   }
 
-  static getMnemonic(password) {
+  static getWallet(password) {
     return new Promise(async (resolve, reject) => {
-        try {
-          const cipher = await LF.getItem(`m/99'/66'/0'/0/0`)
-          if (cipher) {
-            const bytes = await AES.decrypt(cipher.toString(), password)
-            const plain = await bytes.toString(enc.Utf8)
-            const wallet = recoverKnucklesWallet(plain)
-            resolve(wallet)
-          }
-        } catch (err) {
-          reject(new Error(err.message))
+      try {
+        const secretStorage = await LF.getItem(`m/99'/66'/0'/0/0`)
+        if (!secretStorage.startsWith('{"address":')) reject(new Error("Wallet is in old format, please recover your wallet"))
+        if (secretStorage ) {
+          console.log(secretStorage)
+          resolve(await Wallet.fromEncryptedJson(secretStorage, password))
         }
+      } catch (e) {
+        reject(new Error(e.message))
+      }
     })
   }
 
@@ -106,16 +108,14 @@ class KnucklesWallet {
     return plainToClass(KnucklesWallet, json)
   }
 
-  @Expose()
   mnemonic() {
-    return this.mnemonic
+    return this.wallet.mnemonic
   }
 }
 
 function recoverKnucklesWallet(mnemonic) {
   try {
     const knucklesWallet = new KnucklesWallet()
-    knucklesWallet.mnemonic = mnemonic
     knucklesWallet.wallet = knucklesWallet.recoverWallet()
     //delete knucklesWallet.mnemonic
     return knucklesWallet
