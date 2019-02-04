@@ -240,7 +240,6 @@ async function rewardsFor(userAddress) {
       topics: topics
     });
     logs = logs.map(log => event.decode(log.data, log.topics));
-    console.log(logs);
     return logs;
   } catch (err) {
     throw new Error(err);
@@ -426,7 +425,6 @@ async function proposalCount(address) {
 
 async function leaderboard(period) {
   try {
-    console.log("Period from resolver: ", period);
     let fromBlock = await this.provider.getBlockNumber();
 
     switch (period) {
