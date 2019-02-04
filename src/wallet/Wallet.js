@@ -29,7 +29,9 @@ class KnucklesWallet {
   static async restore (mnemonic, password) {
     try {
       const knucklesWallet = new KnucklesWallet()
+      knucklesWallet.mnemonic =  mnemonic // TODO overriding function but needed by recoverWallet
       knucklesWallet.wallet = knucklesWallet.recoverWallet()
+      knucklesWallet.mnemonic =  '' // cfr 2 lines above, don't know if storing the mnemonic is a good idea.
       await knucklesWallet.saveWallet(password)
       return knucklesWallet
     } catch (err) {
@@ -39,21 +41,23 @@ class KnucklesWallet {
 
   static exists() {
     return new Promise(async (resolve, reject) => {
-        try {
-          const res = await LF.getItem(`m/99'/66'/0'/0/0`)
-          if (res) {
-            resolve("password")
-          } else {
-            resolve(false)
-          }
-        } catch (err) {
-          reject(new Error(err))
+      try {
+        const res = await LF.getItem(`m/99'/66'/0'/0/0`)
+        if (res) {
+          resolve('password')
+        } else {
+          resolve(false)
         }
-
+      } catch (err) {
+        reject(new Error(err))
+      }
     })
   }
 
   recoverWallet() {
+    if(!this.mnemonic){
+      throw new Error('mnemonic is not set, cannot recover wallet')
+    }
     try {
       return Wallet.fromMnemonic(this.mnemonic, `m/99'/66'/0'/0/0`)
     } catch(err) {
@@ -74,7 +78,7 @@ class KnucklesWallet {
         await LF.setItem(`m/99'/66'/0'/0/0`, encrypted)
         resolve(true)
       } catch (e) {
-        reject(new Error(err))
+        reject(new Error(e))
       }
     })
   }
@@ -83,7 +87,7 @@ class KnucklesWallet {
     return new Promise(async (resolve, reject) => {
       try {
         const secretStorage = await LF.getItem(`m/99'/66'/0'/0/0`)
-        if (!secretStorage.startsWith('{"address":')) reject(new Error("Wallet is in old format, please recover your wallet"))
+        if (!secretStorage.startsWith('{"address":')) reject(new Error('Wallet is in old format, please recover your wallet'))
         if (secretStorage ) {
           console.log(secretStorage)
           resolve(await Wallet.fromEncryptedJson(secretStorage, password))
@@ -96,8 +100,7 @@ class KnucklesWallet {
 
   credential(type, message) {
     const wallet = this.recoverWallet()
-    const credential = Credential.create(type, message, wallet.publicKey)
-    return credential
+    return Credential.create(type, message, wallet.publicKey)
   }
 
   toJSON() {
