@@ -63,7 +63,6 @@ export async function createRecurringBounty(reference, deadline, reward, funding
     reward = parseEther(reward.toString())
     const recurringBountyFactory = this.ContractProvider(RecurringBountyFactory, this.provider, wallet)
     let spend = await approveSpend.call(this, recurringBountyFactory.address, funding, wallet)
-    await spend.wait()
     let creation = await recurringBountyFactory.createBounty(reference, deadline, reward, funding, {gasPrice: parseEther('0')})
     return await creation.wait()
   } catch (e) {
@@ -362,8 +361,19 @@ commitLogs = commitLogs.map(log => {
 }
 
 
-export async function leaderboard() {
+export async function leaderboard(period) {
   try {
+    let fromBlock = await this.provider.getBlockNumber()
+    switch (period) {
+      case 'all':
+        fromBlock = 0
+        break;
+      case '30':
+        fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0
+        break;
+      case '90':
+        fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0
+    }
     const event = (new Interface(RecurringBountyInterface.abi)).events.logRecurringAccepted
     const topics = [event.topic]
     let logs = await this.provider.getLogs({

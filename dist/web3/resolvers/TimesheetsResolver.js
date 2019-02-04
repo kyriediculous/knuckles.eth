@@ -61,12 +61,27 @@ async function getPeriod(user, index) {
   }
 }
 
-async function timesheet(user) {
+async function timesheet(user, period) {
   try {
+    let fromBlock = await this.provider.getBlockNumber();
+
+    switch (period) {
+      case 'all':
+        fromBlock = 0;
+        break;
+
+      case '30':
+        fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0;
+        break;
+
+      case '90':
+        fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0;
+    }
+
     let timesheetEvent = new _utils.Interface(_Timesheets.default.abi).events.logTimesheetPeriod;
     let timesheetTopics = [timesheetEvent.topic, (0, _utils.hexlify)((0, _utils.padZeros)((0, _utils.arrayify)(user), 32))];
     let logs = await this.provider.getLogs({
-      fromBlock: 0,
+      fromBlock: fromBlock,
       toBlock: 'latest',
       topics: timesheetTopics
     });
@@ -85,10 +100,10 @@ async function timesheet(user) {
   }
 }
 
-async function timesheetRewards() {
+async function timesheetRewards(period) {
   try {
     let allMembers = await _OrganisationResolver.members.call(this);
-    let timesheets = await Promise.all(allMembers.map(m => timesheet.call(this, m.user)));
+    let timesheets = await Promise.all(allMembers.map(m => timesheet.call(this, m.user, period)));
     return timesheets.map((ts, i) => {
       if (ts.length == 1) {
         return {

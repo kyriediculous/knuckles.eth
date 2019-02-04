@@ -456,13 +456,13 @@ class Bounties {
   * Get the leaderboard of earned tokens
   * @returns {Array} contains objects with the user profile and his total reward earned
   */
-  async leaderboard() {
+  async leaderboard(period) {
     try {
       let leaderboard, singlesLead, recurringLead, timesheetRewards
       [singlesLead, recurringLead, timesheetRewards] = await Promise.all([
-         this.eth.bounties.leaderboard(),
-         this.eth.recurringBounties.leaderboard(),
-         this.eth.timesheets.rewards()
+         this.eth.bounties.leaderboard(period),
+         this.eth.recurringBounties.leaderboard(period),
+         this.eth.timesheets.rewards(period)
       ])
       leaderboard = [...singlesLead, ...recurringLead, ...timesheetRewards]
       leaderboard = groupBy(leaderboard, 'user')
@@ -486,7 +486,6 @@ class Bounties {
         return l
       })
 
-      output.forEach(o => console.log(o))
       return output.filter(o => o.user != undefined )
 
     } catch (err) {
@@ -576,7 +575,6 @@ class Bounties {
   }
 
   async cancelMintable({address, type}, wallet) {
-    console.log("Cancelling mintable:", address, type)
     try {
       let tx
       switch (type) {
@@ -611,11 +609,9 @@ class Bounties {
   }
 
   async withdrawFunding({address, type}, amount, wallet) {
-    console.log(address, type, amount, wallet)
     try {
       if (type !== 'recurring') throw new Error("Bounty type must be recurring");
       const token = Token.init()
-      console.log("SYNC", token.address())
       await this.eth.recurringBounties.withdrawFunding(address, amount, token.address(), wallet)
     } catch (err) {
       throw new Error(err)

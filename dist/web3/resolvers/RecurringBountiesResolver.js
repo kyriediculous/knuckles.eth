@@ -93,7 +93,6 @@ async function createRecurringBounty(reference, deadline, reward, funding, walle
     reward = (0, _utils.parseEther)(reward.toString());
     const recurringBountyFactory = this.ContractProvider(_RecurringBountyFactory.default, this.provider, wallet);
     let spend = await _TokenResolver.approveSpend.call(this, recurringBountyFactory.address, funding, wallet);
-    await spend.wait();
     let creation = await recurringBountyFactory.createBounty(reference, deadline, reward, funding, {
       gasPrice: (0, _utils.parseEther)('0')
     });
@@ -399,8 +398,23 @@ async function bountyActivityFeed(address) {
   }
 }
 
-async function leaderboard() {
+async function leaderboard(period) {
   try {
+    let fromBlock = await this.provider.getBlockNumber();
+
+    switch (period) {
+      case 'all':
+        fromBlock = 0;
+        break;
+
+      case '30':
+        fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0;
+        break;
+
+      case '90':
+        fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0;
+    }
+
     const event = new _utils.Interface(_RecurringBountyInterface.default.abi).events.logRecurringAccepted;
     const topics = [event.topic];
     let logs = await this.provider.getLogs({
