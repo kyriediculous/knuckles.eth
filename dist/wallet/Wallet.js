@@ -13,8 +13,6 @@ var _classTransformer = require("class-transformer");
 
 require("reflect-metadata");
 
-var _Credential = _interopRequireDefault(require("./Credential"));
-
 var _localforage = _interopRequireDefault(require("localforage"));
 
 var _cryptoJs = require("crypto-js");
@@ -39,11 +37,7 @@ class KnucklesWallet {
   static async restore(mnemonic, password) {
     try {
       const knucklesWallet = new KnucklesWallet();
-      knucklesWallet.mnemonic = mnemonic; // TODO overriding function but needed by recoverWallet
-
-      knucklesWallet.wallet = knucklesWallet.recoverWallet();
-      knucklesWallet.mnemonic = ''; // cfr 2 lines above, don't know if storing the mnemonic is a good idea.
-
+      knucklesWallet.wallet = _ethers.Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`);
       await knucklesWallet.saveWallet(password);
       return knucklesWallet;
     } catch (err) {
@@ -65,18 +59,6 @@ class KnucklesWallet {
         reject(new Error(err));
       }
     });
-  }
-
-  recoverWallet() {
-    if (!this.mnemonic) {
-      throw new Error('mnemonic is not set, cannot recover wallet');
-    }
-
-    try {
-      return _ethers.Wallet.fromMnemonic(this.mnemonic, `m/99'/66'/0'/0/0`);
-    } catch (err) {
-      throw new Error(err);
-    }
   }
 
   saveWallet(password) {
@@ -101,21 +83,20 @@ class KnucklesWallet {
     return new Promise(async (resolve, reject) => {
       try {
         const secretStorage = await _localforage.default.getItem(`m/99'/66'/0'/0/0`);
-        if (!secretStorage.startsWith('{"address":')) reject(new Error('Wallet is in old format, please recover your wallet'));
+
+        if (!secretStorage.startsWith('{"address":')) {
+          const bytes = await _cryptoJs.AES.decrypt(secretStorage.toString(), password);
+          const plain = await bytes.toString(_cryptoJs.enc.Utf8);
+          resolve((await KnucklesWallet.restore(plain, password)));
+        }
 
         if (secretStorage) {
-          console.log(secretStorage);
           resolve((await _ethers.Wallet.fromEncryptedJson(secretStorage, password)));
         }
       } catch (e) {
         reject(new Error(e.message));
       }
     });
-  }
-
-  credential(type, message) {
-    const wallet = this.recoverWallet();
-    return _Credential.default.create(type, message, wallet.publicKey);
   }
 
   toJSON() {
@@ -130,17 +111,6 @@ class KnucklesWallet {
     return this.wallet.mnemonic;
   }
 
-}
-
-function recoverKnucklesWallet(mnemonic) {
-  try {
-    const knucklesWallet = new KnucklesWallet();
-    knucklesWallet.wallet = knucklesWallet.recoverWallet(); //delete knucklesWallet.mnemonic
-
-    return knucklesWallet;
-  } catch (err) {
-    throw new Error(err);
-  }
 }
 
 var _default = KnucklesWallet;
