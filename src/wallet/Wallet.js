@@ -4,12 +4,9 @@ import {
 } from 'ethers'
 import {
   classToPlain,
-  plainToClass,
-  Exclude,
-  Expose
+  plainToClass
 } from 'class-transformer'
 import 'reflect-metadata'
-import Credential from './Credential'
 import LF from 'localforage'
 import {AES, enc} from 'crypto-js'
 
@@ -29,7 +26,7 @@ class KnucklesWallet {
   static async restore (mnemonic, password) {
     try {
       const knucklesWallet = new KnucklesWallet()
-      knucklesWallet.wallet = knucklesWallet.recoverWallet()
+      knucklesWallet.wallet = Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`)
       await knucklesWallet.saveWallet(password)
       return knucklesWallet
     } catch (err) {
@@ -51,14 +48,6 @@ class KnucklesWallet {
         }
 
     })
-  }
-
-  recoverWallet() {
-    try {
-      return Wallet.fromMnemonic(this.mnemonic, `m/99'/66'/0'/0/0`)
-    } catch(err) {
-      throw new Error(err)
-    }
   }
 
   saveWallet(password) {
@@ -83,21 +72,18 @@ class KnucklesWallet {
     return new Promise(async (resolve, reject) => {
       try {
         const secretStorage = await LF.getItem(`m/99'/66'/0'/0/0`)
-        if (!secretStorage.startsWith('{"address":')) reject(new Error("Wallet is in old format, please recover your wallet"))
+        if (!secretStorage.startsWith('{"address":')) {
+          const bytes = await AES.decrypt(secretStorage.toString(), password)
+          const plain = await bytes.toString(enc.Utf8)
+          resolve(await KnucklesWallet.restore(plain, password))
+        }
         if (secretStorage ) {
-          console.log(secretStorage)
           resolve(await Wallet.fromEncryptedJson(secretStorage, password))
         }
       } catch (e) {
         reject(new Error(e.message))
       }
     })
-  }
-
-  credential(type, message) {
-    const wallet = this.recoverWallet()
-    const credential = Credential.create(type, message, wallet.publicKey)
-    return credential
   }
 
   toJSON() {
@@ -113,16 +99,6 @@ class KnucklesWallet {
   }
 }
 
-function recoverKnucklesWallet(mnemonic) {
-  try {
-    const knucklesWallet = new KnucklesWallet()
-    knucklesWallet.wallet = knucklesWallet.recoverWallet()
-    //delete knucklesWallet.mnemonic
-    return knucklesWallet
-  } catch (err) {
-    throw new Error(err)
-  }
-}
 
 export default KnucklesWallet
 
