@@ -1,6 +1,6 @@
 {
   "name": "knuckles-eth",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "A javascript package to interact with the Knuckles blockchain and swarm cluster",
   "main": "dist/index.js",
   "scripts": {
