@@ -550,8 +550,6 @@ class Bounties {
 
 
   async leaderboard(period) {
-    console.log("Fetching leaderboard with period: ", period);
-
     try {
       let leaderboard, singlesLead, recurringLead, timesheetRewards;
       [singlesLead, recurringLead, timesheetRewards] = await Promise.all([this.eth.bounties.leaderboard(period), this.eth.recurringBounties.leaderboard(period), this.eth.timesheets.rewards(period)]);
@@ -579,7 +577,6 @@ class Bounties {
         l.rewards = parseFloat((0, _utils.formatEther)(l.rewards)).toFixed(2);
         return l;
       });
-      output.forEach(o => console.log(o));
       return output.filter(o => o.user != undefined);
     } catch (err) {
       throw new Error(err);
@@ -693,8 +690,6 @@ class Bounties {
     address,
     type
   }, wallet) {
-    console.log("Cancelling mintable:", address, type);
-
     try {
       let tx;
 
@@ -740,14 +735,11 @@ class Bounties {
     address,
     type
   }, amount, wallet) {
-    console.log(address, type, amount, wallet);
-
     try {
       if (type !== 'recurring') throw new Error("Bounty type must be recurring");
 
       const token = _Token.default.init();
 
-      console.log("SYNC", token.address());
       await this.eth.recurringBounties.withdrawFunding(address, amount, token.address(), wallet);
     } catch (err) {
       throw new Error(err);
