@@ -233,7 +233,7 @@ class Bounties {
         if (attachments[i].type.startsWith('image/')) {
           attachments[i] = {
             type: attachments[i].type,
-            data: URL.createObjectURL(attachments[i]),
+            data: this.bzz.host + '/bzz:/' + url[4] + '/' + url[5],
             name: url[5]
           };
         } else {
@@ -277,7 +277,7 @@ class Bounties {
           if (attachments[i].type.startsWith('image/')) {
             attachments[i] = {
               type: attachments[i].type,
-              data: URL.createObjectURL(attachments[i]),
+              data: this.bzz.host + '/bzz:/' + url[4] + '/' + url[5],
               name: url[5]
             };
           } else {
