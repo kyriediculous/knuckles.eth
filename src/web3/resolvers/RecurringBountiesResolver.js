@@ -247,7 +247,7 @@ export async function mintFunding(address, amount, wallet) {
   try {
     if (wallet === undefined) throw new Error("Must supply a signer")
     const rbf = this.ContractProvider(RecurringBountyFactory, this.provider, wallet)
-    let tx = await rbf.mintFunding(address, amount, {gasPrice: parseEther('0')})
+    let tx = await rbf.mintFunding(address, parseEther(amount.toString()), {gasPrice: parseEther('0')})
     return await tx.wait()
   } catch (e) {
     throw new Error(e)
