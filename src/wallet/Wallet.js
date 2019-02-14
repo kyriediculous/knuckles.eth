@@ -34,7 +34,7 @@ class KnucklesWallet {
     }
   }
 
- static async fromMnemonic (mnemonic) {
+ static fromMnemonic (mnemonic) {
    return Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`)
  }
 
