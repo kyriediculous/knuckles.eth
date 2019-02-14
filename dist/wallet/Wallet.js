@@ -45,7 +45,7 @@ class KnucklesWallet {
     }
   }
 
-  static async fromMnemonic(mnemonic) {
+  static fromMnemonic(mnemonic) {
     return _ethers.Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`);
   }
 
