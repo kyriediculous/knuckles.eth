@@ -32,7 +32,7 @@ contract RecurringBountyFactory {
     address _bounty = new BountyProxy(OrganisationContract(organisation).contracts("recurring-bounty"));
     RecurringBountyInterface(_bounty).createBounty(_reference, address(this), _deadline, _reward, OrganisationContract(organisation).contracts("token"));
     OrganisationContract(organisation).mintToken(_bounty, _funding);
-    emit logRecurringBountyCreated(organisation, address(_bounty), _reference);
+    emit logRecurringBountyCreated(address(this), address(_bounty), _reference);
   }
 
   function acceptMintable(address _bounty, uint _id) external {

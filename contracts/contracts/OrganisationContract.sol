@@ -201,7 +201,7 @@ contract BountyFactory {
     address _bounty = address(new BountyProxy(Organisation(organisation).contracts("bounty")));
     BountyInterface(_bounty).createBounty(_reference, address(this), _deadline, _reward, Organisation(organisation).contracts("token"));
     Organisation(organisation).mintToken(_bounty, _reward);
-    emit logBountyCreated(organisation, address(_bounty), _reference);
+    emit logBountyCreated(address(this), address(_bounty), _reference);
   }
 
   function acceptMintable(address _bounty, uint _id) external {
