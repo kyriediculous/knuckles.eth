@@ -132,7 +132,7 @@ async function getRecurringBountyMeta(address) {
       timestamp: (0, _moment.default)(data[2].toString(10) * 1000, "x"),
       deadline: (0, _moment.default)(data[3].toString(10) * 1000, "x"),
       reward: parseFloat((0, _utils.formatEther)((0, _utils.bigNumberify)(data[4]))).toFixed(2),
-      status: statusOptions[myBounty[5]] !== 'Active' ? statusOptions[myBounty[5]] : Date.now() > myBounty[3].toNumber() * 1000 ? 'Completed' : 'Active',
+      status: statusOptions[data[5]] !== 'Active' ? statusOptions[data[5]] : Date.now() > data[3].toNumber() * 1000 ? 'Completed' : 'Active',
       commits: Number((await b.getCommits())),
       token: data[6],
       rawTimestamp: parseInt(data[2].toString(10), 10),
