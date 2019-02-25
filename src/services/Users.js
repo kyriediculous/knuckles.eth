@@ -54,7 +54,7 @@ class Users {
           email: 'Not Found',
           bio:  'Not Found',
           avatar:  'Not Found',
-          isAdmin:  'Not Found'
+          isAdmin:  false
         }
         //throw new Error('Can not retrieve nil values from Swarm')
       }
