@@ -562,7 +562,10 @@ class Bounties {
 
         output.push({
           user: await users.get(user),
-          rewards: leaderboard[user].length > 1 ? leaderboard[user].reduce((a, b) => a.rewards.add(b.rewards)) : leaderboard[user][0].rewards
+          rewards: leaderboard[user].length > 1 ? leaderboard[user].reduce((a, b) => {
+            a.rewards = a.rewards.add(b.rewards);
+            return a;
+          }).rewards : leaderboard[user][0].rewards
         });
       }
 
