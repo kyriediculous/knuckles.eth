@@ -338,7 +338,8 @@
       "inputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "constructor"
+      "type": "constructor",
+      "signature": "constructor"
     },
     {
       "anonymous": false,
@@ -37116,8 +37117,8 @@
         }
       },
       "links": {},
-      "address": "0x51e702630B9A719b93EC3BB7049481a88F4e860D",
-      "transactionHash": "0x1196fce3d5f79cf56fdbb24e151dbcca3911feef3d7f1fbba46c2914bbba77f0"
+      "address": "0xF7CC6b6EDc03503B5e6FA9972636bb61c85DfEB0",
+      "transactionHash": "0xaeafbd89c9d9041f67df08b3e0f95f7a0e9a8078d76e599afc5bcff5cba84c5f"
     },
     "326432352": {
       "events": {
@@ -37265,7 +37266,7 @@
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-02-15T15:44:58.433Z",
+  "updatedAt": "2019-02-25T11:54:43.192Z",
   "devdoc": {
     "methods": {}
   },
