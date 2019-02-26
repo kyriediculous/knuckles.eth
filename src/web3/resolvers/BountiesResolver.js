@@ -252,8 +252,8 @@ export async function getMeta(address) {
       deadline: moment((myBounty[3].toString(10) * 1000), "x"),
       reward: parseFloat(formatEther(bigNumberify(myBounty[4]))).toFixed(2),
       status: statusOptions[myBounty[5]] !== 'Active' ? statusOptions[myBounty[5]] : ( Date.now() > myBounty[3].toNumber() * 1000 ? 'Completed' : 'Active' ) ,
-      commits: Number(await bounty.getCommits()),
-      contributions: Number(await bounty.getContributions()),
+      commits: (await bounty.getCommits()).toNumber(),
+      contributions: (await bounty.getContributions()).toNumber(),
       token: myBounty[6],
       rawTimestamp: parseInt(myBounty[2].toString(10), 10),
       rawDeadline: parseInt(myBounty[3].toString(10), 10)
@@ -391,10 +391,10 @@ export async function leaderboard(period) {
       case 'all':
         fromBlock = 0
         break;
-      case '30':
+      case 'monthly':
         fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0
         break;
-      case '90':
+      case 'quarterly':
         fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0
     }
     const event = (new Interface(BountyInterface.abi)).events.logAccepted
