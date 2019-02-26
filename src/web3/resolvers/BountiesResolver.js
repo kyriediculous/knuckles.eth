@@ -253,7 +253,7 @@ export async function getMeta(address) {
       reward: parseFloat(formatEther(bigNumberify(myBounty[4]))).toFixed(2),
       status: statusOptions[myBounty[5]] !== 'Active' ? statusOptions[myBounty[5]] : ( Date.now() > myBounty[3].toNumber() * 1000 ? 'Completed' : 'Active' ) ,
       commits: Number(await bounty.getCommits()),
-      contributions: Number(await bounty.getContributions()),
+      contributions: (await bounty.getCommits()).toNumber(),
       token: myBounty[6],
       rawTimestamp: parseInt(myBounty[2].toString(10), 10),
       rawDeadline: parseInt(myBounty[3].toString(10), 10)

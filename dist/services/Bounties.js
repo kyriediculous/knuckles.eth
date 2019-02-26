@@ -67,7 +67,7 @@ class Bounties {
       let singles = await this.eth.bounties.all();
       let recurring = await this.eth.recurringBounties.all();
       let allBounties = singles.concat(recurring);
-      return (0, _.sortNewest)((await Promise.all(allBounties.map(b => this.get(b)))).filter(b => b != undefined));
+      return (0, _.sortNewest)((await Promise.all(allBounties.map(b => this.meta(b)))).filter(b => b != undefined));
     } catch (err) {
       console.log(err);
       throw new Error(err);

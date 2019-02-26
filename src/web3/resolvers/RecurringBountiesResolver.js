@@ -99,7 +99,7 @@ export async function getRecurringBountyMeta(address) {
       deadline: moment((data[3].toString(10) * 1000), "x"),
       reward: parseFloat(formatEther(bigNumberify(data[4]))).toFixed(2),
       status: statusOptions[data[5]] !== 'Active' ? statusOptions[data[5]] : ( Date.now() > data[3].toNumber() * 1000 ? 'Completed' : 'Active' ) ,
-      commits: Number(await b.getCommits()),
+      commits: (await b.getCommits()).toNumber(),
       token: data[6],
       rawTimestamp: parseInt(data[2].toString(10), 10),
       rawDeadline: parseInt(data[3].toString(10), 10)
@@ -368,7 +368,7 @@ export async function leaderboard(period) {
       case 'all':
         fromBlock = 0
         break;
-      case 'monthly':
+      case 'monhtly':
         fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0
         break;
       case 'quarterly':
