@@ -393,6 +393,7 @@ class Bounties {
       return myBounties;
     } catch (err) {
       console.log(err);
+      throw Error(err.message);
     }
   }
   /**
