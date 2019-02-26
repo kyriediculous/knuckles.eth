@@ -391,10 +391,10 @@ export async function leaderboard(period) {
       case 'all':
         fromBlock = 0
         break;
-      case '30':
+      case 'monthly':
         fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0
         break;
-      case '90':
+      case 'quarterly':
         fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0
     }
     const event = (new Interface(BountyInterface.abi)).events.logAccepted
