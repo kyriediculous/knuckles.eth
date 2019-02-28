@@ -12,8 +12,8 @@ function seedrand(seed) {
     randseed[i] = 0;
   }
 
-  for (var i = 0; i < seed.length; i++) {
-    randseed[i % 4] = (randseed[i % 4] << 5) - randseed[i % 4] + seed.charCodeAt(i);
+  for (var j = 0; j < seed.length; j++) {
+    randseed[j % 4] = (randseed[j % 4] << 5) - randseed[j % 4] + seed.charCodeAt(j);
   }
 }
 
@@ -103,7 +103,7 @@ function renderIcon(opts, canvas) {
 }
 
 function createIcon(opts) {
-  var opts = buildOpts(opts || {});
+  opts = buildOpts(opts || {});
   var canvas = document.createElement('canvas');
   renderIcon(opts, canvas);
   return canvas.toDataURL();

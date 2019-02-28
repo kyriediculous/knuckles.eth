@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _ethers = require("ethers");
-
 var _Provider = _interopRequireDefault(require("./Provider"));
 
 var _ContractProvider = _interopRequireDefault(require("./ContractProvider"));

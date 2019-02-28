@@ -1,4 +1,5 @@
 module.exports = {
+  "parser": "babel-eslint",
     "env": {
         "browser": true,
         "commonjs": true,
@@ -26,6 +27,9 @@ module.exports = {
         "semi": [
             "error",
             "never"
+        ],
+        "no-control-regex": [
+          "off"
         ]
     }
 };

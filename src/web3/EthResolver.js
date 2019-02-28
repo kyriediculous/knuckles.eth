@@ -1,4 +1,3 @@
-import {Wallet} from 'ethers'
 import Provider from './Provider'
 import ContractProvider from './ContractProvider'
 
