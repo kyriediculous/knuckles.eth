@@ -36,7 +36,7 @@ class Rewards {
   async add(item, price, wallet) {
     try {
       let swarmHash = await this.bzz.upload(JSON.stringify(item), {
-        contentType: "application/json"
+        contentType: 'application/json'
       });
       return await this.eth.rewards.add(swarmHash, price, wallet);
     } catch (err) {
@@ -84,8 +84,8 @@ class Rewards {
         }
       });
 
-      for (var i = 0; i < all.length; i++) {
-        all[i].details.picture = attachments[i];
+      for (var l = 0; l < all.length; l++) {
+        all[l].details.picture = attachments[l];
       }
 
       return all;

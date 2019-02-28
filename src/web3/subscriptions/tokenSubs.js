@@ -11,6 +11,6 @@ export const onTokenTransfer = (to, callback) =>  {
     topics: topics,
     address: Token.networks[provider.network.chainId].address
   }, raw => {
-     if ( raw !== undefined ) callback(event.decode(raw.data, raw.topics));
+    if ( raw !== undefined ) callback(event.decode(raw.data, raw.topics))
   })
 }

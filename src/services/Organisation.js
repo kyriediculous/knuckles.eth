@@ -22,7 +22,7 @@ export default class Organisation {
 
   async identity(profile, wallet) {
     try {
-      const swarmHash = '0x' + await this.bzz.upload(JSON.stringify(profile), {contentType: "application/json"})
+      const swarmHash = '0x' + await this.bzz.upload(JSON.stringify(profile), {contentType: 'application/json'})
       return await this.eth.organisation.identity(profile.name, swarmHash, wallet)
     } catch (err) {
       throw Error(err)

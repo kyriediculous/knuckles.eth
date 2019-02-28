@@ -1,17 +1,10 @@
 import {
-  keccak256,
-  toUtf8Bytes
-} from 'ethers/utils'
-import {
   encrypt,
   decrypt
 } from 'eccrypto'
 import {
-  verifyMessage
-} from 'ethers/wallet'
-import {
   publicKeyConvert
-} from 'secp256k1';
+} from 'secp256k1'
 
 
 /**
@@ -33,7 +26,7 @@ function encryptWithPublicKey(message, pubKey) {
       ephemPublicKey: encryptedBuffers.ephemPublicKey.toString('hex'),
       ciphertext: encryptedBuffers.ciphertext.toString('hex'),
       mac: encryptedBuffers.mac.toString('hex')
-    };
+    }
     // use compressed key because it's smaller
     const compressedKey = publicKeyConvert(new Buffer(cipher.ephemPublicKey, 'hex'), true).toString('hex')
 
@@ -45,7 +38,7 @@ function encryptWithPublicKey(message, pubKey) {
     ]).toString('hex')
 
     return ret
-  });
+  })
 }
 
 
@@ -57,13 +50,13 @@ function encryptWithPublicKey(message, pubKey) {
  */
 
 function decryptWithPrivateKey(encrypted, privateKey) {
-  const buf = new Buffer(encrypted, 'hex');
+  const buf = new Buffer(encrypted, 'hex')
   encrypted = {
     iv: buf.toString('hex', 0, 16),
     ephemPublicKey: buf.toString('hex', 16, 49),
     mac: buf.toString('hex', 49, 81),
     ciphertext: buf.toString('hex', 81, buf.length)
-  };
+  }
   // decompress publicKey
   encrypted.ephemPublicKey = publicKeyConvert(new Buffer(encrypted.ephemPublicKey, 'hex'), false).toString('hex')
   const twoStripped = privateKey.substring(2)
@@ -72,11 +65,11 @@ function decryptWithPrivateKey(encrypted, privateKey) {
     ephemPublicKey: new Buffer(encrypted.ephemPublicKey, 'hex'),
     ciphertext: new Buffer(encrypted.ciphertext, 'hex'),
     mac: new Buffer(encrypted.mac, 'hex')
-  };
+  }
   return decrypt(
     new Buffer(twoStripped, 'hex'),
     encryptedBuffer
-  ).then(decryptedBuffer => decryptedBuffer.toString());
+  ).then(decryptedBuffer => decryptedBuffer.toString())
 }
 
 export {

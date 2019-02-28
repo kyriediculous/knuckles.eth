@@ -20,7 +20,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //faucet setlimit received limit
 async function faucet(wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider, wallet);
     let tx = await tokenFaucet.faucet({
       gasPrice: (0, _utils.parseEther)('0')
@@ -33,7 +33,7 @@ async function faucet(wallet) {
 
 async function setLimit(limit, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider, wallet);
     let tx = await tokenFaucet.setLimit((0, _utils.parseEther)(limit.toString()), {
       gasPrice: (0, _utils.parseEther)('0')
@@ -46,7 +46,7 @@ async function setLimit(limit, wallet) {
 
 async function received(wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider);
     return await tokenFaucet.received(wallet.address);
   } catch (err) {
@@ -66,8 +66,7 @@ async function currentLimit() {
 
 async function allFaucets() {
   try {
-    const tokenFaucet = this.ContractProvider(_TokenFaucet.default, this.provider);
-    let faucetEvent = new Interface(_TokenFaucet.default.abi).events.logFaucet;
+    let faucetEvent = new _utils.Interface(_TokenFaucet.default.abi).events.logFaucet;
     let faucetTopics = [faucetEvent.topic];
     let logs = await this.provider.getLogs({
       fromBlock: 0,
@@ -78,7 +77,7 @@ async function allFaucets() {
     return logs.map(l => ({
       user: l._user,
       amount: parseFloat((0, _utils.formatEther)((0, _utils.bigNumberify)(l._amount))).toFixed(2),
-      date: (0, _moment.default)(l._date.toString(10) * 1000, "x")
+      date: (0, _moment.default)(l._date.toString(10) * 1000, 'x')
     }));
   } catch (err) {
     throw new Error(err);

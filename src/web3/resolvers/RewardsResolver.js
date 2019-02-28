@@ -1,12 +1,12 @@
 import RewardStore from '../../../contracts/build/contracts/RewardStore.json'
-import {approveSpend, getBalance} from './TokenResolver'
+import {approveSpend} from './TokenResolver'
 import {parseEther, formatEther, bigNumberify} from 'ethers/utils'
 
 //add remove get purchase
 
 export async function add(reference, price, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const rewardStore = this.ContractProvider(RewardStore, this.provider, wallet)
     let tx = await rewardStore.addListing('0x' + reference, parseEther(price.toString()), {gasPrice: parseEther('0')})
     return await tx.wait()
@@ -17,7 +17,7 @@ export async function add(reference, price, wallet) {
 
 export async function remove(index, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const rewardStore = this.ContractProvider(RewardStore, this.provider, wallet)
     let tx = await rewardStore.removeListing(index, {gasPrice: parseEther('0')})
     return await tx.wait()
@@ -42,7 +42,7 @@ export async function get(index) {
 
 export async function update(index, reference, price, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const org = this.ContractProvider(RewardStore, this.provider, wallet)
     let tx = await org.updateListing(index, '0x'+ reference, parseEther(price.toString()), {gasPrice: parseEther('0')})
     return await tx.wait()
@@ -69,7 +69,7 @@ export async function getAll() {
       }
     })
     return all.filter(l => {
-      return l.reference.startsWith("0x0000") == false
+      return l.reference.startsWith('0x0000') == false
     })
   } catch (err) {
     throw new Error(err)
@@ -78,7 +78,7 @@ export async function getAll() {
 
 export async function purchase(item, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const rewardStore = this.ContractProvider(RewardStore, this.provider, wallet)
     const spend = await approveSpend.call(this, rewardStore.address, item.price, wallet)
     await spend.wait()
@@ -91,7 +91,7 @@ export async function purchase(item, wallet) {
 
 export async function changeStatus(index, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const rewardStore = this.ContractProvider(RewardStore, this.provider, wallet)
     let tx = await rewardStore.changeActive(index)
     return await tx.wait()

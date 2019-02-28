@@ -7,8 +7,6 @@ exports.default = void 0;
 
 var _swarm = require("@erebos/swarm");
 
-const toUtf8String = require('ethers/utils').toUtf8String;
-
 const clients = {
   development: 'http://localhost:8500',
   knuckles: 'https://knuckle-swarm.designisdead.com'

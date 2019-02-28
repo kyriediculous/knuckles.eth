@@ -1,17 +1,16 @@
 import BountyFactory from '../../../contracts/build/contracts/BountyFactory.json'
 import BountyInterface from '../../../contracts/build/contracts/BountyInterface.json'
-import Token from '../../../contracts/build/contracts/Token.json'
-import {approveSpend, getBalance} from './TokenResolver'
+import {approveSpend} from './TokenResolver'
 import moment from 'moment'
-import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther, bigNumberify} from 'ethers/utils'
+import {parseEther, arrayify, padZeros, hexlify, formatEther, bigNumberify} from 'ethers/utils'
 import {Contract} from 'ethers'
 import {Interface} from 'ethers/utils'
 import {sortOldest} from '../../utils/_'
 
-const statusOptions = ["Active", "Completed", "Abandoned"]
+const statusOptions = ['Active', 'Completed', 'Abandoned']
 
 function bountyAt(address, provider, wallet = undefined) {
-  if (!wallet) return new Contract(address, BountyInterface.abi, provider);
+  if (!wallet) return new Contract(address, BountyInterface.abi, provider)
   return new Contract(address, BountyInterface.abi, wallet.connect(provider))
 }
 
@@ -19,7 +18,6 @@ function bountyAt(address, provider, wallet = undefined) {
 
 export async function allBounties () {
   try {
-    const bountyFactory = this.ContractProvider(BountyFactory, this.provider)
     let event = (new Interface(BountyFactory.abi)).events.logBountyCreated
     let logs = await this.provider.getLogs({
       fromBlock: 0,
@@ -39,13 +37,12 @@ export async function allBounties () {
 
 export async function createBounty(reference, deadline, reward, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     reference = '0x' + reference
     deadline = Date.parse(deadline) / 1000
     reward = parseEther(reward.toString())
     const bountyFactory = this.ContractProvider(BountyFactory, this.provider, wallet)
-    const token = this.ContractProvider(Token, this.provider, wallet)
-    let spend = await approveSpend.call(this, bountyFactory.address, reward, wallet)
+    await approveSpend.call(this, bountyFactory.address, reward, wallet)
     let tx =  await bountyFactory.createBounty(reference, deadline, reward, {gasPrice: parseEther('0')})
     return await tx.wait()
   } catch (err) {
@@ -55,7 +52,7 @@ export async function createBounty(reference, deadline, reward, wallet) {
 
 export async function createMintable(reference, deadline, reward, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     reference = '0x' + reference
     deadline = Date.parse(deadline) / 1000
     reward = parseEther(reward.toString())
@@ -132,44 +129,44 @@ export async function bountyActivityFeed(address) {
       let ev = startWorkEvent.decode(log.data, log.topics)
       return {
         by: ev._by,
-        timestamp: moment((ev._timestamp.toString(10) * 1000), "x"),
+        timestamp: moment((ev._timestamp.toString(10) * 1000), 'x'),
         type: 'startWork',
         extraData: null
       }
     })
-commitLogs = commitLogs.map(log => {
+    commitLogs = commitLogs.map(log => {
       let ev = commitEvent.decode(log.data, log.topics)
       return {
         by: ev._by,
-        timestamp:moment((ev._timestamp.toString(10) * 1000), "x"),
+        timestamp:moment((ev._timestamp.toString(10) * 1000), 'x'),
         type: 'commit',
         extraData: ev._id
       }
     })
-  contributionLogs = contributionLogs.map(log => {
+    contributionLogs = contributionLogs.map(log => {
       let ev = contributeEvent.decode(log.data, log.topics)
       return {
         by: ev._by,
-        timestamp: moment((ev._timestamp.toString(10) * 1000), "x"),
+        timestamp: moment((ev._timestamp.toString(10) * 1000), 'x'),
         type: 'contribute',
         extraData: parseFloat(formatEther(bigNumberify(ev._amount))).toFixed(2)
       }
     })
 
-  acceptedLog = acceptedLog.map(log => {
+    acceptedLog = acceptedLog.map(log => {
       let ev = acceptEvent.decode(log.data, log.topics)
       return {
         by: ev._winner,
-        timestamp: moment((ev._timestamp.toString(10) * 1000), "x"),
+        timestamp: moment((ev._timestamp.toString(10) * 1000), 'x'),
         type: 'accepted'
       }
     })
-  cancelledLog = cancelledLog.map( log => {
+    cancelledLog = cancelledLog.map( log => {
       let ev = cancelEvent.decode(log.data, log.topics)
       return {
         by: ev._by,
         type: 'cancelled',
-        timestamp: moment((ev._timestamp.toString(10) * 1000), "x")
+        timestamp: moment((ev._timestamp.toString(10) * 1000), 'x')
       }
     })
 
@@ -227,8 +224,8 @@ export async function getBounty(address) {
     myBounty.contributions = await Promise.all(contributions.map(c => getContribution.call(this, address, c)))
 
     let commits = []
-    for (var i = 0; i < myBounty.commits; i++) {
-      commits.push(i)
+    for (var j = 0; j < myBounty.commits; j++) {
+      commits.push(j)
     }
     myBounty.commits = await Promise.all(commits.map(c => getCommit.call(this, address, c)))
 
@@ -248,8 +245,8 @@ export async function getMeta(address) {
       attachments: [],
       reference: myBounty[0].substring(2),
       issuer: myBounty[1],
-      timestamp: moment((myBounty[2].toString(10) * 1000), "x"),
-      deadline: moment((myBounty[3].toString(10) * 1000), "x"),
+      timestamp: moment((myBounty[2].toString(10) * 1000), 'x'),
+      deadline: moment((myBounty[3].toString(10) * 1000), 'x'),
       reward: parseFloat(formatEther(bigNumberify(myBounty[4]))).toFixed(2),
       status: statusOptions[myBounty[5]] !== 'Active' ? statusOptions[myBounty[5]] : ( Date.now() > myBounty[3].toNumber() * 1000 ? 'Completed' : 'Active' ) ,
       commits: (await bounty.getCommits()).toNumber(),
@@ -266,7 +263,7 @@ export async function getMeta(address) {
 
 export async function cancelBounty(address, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const bounty = bountyAt(address, this.provider, wallet)
     let tx = await bounty.cancelBounty({
       gasPrice: parseEther('0')
@@ -279,7 +276,7 @@ export async function cancelBounty(address, wallet) {
 
 export async function cancelMintable(address, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const bf = this.ContractProvider(BountyFactory, this.provider, wallet)
     let tx = await bf.cancelMintable(address, {gasPrice: parseEther('0')})
     return tx.wait()
@@ -290,7 +287,7 @@ export async function cancelMintable(address, wallet) {
 
 export async function contribute(address, amount, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const bounty = bountyAt(address, this.provider, wallet)
     let spend = await approveSpend.call(this, address, amount, wallet)
     await spend.wait()
@@ -312,7 +309,7 @@ export async function getContribution(address, id) {
       contributer: con[0],
       token: con[1],
       amount: formatEther(bigNumberify(con[2])),
-      timestamp: moment((con[3].toString(10) * 1000), "x")
+      timestamp: moment((con[3].toString(10) * 1000), 'x')
     }
     return con
   } catch (err) {
@@ -328,7 +325,7 @@ export async function getCommit(address, id) {
       reference: prop[0].substring(2),
       author: prop[1],
       accepted: prop[2],
-      timestamp: moment((prop[3].toString(10) * 1000), "x"),
+      timestamp: moment((prop[3].toString(10) * 1000), 'x'),
       comment: '',
       attachment: '',
       id,
@@ -342,11 +339,10 @@ export async function getCommit(address, id) {
 
 export async function acceptCommit(address, id, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const b = bountyAt(address, this.provider, wallet)
     let tx = await b.acceptCommit(id, {gasPrice: parseEther('0')})
     return await tx.wait()
-    return tx
   } catch (e) {
     throw new Error(e)
   }
@@ -354,7 +350,7 @@ export async function acceptCommit(address, id, wallet) {
 
 export async function acceptMintable(address, id, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const bountyFactory = this.ContractProvider(BountyFactory, this.provider, wallet)
     let tx = await bountyFactory.acceptMintable(address, id, {gasPrice: parseEther('0')})
     return await tx.wait()
@@ -365,7 +361,7 @@ export async function acceptMintable(address, id, wallet) {
 
 export async function submitCommit(address, reference, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const b = bountyAt(address, this.provider, wallet)
     reference = '0x' + reference
     let tx = await b.submitCommit(reference, {gasPrice: parseEther('0')})
@@ -388,14 +384,14 @@ export async function leaderboard(period) {
   try {
     let fromBlock = await this.provider.getBlockNumber()
     switch (period) {
-      case 'all':
-        fromBlock = 0
-        break;
-      case 'monthly':
-        fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0
-        break;
-      case 'quarterly':
-        fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0
+    case 'all':
+      fromBlock = 0
+      break
+    case 'monthly':
+      fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0
+      break
+    case 'quarterly':
+      fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0
     }
     const event = (new Interface(BountyInterface.abi)).events.logAccepted
     const topics = [event.topic]
@@ -417,7 +413,7 @@ export async function leaderboard(period) {
       return result
     },
     {}
-  ))
+    ))
     leaderboard.forEach(person => {
       return person.rewards = person.rewards.reduce( (a,b) => a.add(b))
     })
@@ -429,7 +425,7 @@ export async function leaderboard(period) {
 
 export async function startWorking(address, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const b = bountyAt(address, this.provider, wallet)
     let tx = await b.startWork({gasPrice: parseEther('0')})
     return await tx.wait()
@@ -440,7 +436,7 @@ export async function startWorking(address, wallet) {
 
 export async function refundContribution(address, contributionId, amount, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const bounty = bountyAt(address, this.provider, wallet)
     let tx = await bounty.refundContribution(contributionId, parseEther(amount.toString(10)), {gasPrice: parseEther('0')})
     return await tx.wait()

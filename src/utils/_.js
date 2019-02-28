@@ -4,7 +4,7 @@ import {
 import sha3 from 'crypto-js/sha3'
 
 export const groupBy = (array, key) => array.reduce((rv, x) => {
-  (rv[x[key]] = rv[x[key]] || []).push(x);
+  (rv[x[key]] = rv[x[key]] || []).push(x)
   return rv
 }, {})
 
@@ -30,11 +30,11 @@ export const sortOldest = (array) => {
 }
 
 //parse all lowercase to first letter uppercase eg: john doe --> John Doe
-export const formatName = text => text.toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
+export const formatName = text => text.toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ')
 
 export const stringToHex = (str) => {
   return utils.formatBytes32String(str)
-};
+}
 
 export const bytes32ToString = (hex) => {
   return utils.toUtf8String(hex).replace(/\u0000/g, '')
@@ -42,11 +42,11 @@ export const bytes32ToString = (hex) => {
 
 export const isHex = (hex) => {
   if (!/^(0x){1}[0-9a-f]*$/i.test(hex)) {
-    return false;
+    return false
   } else {
-    return true;
+    return true
   }
-};
+}
 
 /**
  * Checks if the given string is an address
@@ -58,15 +58,15 @@ export const isHex = (hex) => {
 export const isAddress = (address) => {
   // check if it has the basic requirements of an address
   if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
-    return false;
+    return false
     // If it's ALL lowercase or ALL upppercase
   } else if (/^(0x|0X)?[0-9a-f]{40}$/.test(address) || /^(0x|0X)?[0-9A-F]{40}$/.test(address)) {
-    return true;
+    return true
     // Otherwise check each case
   } else {
-    return checkAddressChecksum(address);
+    return checkAddressChecksum(address)
   }
-};
+}
 
 /**
  * Checks if the given string is a checksummed address
@@ -77,17 +77,17 @@ export const isAddress = (address) => {
  */
 export const  checkAddressChecksum = (address) => {
   // Check each case
-  address = address.replace(/^0x/i, '');
-  var addressHash = sha3(address.toLowerCase());
+  address = address.replace(/^0x/i, '')
+  var addressHash = sha3(address.toLowerCase())
 
   for (var i = 0; i < 40; i++) {
     // the nth letter should be uppercase if the nth digit of casemap is 1
     if ((parseInt(addressHash[i], 16) > 7 && address[i].toUpperCase() !== address[i]) || (parseInt(addressHash[i], 16) <= 7 && address[i].toLowerCase() !== address[i])) {
-      return false;
+      return false
     }
   }
-  return true;
-};
+  return true
+}
 
 /**
  * Takes an input and transforms it into an BN
@@ -100,9 +100,9 @@ export const toBN = (number) => {
   try {
     return utils.bigNumberify(number)
   } catch (e) {
-    throw new Error(e + ' Given value: "' + number + '"');
+    throw new Error(e + ' Given value: "' + number + '"')
   }
-};
+}
 
 
 /**
@@ -113,13 +113,13 @@ export const toBN = (number) => {
  * @return {Boolean}
  */
 export const isBN = (object) => {
-  return (object && object.constructor && object.constructor.name === 'BN') || (object && object.constructor && object.constructor.name === 'BigNumber');
-};
+  return (object && object.constructor && object.constructor.name === 'BN') || (object && object.constructor && object.constructor.name === 'BigNumber')
+}
 
 export const remove0x = (str) => {
   if (str.startsWith('0x'))
-    return str.substring(2);
-  else return str;
+    return str.substring(2)
+  else return str
 }
 
 

@@ -11,9 +11,9 @@ var _classTransformer = require("class-transformer");
 
 require("reflect-metadata");
 
-var _dec, _class;
+var _localforage = _interopRequireDefault(require("localforage"));
 
-function _applyDecoratedDescriptor(target, property, decorators, descriptor, context) { var desc = {}; Object['ke' + 'ys'](descriptor).forEach(function (key) { desc[key] = descriptor[key]; }); desc.enumerable = !!desc.enumerable; desc.configurable = !!desc.configurable; if ('value' in desc || desc.initializer) { desc.writable = true; } desc = decorators.slice().reverse().reduce(function (desc, decorator) { return decorator(target, property, desc) || desc; }, desc); if (context && desc.initializer !== void 0) { desc.value = desc.initializer ? desc.initializer.call(context) : void 0; desc.initializer = undefined; } if (desc.initializer === void 0) { Object['define' + 'Property'](target, property, desc); desc = null; } return desc; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const credentialTypes = {
   bitbucket: {
@@ -22,7 +22,8 @@ const credentialTypes = {
     name: 'bitbucket'
   }
 };
-let Credential = (_dec = (0, _classTransformer.Expose)(), (_class = class Credential {
+
+class Credential {
   static create(type, message, publicKey) {
     const missing = [];
     const metadata = credentialTypes[type];
@@ -50,13 +51,14 @@ let Credential = (_dec = (0, _classTransformer.Expose)(), (_class = class Creden
   storeCredential() {
     return new Promise(async (resolve, reject) => {
       const value = await (0, _ECcrypto.encryptWithPublicKey)(JSON.stringify(this.toJSON()), this.publicKey);
-      NativeStorage.setItem(`knuckles:${this.name}:${this.publicKey}`, value, _ => resolve(true), err => reject(new Error(err)));
+
+      _localforage.default.setItem(`knuckles:${this.name}:${this.publicKey}`, value, () => resolve(true), err => reject(new Error(err)));
     });
   }
 
   static getCredential(key, privateKey) {
     return new Promise(async (resolve, reject) => {
-      NativeStorage.getItem(`knuckles:${this.name}:${this.publicKey}`, async res => resolve((await (0, _ECcrypto.decryptWithPrivateKey)(res, privateKey))), err => reject(err));
+      _localforage.default.getItem(`knuckles:${this.name}:${this.publicKey}`, async res => resolve((await (0, _ECcrypto.decryptWithPrivateKey)(res, privateKey))), err => reject(err));
     });
   }
 
@@ -69,9 +71,10 @@ let Credential = (_dec = (0, _classTransformer.Expose)(), (_class = class Creden
   }
 
   static fromJSON(json) {
-    return (0, _classTransformer.plainToClass)(claim, json);
+    return (0, _classTransformer.plainToClass)(Credential, json);
   }
 
-}, (_applyDecoratedDescriptor(_class.prototype, "credential", [_dec], Object.getOwnPropertyDescriptor(_class.prototype, "credential"), _class.prototype)), _class));
+}
+
 var _default = Credential;
 exports.default = _default;

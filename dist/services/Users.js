@@ -7,9 +7,6 @@ exports.default = void 0;
 
 var _web = require("../web3");
 
-var _ = require("../utils/_");
-
-//import blockies from '../utils/blockies'
 class Users {
   //Default ganache & localhost
   static init({
@@ -44,7 +41,7 @@ class Users {
   async register(profile, wallet) {
     try {
       const swarmHash = '0x' + (await this.bzz.upload(JSON.stringify(profile), {
-        contentType: "application/json"
+        contentType: 'application/json'
       }));
       await this.eth.users.register(profile.name, swarmHash, wallet);
     } catch (err) {

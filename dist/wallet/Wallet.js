@@ -26,7 +26,7 @@ class KnucklesWallet {
 
       const mnemonic = _bip.default.generateMnemonic();
 
-      knucklesWallet.wallet = _ethers.Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`);
+      knucklesWallet.wallet = _ethers.Wallet.fromMnemonic(mnemonic, 'm/99\'/66\'/0\'/0/0');
       await knucklesWallet.saveWallet(password);
       return knucklesWallet;
     } catch (err) {
@@ -37,7 +37,7 @@ class KnucklesWallet {
   static async restore(mnemonic, password) {
     try {
       const knucklesWallet = new KnucklesWallet();
-      knucklesWallet.wallet = _ethers.Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`);
+      knucklesWallet.wallet = _ethers.Wallet.fromMnemonic(mnemonic, 'm/99\'/66\'/0\'/0/0');
       await knucklesWallet.saveWallet(password);
       return knucklesWallet;
     } catch (err) {
@@ -46,13 +46,13 @@ class KnucklesWallet {
   }
 
   static fromMnemonic(mnemonic) {
-    return _ethers.Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`);
+    return _ethers.Wallet.fromMnemonic(mnemonic, 'm/99\'/66\'/0\'/0/0');
   }
 
   static exists() {
     return new Promise(async (resolve, reject) => {
       try {
-        const res = await _localforage.default.getItem(`m/99'/66'/0'/0/0`);
+        const res = await _localforage.default.getItem('m/99\'/66\'/0\'/0/0');
 
         if (res) {
           resolve('password');
@@ -75,7 +75,7 @@ class KnucklesWallet {
           }
         };
         const encrypted = await this.wallet.encrypt(password, options);
-        await _localforage.default.setItem(`m/99'/66'/0'/0/0`, encrypted);
+        await _localforage.default.setItem('m/99\'/66\'/0\'/0/0', encrypted);
         resolve(true);
       } catch (e) {
         reject(new Error(e));
@@ -86,7 +86,7 @@ class KnucklesWallet {
   static getWallet(password) {
     return new Promise(async (resolve, reject) => {
       try {
-        const secretStorage = await _localforage.default.getItem(`m/99'/66'/0'/0/0`);
+        const secretStorage = await _localforage.default.getItem('m/99\'/66\'/0\'/0/0');
 
         if (!secretStorage.startsWith('{"address":')) {
           const bytes = await _cryptoJs.AES.decrypt(secretStorage.toString(), password);

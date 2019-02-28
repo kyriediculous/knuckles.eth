@@ -1,6 +1,6 @@
 import Timesheets from '../../../contracts/build/contracts/Timesheets.json'
 import moment from 'moment'
-import {toUtf8Bytes, keccak256, sha256, parseEther, arrayify, padZeros, hexlify, getAddress, formatEther, bigNumberify} from 'ethers/utils'
+import {parseEther, arrayify, padZeros, hexlify, formatEther, bigNumberify} from 'ethers/utils'
 import {members} from './OrganisationResolver'
 import {Interface} from 'ethers/utils'
 
@@ -8,7 +8,7 @@ import {Interface} from 'ethers/utils'
 
 export async function setReward(reward, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const timesheets = this.ContractProvider(Timesheets, this.provider, wallet)
     let tx = await timesheets.setReward(parseEther(reward.toString()), {gasPrice: parseEther('0')})
     return await tx.wait()
@@ -19,7 +19,7 @@ export async function setReward(reward, wallet) {
 
 export async function setPeriod(user, startPeriod, completed, wallet) {
   try {
-  if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const timesheets = this.ContractProvider(Timesheets, this.provider, wallet)
     let tx = await timesheets.setPeriod(user, startPeriod, completed, {gasPrice: parseEther('0')})
     return await tx.wait()
@@ -33,7 +33,7 @@ export async function getPeriod(user, index) {
     const timesheets = this.ContractProvider(Timesheets, this.provider)
     let period = await timesheets.timsheets(user, index)
     return {
-      startData: moment((period[0].toString(10) * 1000), "x"),
+      startData: moment((period[0].toString(10) * 1000), 'x'),
       completed: period[1]
     }
   } catch (err) {
@@ -45,14 +45,14 @@ export async function timesheet(user, period) {
   try {
     let fromBlock = await this.provider.getBlockNumber()
     switch (period) {
-      case 'all':
-        fromBlock = 0
-        break;
-      case 'monthly':
-        fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0
-        break;
-      case 'quarterly':
-        fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0
+    case 'all':
+      fromBlock = 0
+      break
+    case 'monthly':
+      fromBlock = fromBlock - 518400 > 0 ? fromBlock - 518400 : 0
+      break
+    case 'quarterly':
+      fromBlock = fromBlock - 1555200 > 0 ? fromBlock - 1555200 : 0
     }
     let timesheetEvent = (new Interface(Timesheets.abi)).events.logTimesheetPeriod
     let timesheetTopics = [timesheetEvent.topic, hexlify(padZeros(arrayify(user), 32))]
@@ -65,7 +65,7 @@ export async function timesheet(user, period) {
     return logs.map(l => {
       return {
         user: l._user,
-        start: moment((l._periodStart.toString(10) * 1000), "x"),
+        start: moment((l._periodStart.toString(10) * 1000), 'x'),
         completed: l._completed,
         approver: l._approver,
         reward: l._reward

@@ -1,6 +1,5 @@
 import {EthResolver, Swarm} from '../web3'
 import Users from './Users'
-import Timesheets from './Timesheets'
 import Token from './Token'
 import {formatEther, bigNumberify} from 'ethers/utils'
 import {groupBy, sortNewest} from '../utils/_'
@@ -54,7 +53,6 @@ class Bounties {
       let allBounties = singles.concat(recurring)
       return sortNewest((await Promise.all(allBounties.map(b => this.meta(b)))).filter(b => b != undefined))
     } catch (err) {
-      console.log(err)
       throw new Error(err)
     }
   }
@@ -73,21 +71,20 @@ class Bounties {
         attachments: bounty.attachments,
         tags: bounty.tags.map(t => t.toLowerCase())
       }
-      const swarmHash = await this.bzz.upload(JSON.stringify(swarmBounty), {contentType: "application/json"})
+      const swarmHash = await this.bzz.upload(JSON.stringify(swarmBounty), {contentType: 'application/json'})
       let tx
       switch (bounty.type) {
-        case 'single':
-          tx = await this.eth.bounties.create(swarmHash, bounty.deadline, bounty.reward, wallet)
-          break;
-        case 'recurring':
-          tx = await this.eth.recurringBounties.create(swarmHash, bounty.deadline, bounty.reward, bounty.funding, wallet)
-          break;
-        default:
-          throw new Error("Bounty type not valid or undefined")
+      case 'single':
+        tx = await this.eth.bounties.create(swarmHash, bounty.deadline, bounty.reward, wallet)
+        break
+      case 'recurring':
+        tx = await this.eth.recurringBounties.create(swarmHash, bounty.deadline, bounty.reward, bounty.funding, wallet)
+        break
+      default:
+        throw new Error('Bounty type not valid or undefined')
       }
       return tx
     } catch (err) {
-      console.log(err)
       throw new Error(err)
     }
   }
@@ -107,17 +104,17 @@ class Bounties {
         attachments: bounty.attachments,
         tags: bounty.tags.map(t => t.toLowerCase())
       }
-      const swarmHash = await this.bzz.upload(JSON.stringify(swarmBounty), {contentType: "application/json"})
+      const swarmHash = await this.bzz.upload(JSON.stringify(swarmBounty), {contentType: 'application/json'})
       let tx
       switch (bounty.type) {
-        case 'single':
-          tx = await this.eth.bounties.createMintable(swarmHash, bounty.deadline, bounty.reward, wallet)
-          break;
-        case 'recurring':
-          tx = await this.eth.recurringBounties.createMintable(swarmHash, bounty.deadline, bounty.reward, bounty.funding, wallet)
-          break;
-        default:
-          throw new Error("Bounty type not valid or undefined")
+      case 'single':
+        tx = await this.eth.bounties.createMintable(swarmHash, bounty.deadline, bounty.reward, wallet)
+        break
+      case 'recurring':
+        tx = await this.eth.recurringBounties.createMintable(swarmHash, bounty.deadline, bounty.reward, bounty.funding, wallet)
+        break
+      default:
+        throw new Error('Bounty type not valid or undefined')
       }
       return tx
     } catch (err) {
@@ -135,14 +132,14 @@ class Bounties {
     try {
       let tx
       switch (type) {
-        case 'single':
-          tx = await this.eth.bounties.acceptMintable(address, id, wallet)
-          break;
-        case 'recurring':
-          tx = await this.eth.recurringBounties.acceptMintable(address, id, wallet)
-          break;
-        default:
-        throw new Error("Bounty type not valid or undefined")
+      case 'single':
+        tx = await this.eth.bounties.acceptMintable(address, id, wallet)
+        break
+      case 'recurring':
+        tx = await this.eth.recurringBounties.acceptMintable(address, id, wallet)
+        break
+      default:
+        throw new Error('Bounty type not valid or undefined')
       }
       return tx
     } catch (err) {
@@ -160,15 +157,14 @@ class Bounties {
     try {
       let bounty
       switch (type) {
-        case 'single':
-          bounty = await this.eth.bounties.get(address)
-          break;
-        case 'recurring':
-          bounty = await this.eth.recurringBounties.get(address)
-          break;
-        default:
-          throw new Error("Bounty type not valid or undefined")
-          break;
+      case 'single':
+        bounty = await this.eth.bounties.get(address)
+        break
+      case 'recurring':
+        bounty = await this.eth.recurringBounties.get(address)
+        break
+      default:
+        throw new Error('Bounty type not valid or undefined')
       }
       bounty.address = address
       bounty.type = type
@@ -180,7 +176,7 @@ class Bounties {
       bounty.attachments =  []
 
       let manifests = await Promise.all(bountyDetails.attachments.map(a => this.bzz.bzz.list(a)))
-      let attachments = await Promise.all(manifests.map( (m, i) => this.bzz.download(bountyDetails.attachments[i] + "/" + m.entries[0].path)))
+      let attachments = await Promise.all(manifests.map( (m, i) => this.bzz.download(bountyDetails.attachments[i] + '/' + m.entries[0].path)))
 
       for (var i=0; i < attachments.length; i++) {
         let url = attachments[i].url.split('/')
@@ -202,7 +198,7 @@ class Bounties {
       bounty.attachments = attachments
       const users = Users.init()
       bounty.issuer = await users.get(bounty.issuer)
-      if (bounty.issuer == undefined) return;
+      if (bounty.issuer == undefined) return
       let commitDetails = await Promise.all(bounty.commits.map(c => this.bzz.download(c.reference)))
       commitDetails = await Promise.all(commitDetails.map(cd => cd.text()))
       commitDetails = commitDetails.map(cd => JSON.parse(cd))
@@ -215,26 +211,26 @@ class Bounties {
       }))
 
       attachments = await Promise.all(manifests.map((mf, i) => {
-        if (mf == "") {
+        if (mf == '') {
           return ''
         } else {
-          return this.bzz.download(commitDetails[i].attachment + "/" + mf.entries[0].path)
+          return this.bzz.download(commitDetails[i].attachment + '/' + mf.entries[0].path)
         }
       }))
 
-      for(var i = 0; i < attachments.length; i++) {
-        if (attachments[i] != '') {
-          let url = attachments[i].url.split('/')
-          attachments[i] = await attachments[i].blob()
-          if (attachments[i].type.startsWith('image/')) {
-            attachments[i] = {
-              type: attachments[i].type,
+      for(var j = 0; j < attachments.length; j++) {
+        if (attachments[j] != '') {
+          let url = attachments[j].url.split('/')
+          attachments[j] = await attachments[j].blob()
+          if (attachments[j].type.startsWith('image/')) {
+            attachments[j] = {
+              type: attachments[j].type,
               data: this.bzz.host + '/bzz:/' + url[4] + '/' + url[5],
               name: url[5]
             }
           } else {
-            attachments[i] = {
-              type: attachments[i].type,
+            attachments[j] = {
+              type: attachments[j].type,
               data: this.bzz.host + '/bzz:/' + url[4] + '/' + url[5],
               name: url[5]
             }
@@ -242,22 +238,20 @@ class Bounties {
         }
       }
       let authors = await Promise.all(bounty.commits.map(c => users.get(c.author)))
-      for (var i = 0; i < bounty.commits.length; i++) {
-        bounty.commits[i].comment = commitDetails[i].comment
-        bounty.commits[i].attachment = attachments[i]
-        bounty.commits[i].author = authors[i]
+      for (var k = 0; k < bounty.commits.length; k++) {
+        bounty.commits[k].comment = commitDetails[k].comment
+        bounty.commits[k].attachment = attachments[k]
+        bounty.commits[k].author = authors[k]
       }
 
       if (type === 'single') {
         let contributers = await Promise.all(bounty.contributions.map(bc => users.get(bc.contributer)))
-        for (let i = 0; i < bounty.contributions.length; i++) {
-          bounty.contributions[i].contributer = contributers[i]
+        for (let l = 0; l < bounty.contributions.length; l++) {
+          bounty.contributions[l].contributer = contributers[l]
         }
       }
-
       return bounty
     } catch (err) {
-      console.log(err)
       throw new Error(err)
     }
   }
@@ -271,14 +265,14 @@ class Bounties {
     try {
       let bounty
       switch (type) {
-        case 'single':
-          bounty = await this.eth.bounties.meta(address)
-          break;
-        case 'recurring':
-          bounty = await this.eth.recurringBounties.meta(address)
-          break;
-        default:
-        throw new Error("Bounty type not valid or undefined")
+      case 'single':
+        bounty = await this.eth.bounties.meta(address)
+        break
+      case 'recurring':
+        bounty = await this.eth.recurringBounties.meta(address)
+        break
+      default:
+        throw new Error('Bounty type not valid or undefined')
       }
       bounty.address = address
       bounty.type = type
@@ -290,10 +284,10 @@ class Bounties {
       bounty.attachments =  []
       for (let i = 0; i < bountyDetails.attachments.length; i++) {
         const manifest = await this.bzz.bzz.list(bountyDetails.attachments[i])
-        let attachment = await this.bzz.download(bountyDetails.attachments[i] + "/" + manifest.entries[0].path)
+        let attachment = await this.bzz.download(bountyDetails.attachments[i] + '/' + manifest.entries[0].path)
         let url = attachment.url.split('/')
         attachment = await attachment.blob()
-        if (attachment.type.startsWith("image/")) {
+        if (attachment.type.startsWith('image/')) {
           bounty.attachments[i] = {
             type: attachment.type,
             data: URL.createObjectURL(attachment),
@@ -302,7 +296,7 @@ class Bounties {
         } else {
           bounty.attachments[i] = {
             type: attachment.type,
-            data: this.bzz.host + "/bzz:/" + url[4] + '/' + url[5],
+            data: this.bzz.host + '/bzz:/' + url[4] + '/' + url[5],
             name: url[5]
           }
         }
@@ -328,7 +322,6 @@ class Bounties {
       myBounties = (await Promise.all(myBounties.map(mb => this.get.call(this, mb)))).filter(b => b != undefined)
       return myBounties
     } catch (err) {
-      console.log(err)
       throw Error(err.message)
     }
   }
@@ -340,9 +333,9 @@ class Bounties {
   * @param {Object} commit - object representing the commit data
   * @param {Object} wallet - Wallet of the user to sign the transaction with
   */
-  async submit({address, type}, commit, wallet) {
+  async submit({address}, commit, wallet) {
     try {
-      const swarmHash = await this.bzz.upload(JSON.stringify(commit), {contentType: "application/json"})
+      const swarmHash = await this.bzz.upload(JSON.stringify(commit), {contentType: 'application/json'})
       return await this.eth.bounties.submit(address, swarmHash, wallet)
     } catch (err) {
       throw new Error(err)
@@ -387,7 +380,7 @@ class Bounties {
       }
       return myCommits
     } catch (err) {
-      console.log(err)
+      throw Error(err.message)
     }
   }
 
@@ -397,7 +390,7 @@ class Bounties {
   * @param {Number} id - index of the commit
   * @param {Object} wallet - user wallet to sign the transaction with
   */
-  async accept({address, type}, id, wallet) {
+  async accept({address}, id, wallet) {
     try {
       return await this.eth.bounties.accept(address, id, wallet)
     } catch (err) {
@@ -422,7 +415,7 @@ class Bounties {
       })
       return logs
     } catch (err) {
-      console.log(err)
+      throw Error(err.message)
     }
   }
 
@@ -435,12 +428,12 @@ class Bounties {
     try {
       let logs
       switch (type) {
-        case 'single':
-          logs = await this.eth.bounties.activity(address)
-          break;
-        case 'recurring':
-          logs = await this.eth.recurringBounties.activity(address)
-          break;
+      case 'single':
+        logs = await this.eth.bounties.activity(address)
+        break
+      case 'recurring':
+        logs = await this.eth.recurringBounties.activity(address)
+        break
       }
       const users = Users.init()
       const logsBy = await Promise.all(logs.map(l => users.get(l.by)))
@@ -461,9 +454,9 @@ class Bounties {
     try {
       let leaderboard, singlesLead, recurringLead, timesheetRewards
       [singlesLead, recurringLead, timesheetRewards] = await Promise.all([
-         this.eth.bounties.leaderboard(period),
-         this.eth.recurringBounties.leaderboard(period),
-         this.eth.timesheets.rewards(period)
+        this.eth.bounties.leaderboard(period),
+        this.eth.recurringBounties.leaderboard(period),
+        this.eth.timesheets.rewards(period)
       ])
       leaderboard = [...singlesLead, ...recurringLead, ...timesheetRewards]
       leaderboard = groupBy(leaderboard, 'user')
@@ -472,15 +465,15 @@ class Bounties {
         let users = Users.init()
         output.push({
           user: await users.get(user),
-          rewards: leaderboard[user].length > 1 ? (leaderboard[user].reduce((a, b) => {a.rewards = a.rewards.add(b.rewards); return a;})).rewards : leaderboard[user][0].rewards
-        });
+          rewards: leaderboard[user].length > 1 ? (leaderboard[user].reduce((a, b) => {a.rewards = a.rewards.add(b.rewards); return a})).rewards : leaderboard[user][0].rewards
+        })
       }
       output = output.sort( (a, b) => {
-          if (a.rewards.gt(b.rewards)) {
-            return -1
-          } else {
-            return 1
-          }
+        if (a.rewards.gt(b.rewards)) {
+          return -1
+        } else {
+          return 1
+        }
       })
       output = output.map(l => {
         l.rewards = parseFloat(formatEther(l.rewards)).toFixed(2)
@@ -502,15 +495,14 @@ class Bounties {
   async startWorking({address, type}, wallet) {
     try {
       switch (type) {
-        case 'single':
-          return this.eth.bounties.startWorking(address, wallet)
-          break;
-        case 'recurring':
-          return this.eth.recurringBounties.startWorking(address, wallet)
-          break;
-        default:
-          throw new Error("Invalid or undefined bounty type")
-          break;
+      case 'single':
+        await this.eth.bounties.startWorking(address, wallet)
+        break
+      case 'recurring':
+        await this.eth.recurringBounties.startWorking(address, wallet)
+        break
+      default:
+        throw new Error('Invalid or undefined bounty type')
       }
     } catch (err) {
       throw new Error(err)
@@ -526,7 +518,7 @@ class Bounties {
   */
   async contribute({address, type}, amount, wallet) {
     try {
-      if (type != 'single') throw new Error("Can not contribute to recurring bounties, send tokens to the contract to add funding");
+      if (type != 'single') throw new Error('Can not contribute to recurring bounties, send tokens to the contract to add funding')
       return this.eth.bounties.contribute(address, amount, wallet)
     } catch (err) {
       throw new Error(err)
@@ -542,7 +534,7 @@ class Bounties {
   */
   async refundContribution({address, type}, contributionId, amount, wallet) {
     try {
-      if (type != 'single') throw new Error("Can not refund recurring bounties");
+      if (type != 'single') throw new Error('Can not refund recurring bounties')
       return this.eth.bounties.refundContribution(address, contributionId, amount, wallet)
     } catch (err) {
       throw new Error(err)
@@ -559,19 +551,18 @@ class Bounties {
     try {
       let tx
       switch (type) {
-        case 'single':
-          tx = await this.eth.bounties.cancel(address, wallet)
-          break;
-        case 'recurring':
-          tx =  await this.eth.recurringBounties.cancel(address, wallet)
-          break;
-        default:
-          throw new Error("Bounty type not valid or undefined")
-          break;
+      case 'single':
+        tx = await this.eth.bounties.cancel(address, wallet)
+        break
+      case 'recurring':
+        tx =  await this.eth.recurringBounties.cancel(address, wallet)
+        break
+      default:
+        throw new Error('Bounty type not valid or undefined')
       }
       return tx
     } catch (err) {
-      throw new Error(err)
+      throw Error(err.message)
     }
   }
 
@@ -579,15 +570,14 @@ class Bounties {
     try {
       let tx
       switch (type) {
-        case 'single':
-          tx = await this.eth.bounties.cancelMintable(address, wallet)
-          break;
-        case 'recurring':
-          tx = await this.eth.recurringBounties.cancelMintable(address, wallet)
-          break;
-        default:
-          throw new Error("Bounty type not valid or undefined")
-          break;
+      case 'single':
+        tx = await this.eth.bounties.cancelMintable(address, wallet)
+        break
+      case 'recurring':
+        tx = await this.eth.recurringBounties.cancelMintable(address, wallet)
+        break
+      default:
+        throw new Error('Bounty type not valid or undefined')
       }
       return tx
     } catch (e) {
@@ -597,7 +587,7 @@ class Bounties {
 
   async addFunding({address, type}, amount, wallet) {
     try {
-      if (type !== 'recurring') throw new Error("Bounty type must be recurring");
+      if (type !== 'recurring') throw new Error('Bounty type must be recurring')
       const issuer = (await this.eth.recurringBounties.meta(address)).issuer
       if (issuer == wallet.address) {
         await this.eth.recurringBounties.addFunding(address, amount, wallet)
@@ -611,7 +601,7 @@ class Bounties {
 
   async withdrawFunding({address, type}, amount, wallet) {
     try {
-      if (type !== 'recurring') throw new Error("Bounty type must be recurring");
+      if (type !== 'recurring') throw new Error('Bounty type must be recurring')
       const token = Token.init()
       await this.eth.recurringBounties.withdrawFunding(address, amount, token.address(), wallet)
     } catch (err) {

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "npm run test",
     "build": "babel src --out-dir dist --copy-files",
-    "lint": "eslint --ext .js --ignore-path .gitignore src"
+    "lint": "eslint --ext .js --ignore-path .gitignore src --fix"
   },
   "keywords": [
     "ethereum",

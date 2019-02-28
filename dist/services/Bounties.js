@@ -9,8 +9,6 @@ var _web = require("../web3");
 
 var _Users = _interopRequireDefault(require("./Users"));
 
-var _Timesheets = _interopRequireDefault(require("./Timesheets"));
-
 var _Token = _interopRequireDefault(require("./Token"));
 
 var _utils = require("ethers/utils");
@@ -69,7 +67,6 @@ class Bounties {
       let allBounties = singles.concat(recurring);
       return (0, _.sortNewest)((await Promise.all(allBounties.map(b => this.meta(b)))).filter(b => b != undefined));
     } catch (err) {
-      console.log(err);
       throw new Error(err);
     }
   }
@@ -90,7 +87,7 @@ class Bounties {
         tags: bounty.tags.map(t => t.toLowerCase())
       };
       const swarmHash = await this.bzz.upload(JSON.stringify(swarmBounty), {
-        contentType: "application/json"
+        contentType: 'application/json'
       });
       let tx;
 
@@ -104,12 +101,11 @@ class Bounties {
           break;
 
         default:
-          throw new Error("Bounty type not valid or undefined");
+          throw new Error('Bounty type not valid or undefined');
       }
 
       return tx;
     } catch (err) {
-      console.log(err);
       throw new Error(err);
     }
   }
@@ -131,7 +127,7 @@ class Bounties {
         tags: bounty.tags.map(t => t.toLowerCase())
       };
       const swarmHash = await this.bzz.upload(JSON.stringify(swarmBounty), {
-        contentType: "application/json"
+        contentType: 'application/json'
       });
       let tx;
 
@@ -145,7 +141,7 @@ class Bounties {
           break;
 
         default:
-          throw new Error("Bounty type not valid or undefined");
+          throw new Error('Bounty type not valid or undefined');
       }
 
       return tx;
@@ -178,7 +174,7 @@ class Bounties {
           break;
 
         default:
-          throw new Error("Bounty type not valid or undefined");
+          throw new Error('Bounty type not valid or undefined');
       }
 
       return tx;
@@ -211,8 +207,7 @@ class Bounties {
           break;
 
         default:
-          throw new Error("Bounty type not valid or undefined");
-          break;
+          throw new Error('Bounty type not valid or undefined');
       }
 
       bounty.address = address;
@@ -224,7 +219,7 @@ class Bounties {
       bounty.tags = bountyDetails.tags;
       bounty.attachments = [];
       let manifests = await Promise.all(bountyDetails.attachments.map(a => this.bzz.bzz.list(a)));
-      let attachments = await Promise.all(manifests.map((m, i) => this.bzz.download(bountyDetails.attachments[i] + "/" + m.entries[0].path)));
+      let attachments = await Promise.all(manifests.map((m, i) => this.bzz.download(bountyDetails.attachments[i] + '/' + m.entries[0].path)));
 
       for (var i = 0; i < attachments.length; i++) {
         let url = attachments[i].url.split('/');
@@ -262,27 +257,27 @@ class Bounties {
         }
       }));
       attachments = await Promise.all(manifests.map((mf, i) => {
-        if (mf == "") {
+        if (mf == '') {
           return '';
         } else {
-          return this.bzz.download(commitDetails[i].attachment + "/" + mf.entries[0].path);
+          return this.bzz.download(commitDetails[i].attachment + '/' + mf.entries[0].path);
         }
       }));
 
-      for (var i = 0; i < attachments.length; i++) {
-        if (attachments[i] != '') {
-          let url = attachments[i].url.split('/');
-          attachments[i] = await attachments[i].blob();
+      for (var j = 0; j < attachments.length; j++) {
+        if (attachments[j] != '') {
+          let url = attachments[j].url.split('/');
+          attachments[j] = await attachments[j].blob();
 
-          if (attachments[i].type.startsWith('image/')) {
-            attachments[i] = {
-              type: attachments[i].type,
+          if (attachments[j].type.startsWith('image/')) {
+            attachments[j] = {
+              type: attachments[j].type,
               data: this.bzz.host + '/bzz:/' + url[4] + '/' + url[5],
               name: url[5]
             };
           } else {
-            attachments[i] = {
-              type: attachments[i].type,
+            attachments[j] = {
+              type: attachments[j].type,
               data: this.bzz.host + '/bzz:/' + url[4] + '/' + url[5],
               name: url[5]
             };
@@ -292,23 +287,22 @@ class Bounties {
 
       let authors = await Promise.all(bounty.commits.map(c => users.get(c.author)));
 
-      for (var i = 0; i < bounty.commits.length; i++) {
-        bounty.commits[i].comment = commitDetails[i].comment;
-        bounty.commits[i].attachment = attachments[i];
-        bounty.commits[i].author = authors[i];
+      for (var k = 0; k < bounty.commits.length; k++) {
+        bounty.commits[k].comment = commitDetails[k].comment;
+        bounty.commits[k].attachment = attachments[k];
+        bounty.commits[k].author = authors[k];
       }
 
       if (type === 'single') {
         let contributers = await Promise.all(bounty.contributions.map(bc => users.get(bc.contributer)));
 
-        for (let i = 0; i < bounty.contributions.length; i++) {
-          bounty.contributions[i].contributer = contributers[i];
+        for (let l = 0; l < bounty.contributions.length; l++) {
+          bounty.contributions[l].contributer = contributers[l];
         }
       }
 
       return bounty;
     } catch (err) {
-      console.log(err);
       throw new Error(err);
     }
   }
@@ -336,7 +330,7 @@ class Bounties {
           break;
 
         default:
-          throw new Error("Bounty type not valid or undefined");
+          throw new Error('Bounty type not valid or undefined');
       }
 
       bounty.address = address;
@@ -350,11 +344,11 @@ class Bounties {
 
       for (let i = 0; i < bountyDetails.attachments.length; i++) {
         const manifest = await this.bzz.bzz.list(bountyDetails.attachments[i]);
-        let attachment = await this.bzz.download(bountyDetails.attachments[i] + "/" + manifest.entries[0].path);
+        let attachment = await this.bzz.download(bountyDetails.attachments[i] + '/' + manifest.entries[0].path);
         let url = attachment.url.split('/');
         attachment = await attachment.blob();
 
-        if (attachment.type.startsWith("image/")) {
+        if (attachment.type.startsWith('image/')) {
           bounty.attachments[i] = {
             type: attachment.type,
             data: URL.createObjectURL(attachment),
@@ -363,7 +357,7 @@ class Bounties {
         } else {
           bounty.attachments[i] = {
             type: attachment.type,
-            data: this.bzz.host + "/bzz:/" + url[4] + '/' + url[5],
+            data: this.bzz.host + '/bzz:/' + url[4] + '/' + url[5],
             name: url[5]
           };
         }
@@ -392,7 +386,6 @@ class Bounties {
       myBounties = (await Promise.all(myBounties.map(mb => this.get.call(this, mb)))).filter(b => b != undefined);
       return myBounties;
     } catch (err) {
-      console.log(err);
       throw Error(err.message);
     }
   }
@@ -406,12 +399,11 @@ class Bounties {
 
 
   async submit({
-    address,
-    type
+    address
   }, commit, wallet) {
     try {
       const swarmHash = await this.bzz.upload(JSON.stringify(commit), {
-        contentType: "application/json"
+        contentType: 'application/json'
       });
       return await this.eth.bounties.submit(address, swarmHash, wallet);
     } catch (err) {
@@ -463,7 +455,7 @@ class Bounties {
 
       return myCommits;
     } catch (err) {
-      console.log(err);
+      throw Error(err.message);
     }
   }
   /**
@@ -475,8 +467,7 @@ class Bounties {
 
 
   async accept({
-    address,
-    type
+    address
   }, id, wallet) {
     try {
       return await this.eth.bounties.accept(address, id, wallet);
@@ -504,7 +495,7 @@ class Bounties {
       });
       return logs;
     } catch (err) {
-      console.log(err);
+      throw Error(err.message);
     }
   }
   /**
@@ -600,16 +591,15 @@ class Bounties {
     try {
       switch (type) {
         case 'single':
-          return this.eth.bounties.startWorking(address, wallet);
+          await this.eth.bounties.startWorking(address, wallet);
           break;
 
         case 'recurring':
-          return this.eth.recurringBounties.startWorking(address, wallet);
+          await this.eth.recurringBounties.startWorking(address, wallet);
           break;
 
         default:
-          throw new Error("Invalid or undefined bounty type");
-          break;
+          throw new Error('Invalid or undefined bounty type');
       }
     } catch (err) {
       throw new Error(err);
@@ -629,7 +619,7 @@ class Bounties {
     type
   }, amount, wallet) {
     try {
-      if (type != 'single') throw new Error("Can not contribute to recurring bounties, send tokens to the contract to add funding");
+      if (type != 'single') throw new Error('Can not contribute to recurring bounties, send tokens to the contract to add funding');
       return this.eth.bounties.contribute(address, amount, wallet);
     } catch (err) {
       throw new Error(err);
@@ -649,7 +639,7 @@ class Bounties {
     type
   }, contributionId, amount, wallet) {
     try {
-      if (type != 'single') throw new Error("Can not refund recurring bounties");
+      if (type != 'single') throw new Error('Can not refund recurring bounties');
       return this.eth.bounties.refundContribution(address, contributionId, amount, wallet);
     } catch (err) {
       throw new Error(err);
@@ -680,13 +670,12 @@ class Bounties {
           break;
 
         default:
-          throw new Error("Bounty type not valid or undefined");
-          break;
+          throw new Error('Bounty type not valid or undefined');
       }
 
       return tx;
     } catch (err) {
-      throw new Error(err);
+      throw Error(err.message);
     }
   }
 
@@ -707,8 +696,7 @@ class Bounties {
           break;
 
         default:
-          throw new Error("Bounty type not valid or undefined");
-          break;
+          throw new Error('Bounty type not valid or undefined');
       }
 
       return tx;
@@ -722,7 +710,7 @@ class Bounties {
     type
   }, amount, wallet) {
     try {
-      if (type !== 'recurring') throw new Error("Bounty type must be recurring");
+      if (type !== 'recurring') throw new Error('Bounty type must be recurring');
       const issuer = (await this.eth.recurringBounties.meta(address)).issuer;
 
       if (issuer == wallet.address) {
@@ -740,7 +728,7 @@ class Bounties {
     type
   }, amount, wallet) {
     try {
-      if (type !== 'recurring') throw new Error("Bounty type must be recurring");
+      if (type !== 'recurring') throw new Error('Bounty type must be recurring');
 
       const token = _Token.default.init();
 

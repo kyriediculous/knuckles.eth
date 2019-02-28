@@ -29,8 +29,6 @@ var _BountyFactory = _interopRequireDefault(require("../../../contracts/build/co
 
 var _BountyInterface = _interopRequireDefault(require("../../../contracts/build/contracts/BountyInterface.json"));
 
-var _Token = _interopRequireDefault(require("../../../contracts/build/contracts/Token.json"));
-
 var _TokenResolver = require("./TokenResolver");
 
 var _moment = _interopRequireDefault(require("moment"));
@@ -43,7 +41,7 @@ var _ = require("../../utils/_");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const statusOptions = ["Active", "Completed", "Abandoned"];
+const statusOptions = ['Active', 'Completed', 'Abandoned'];
 
 function bountyAt(address, provider, wallet = undefined) {
   if (!wallet) return new _ethers.Contract(address, _BountyInterface.default.abi, provider);
@@ -53,7 +51,6 @@ function bountyAt(address, provider, wallet = undefined) {
 
 async function allBounties() {
   try {
-    const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider);
     let event = new _utils.Interface(_BountyFactory.default.abi).events.logBountyCreated;
     let logs = await this.provider.getLogs({
       fromBlock: 0,
@@ -73,13 +70,12 @@ async function allBounties() {
 
 async function createBounty(reference, deadline, reward, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     reference = '0x' + reference;
     deadline = Date.parse(deadline) / 1000;
     reward = (0, _utils.parseEther)(reward.toString());
     const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
-    const token = this.ContractProvider(_Token.default, this.provider, wallet);
-    let spend = await _TokenResolver.approveSpend.call(this, bountyFactory.address, reward, wallet);
+    await _TokenResolver.approveSpend.call(this, bountyFactory.address, reward, wallet);
     let tx = await bountyFactory.createBounty(reference, deadline, reward, {
       gasPrice: (0, _utils.parseEther)('0')
     });
@@ -91,7 +87,7 @@ async function createBounty(reference, deadline, reward, wallet) {
 
 async function createMintable(reference, deadline, reward, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     reference = '0x' + reference;
     deadline = Date.parse(deadline) / 1000;
     reward = (0, _utils.parseEther)(reward.toString());
@@ -163,7 +159,7 @@ async function bountyActivityFeed(address) {
       let ev = startWorkEvent.decode(log.data, log.topics);
       return {
         by: ev._by,
-        timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, "x"),
+        timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, 'x'),
         type: 'startWork',
         extraData: null
       };
@@ -172,7 +168,7 @@ async function bountyActivityFeed(address) {
       let ev = commitEvent.decode(log.data, log.topics);
       return {
         by: ev._by,
-        timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, "x"),
+        timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, 'x'),
         type: 'commit',
         extraData: ev._id
       };
@@ -181,7 +177,7 @@ async function bountyActivityFeed(address) {
       let ev = contributeEvent.decode(log.data, log.topics);
       return {
         by: ev._by,
-        timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, "x"),
+        timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, 'x'),
         type: 'contribute',
         extraData: parseFloat((0, _utils.formatEther)((0, _utils.bigNumberify)(ev._amount))).toFixed(2)
       };
@@ -190,7 +186,7 @@ async function bountyActivityFeed(address) {
       let ev = acceptEvent.decode(log.data, log.topics);
       return {
         by: ev._winner,
-        timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, "x"),
+        timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, 'x'),
         type: 'accepted'
       };
     });
@@ -199,7 +195,7 @@ async function bountyActivityFeed(address) {
       return {
         by: ev._by,
         type: 'cancelled',
-        timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, "x")
+        timestamp: (0, _moment.default)(ev._timestamp.toString(10) * 1000, 'x')
       };
     });
     let activityLog = [...startWorkLogs, ...commitLogs, ...contributionLogs, ...acceptedLog, ...cancelledLog];
@@ -258,8 +254,8 @@ async function getBounty(address) {
     myBounty.contributions = await Promise.all(contributions.map(c => getContribution.call(this, address, c)));
     let commits = [];
 
-    for (var i = 0; i < myBounty.commits; i++) {
-      commits.push(i);
+    for (var j = 0; j < myBounty.commits; j++) {
+      commits.push(j);
     }
 
     myBounty.commits = await Promise.all(commits.map(c => getCommit.call(this, address, c)));
@@ -279,8 +275,8 @@ async function getMeta(address) {
       attachments: [],
       reference: myBounty[0].substring(2),
       issuer: myBounty[1],
-      timestamp: (0, _moment.default)(myBounty[2].toString(10) * 1000, "x"),
-      deadline: (0, _moment.default)(myBounty[3].toString(10) * 1000, "x"),
+      timestamp: (0, _moment.default)(myBounty[2].toString(10) * 1000, 'x'),
+      deadline: (0, _moment.default)(myBounty[3].toString(10) * 1000, 'x'),
       reward: parseFloat((0, _utils.formatEther)((0, _utils.bigNumberify)(myBounty[4]))).toFixed(2),
       status: statusOptions[myBounty[5]] !== 'Active' ? statusOptions[myBounty[5]] : Date.now() > myBounty[3].toNumber() * 1000 ? 'Completed' : 'Active',
       commits: (await bounty.getCommits()).toNumber(),
@@ -297,7 +293,7 @@ async function getMeta(address) {
 
 async function cancelBounty(address, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const bounty = bountyAt(address, this.provider, wallet);
     let tx = await bounty.cancelBounty({
       gasPrice: (0, _utils.parseEther)('0')
@@ -310,7 +306,7 @@ async function cancelBounty(address, wallet) {
 
 async function cancelMintable(address, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const bf = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
     let tx = await bf.cancelMintable(address, {
       gasPrice: (0, _utils.parseEther)('0')
@@ -323,7 +319,7 @@ async function cancelMintable(address, wallet) {
 
 async function contribute(address, amount, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const bounty = bountyAt(address, this.provider, wallet);
     let spend = await _TokenResolver.approveSpend.call(this, address, amount, wallet);
     await spend.wait();
@@ -345,7 +341,7 @@ async function getContribution(address, id) {
       contributer: con[0],
       token: con[1],
       amount: (0, _utils.formatEther)((0, _utils.bigNumberify)(con[2])),
-      timestamp: (0, _moment.default)(con[3].toString(10) * 1000, "x")
+      timestamp: (0, _moment.default)(con[3].toString(10) * 1000, 'x')
     };
     return con;
   } catch (err) {
@@ -361,7 +357,7 @@ async function getCommit(address, id) {
       reference: prop[0].substring(2),
       author: prop[1],
       accepted: prop[2],
-      timestamp: (0, _moment.default)(prop[3].toString(10) * 1000, "x"),
+      timestamp: (0, _moment.default)(prop[3].toString(10) * 1000, 'x'),
       comment: '',
       attachment: '',
       id,
@@ -375,13 +371,12 @@ async function getCommit(address, id) {
 
 async function acceptCommit(address, id, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const b = bountyAt(address, this.provider, wallet);
     let tx = await b.acceptCommit(id, {
       gasPrice: (0, _utils.parseEther)('0')
     });
     return await tx.wait();
-    return tx;
   } catch (e) {
     throw new Error(e);
   }
@@ -389,7 +384,7 @@ async function acceptCommit(address, id, wallet) {
 
 async function acceptMintable(address, id, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const bountyFactory = this.ContractProvider(_BountyFactory.default, this.provider, wallet);
     let tx = await bountyFactory.acceptMintable(address, id, {
       gasPrice: (0, _utils.parseEther)('0')
@@ -402,7 +397,7 @@ async function acceptMintable(address, id, wallet) {
 
 async function submitCommit(address, reference, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const b = bountyAt(address, this.provider, wallet);
     reference = '0x' + reference;
     let tx = await b.submitCommit(reference, {
@@ -472,7 +467,7 @@ async function leaderboard(period) {
 
 async function startWorking(address, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const b = bountyAt(address, this.provider, wallet);
     let tx = await b.startWork({
       gasPrice: (0, _utils.parseEther)('0')
@@ -485,7 +480,7 @@ async function startWorking(address, wallet) {
 
 async function refundContribution(address, contributionId, amount, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const bounty = bountyAt(address, this.provider, wallet);
     let tx = await bounty.refundContribution(contributionId, (0, _utils.parseEther)(amount.toString(10)), {
       gasPrice: (0, _utils.parseEther)('0')

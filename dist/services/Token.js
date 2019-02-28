@@ -44,7 +44,6 @@ class Token {
     try {
       return await this.eth.token.send(to, amount, wallet);
     } catch (err) {
-      console.log(err);
       throw new Error(err);
     }
   }

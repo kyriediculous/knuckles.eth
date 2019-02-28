@@ -34,7 +34,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //identity , minttokens , addAdmin , removeAdmin , blacklistMember , removeBlacklistMember
 async function setIdentity(name, swarmHash, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.setOrganisationIdentity((0, _.stringToHex)(name.toLowerCase()), swarmHash, {
       gasPrice: (0, _utils.parseEther)('0')
@@ -47,7 +47,7 @@ async function setIdentity(name, swarmHash, wallet) {
 
 async function mintTokens(to, amount, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.mintToken(to, (0, _utils.parseEther)(amount.toString()), {
       gasPrice: (0, _utils.parseEther)('0')
@@ -60,7 +60,7 @@ async function mintTokens(to, amount, wallet) {
 
 async function addAdmin(address, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.addAdmin(address, {
       gasPrice: (0, _utils.parseEther)('0')
@@ -73,7 +73,7 @@ async function addAdmin(address, wallet) {
 
 async function removeAdmin(address, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.removeAdmin(address, {
       gasPrice: (0, _utils.parseEther)('0')
@@ -86,7 +86,7 @@ async function removeAdmin(address, wallet) {
 
 async function blacklist(address, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.blacklist(address, {
       gasPrice: (0, _utils.parseEther)('0')
@@ -99,7 +99,7 @@ async function blacklist(address, wallet) {
 
 async function whitelist(address, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const organisation = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await organisation.whitelist(address, {
       gasPrice: (0, _utils.parseEther)('0')
@@ -146,7 +146,7 @@ async function admins() {
     } //Filter 0X0 values because I was stupid
 
 
-    admins = admins.filter(a => a.address.startsWith("0x00000") == false);
+    admins = admins.filter(a => a.address.startsWith('0x00000') == false);
     return admins.filter(a => a.admin);
   } catch (err) {
     throw new Error(err);
@@ -261,7 +261,7 @@ async function pending() {
 
 async function approve(user, accepted, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const org = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await org.approve(user, accepted, {
       gasPrice: (0, _utils.parseEther)('0')
@@ -274,7 +274,7 @@ async function approve(user, accepted, wallet) {
 
 async function toggleApproval(wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const org = this.ContractProvider(_OrganisationContract.default, this.provider, wallet);
     let tx = await org.toggleApproval({
       gasPrice: (0, _utils.parseEther)('0')

@@ -24,7 +24,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //setreward, setperiod, getperiod, getperiods
 async function setReward(reward, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const timesheets = this.ContractProvider(_Timesheets.default, this.provider, wallet);
     let tx = await timesheets.setReward((0, _utils.parseEther)(reward.toString()), {
       gasPrice: (0, _utils.parseEther)('0')
@@ -37,7 +37,7 @@ async function setReward(reward, wallet) {
 
 async function setPeriod(user, startPeriod, completed, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const timesheets = this.ContractProvider(_Timesheets.default, this.provider, wallet);
     let tx = await timesheets.setPeriod(user, startPeriod, completed, {
       gasPrice: (0, _utils.parseEther)('0')
@@ -53,7 +53,7 @@ async function getPeriod(user, index) {
     const timesheets = this.ContractProvider(_Timesheets.default, this.provider);
     let period = await timesheets.timsheets(user, index);
     return {
-      startData: (0, _moment.default)(period[0].toString(10) * 1000, "x"),
+      startData: (0, _moment.default)(period[0].toString(10) * 1000, 'x'),
       completed: period[1]
     };
   } catch (err) {
@@ -89,7 +89,7 @@ async function timesheet(user, period) {
     return logs.map(l => {
       return {
         user: l._user,
-        start: (0, _moment.default)(l._periodStart.toString(10) * 1000, "x"),
+        start: (0, _moment.default)(l._periodStart.toString(10) * 1000, 'x'),
         completed: l._completed,
         approver: l._approver,
         reward: l._reward

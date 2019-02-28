@@ -1,6 +1,4 @@
 import {EthResolver, Swarm} from '../web3'
-//import blockies from '../utils/blockies'
-import {bytes32ToString} from '../utils/_'
 
 class Users {
   //Default ganache & localhost
@@ -29,7 +27,7 @@ class Users {
 
   async register(profile, wallet) {
     try {
-      const swarmHash = '0x' + await this.bzz.upload(JSON.stringify(profile), {contentType: "application/json"})
+      const swarmHash = '0x' + await this.bzz.upload(JSON.stringify(profile), {contentType: 'application/json'})
       await this.eth.users.register(profile.name, swarmHash, wallet)
     } catch (err) {
       throw new Error(err)

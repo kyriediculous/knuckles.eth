@@ -15,7 +15,7 @@ class KnucklesWallet {
     try {
       const knucklesWallet = new KnucklesWallet()
       const mnemonic = bip39.generateMnemonic()
-      knucklesWallet.wallet = Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`)
+      knucklesWallet.wallet = Wallet.fromMnemonic(mnemonic, 'm/99\'/66\'/0\'/0/0')
       await knucklesWallet.saveWallet(password)
       return knucklesWallet
     } catch (err) {
@@ -26,7 +26,7 @@ class KnucklesWallet {
   static async restore (mnemonic, password) {
     try {
       const knucklesWallet = new KnucklesWallet()
-      knucklesWallet.wallet = Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`)
+      knucklesWallet.wallet = Wallet.fromMnemonic(mnemonic, 'm/99\'/66\'/0\'/0/0')
       await knucklesWallet.saveWallet(password)
       return knucklesWallet
     } catch (err) {
@@ -34,14 +34,14 @@ class KnucklesWallet {
     }
   }
 
- static fromMnemonic (mnemonic) {
-   return Wallet.fromMnemonic(mnemonic, `m/99'/66'/0'/0/0`)
- }
+  static fromMnemonic (mnemonic) {
+    return Wallet.fromMnemonic(mnemonic, 'm/99\'/66\'/0\'/0/0')
+  }
 
   static exists() {
     return new Promise(async (resolve, reject) => {
       try {
-        const res = await LF.getItem(`m/99'/66'/0'/0/0`)
+        const res = await LF.getItem('m/99\'/66\'/0\'/0/0')
         if (res) {
           resolve('password')
         } else {
@@ -63,7 +63,7 @@ class KnucklesWallet {
           }
         }
         const encrypted = await this.wallet.encrypt(password, options)
-        await LF.setItem(`m/99'/66'/0'/0/0`, encrypted)
+        await LF.setItem('m/99\'/66\'/0\'/0/0', encrypted)
         resolve(true)
       } catch (e) {
         reject(new Error(e))
@@ -74,7 +74,7 @@ class KnucklesWallet {
   static getWallet(password) {
     return new Promise(async (resolve, reject) => {
       try {
-        const secretStorage = await LF.getItem(`m/99'/66'/0'/0/0`)
+        const secretStorage = await LF.getItem('m/99\'/66\'/0\'/0/0')
         if (!secretStorage.startsWith('{"address":')) {
           const bytes = await AES.decrypt(secretStorage.toString(), password)
           const plain = await bytes.toString(enc.Utf8)

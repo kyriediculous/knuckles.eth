@@ -1,11 +1,11 @@
 import UsersRegistry from '../../../contracts/build/contracts/UsersRegistry.json'
 import Organisation from '../../../contracts/build/contracts/OrganisationContract.json'
-import {solidityKeccak256 as keccak256, parseEther} from 'ethers/utils'
+import {parseEther} from 'ethers/utils'
 import {stringToHex} from '../../utils/_'
 
 export async function register(name, swarmHash, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const usersregistry = this.ContractProvider(UsersRegistry, this.provider, wallet)
     let tx = await usersregistry.register(stringToHex(name.toLowerCase()), swarmHash, {gasPrice: parseEther('0')})
     await tx.wait()
@@ -19,7 +19,7 @@ export async function register(name, swarmHash, wallet) {
 
 export async function update(newName, swarmHash, oldName, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer")
+    if (wallet === undefined) throw new Error('Must supply a signer')
     const usersregistry = this.ContractProvider(UsersRegistry, this.provider, wallet)
     let tx = await usersregistry.update(stringToHex(newName.toLowerCase()), swarmHash, stringToHex(oldName.toLowerCase()), {gasPrice: parseEther('0')})
     return await tx.wait()

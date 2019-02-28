@@ -6,11 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.encryptWithPublicKey = encryptWithPublicKey;
 exports.decryptWithPrivateKey = decryptWithPrivateKey;
 
-var _utils = require("ethers/utils");
-
 var _eccrypto = require("eccrypto");
-
-var _wallet = require("ethers/wallet");
 
 var _secp256k = require("secp256k1");
 
@@ -29,9 +25,9 @@ function encryptWithPublicKey(message, pubKey) {
       iv: encryptedBuffers.iv.toString('hex'),
       ephemPublicKey: encryptedBuffers.ephemPublicKey.toString('hex'),
       ciphertext: encryptedBuffers.ciphertext.toString('hex'),
-      mac: encryptedBuffers.mac.toString('hex')
-    }; // use compressed key because it's smaller
+      mac: encryptedBuffers.mac.toString('hex') // use compressed key because it's smaller
 
+    };
     const compressedKey = (0, _secp256k.publicKeyConvert)(new Buffer(cipher.ephemPublicKey, 'hex'), true).toString('hex');
     const ret = Buffer.concat([new Buffer(cipher.iv, 'hex'), // 16bit
     new Buffer(compressedKey, 'hex'), // 33bit
@@ -55,9 +51,9 @@ function decryptWithPrivateKey(encrypted, privateKey) {
     iv: buf.toString('hex', 0, 16),
     ephemPublicKey: buf.toString('hex', 16, 49),
     mac: buf.toString('hex', 49, 81),
-    ciphertext: buf.toString('hex', 81, buf.length)
-  }; // decompress publicKey
+    ciphertext: buf.toString('hex', 81, buf.length) // decompress publicKey
 
+  };
   encrypted.ephemPublicKey = (0, _secp256k.publicKeyConvert)(new Buffer(encrypted.ephemPublicKey, 'hex'), false).toString('hex');
   const twoStripped = privateKey.substring(2);
   const encryptedBuffer = {

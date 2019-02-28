@@ -28,7 +28,7 @@ async function getBalance(address) {
 
 async function sendTokens(recipient, amount, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const token = this.ContractProvider(_Token.default, this.provider, wallet);
 
     if (typeof amount != 'string') {
@@ -47,7 +47,7 @@ async function sendTokens(recipient, amount, wallet) {
 
 async function approveSpend(recipient, amount, wallet) {
   try {
-    if (wallet === undefined) throw new Error("Must supply a signer");
+    if (wallet === undefined) throw new Error('Must supply a signer');
     const token = this.ContractProvider(_Token.default, this.provider, wallet);
 
     if (typeof amount != 'string') {

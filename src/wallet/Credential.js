@@ -1,11 +1,10 @@
 import {encryptWithPublicKey, decryptWithPrivateKey} from '../utils/ECcrypto'
 import {
   classToPlain,
-  plainToClass,
-  Exclude,
-  Expose
+  plainToClass
 } from 'class-transformer'
 import 'reflect-metadata'
+import LF from 'localforage'
 
 const credentialTypes = {
   bitbucket: {
@@ -42,17 +41,16 @@ class Credential {
   storeCredential() {
     return new Promise(async (resolve, reject) => {
       const value = await encryptWithPublicKey(JSON.stringify(this.toJSON()), this.publicKey)
-      NativeStorage.setItem(`knuckles:${this.name}:${this.publicKey}`, value, _ => resolve(true), err => reject(new Error(err)));
+      LF.setItem(`knuckles:${this.name}:${this.publicKey}`, value, () => resolve(true), err => reject(new Error(err)))
     })
   }
 
   static getCredential(key, privateKey) {
     return new Promise(async (resolve, reject) => {
-      NativeStorage.getItem(`knuckles:${this.name}:${this.publicKey}`, async res => resolve(await decryptWithPrivateKey(res, privateKey)), err => reject(err) )
+      LF.getItem(`knuckles:${this.name}:${this.publicKey}`, async res => resolve(await decryptWithPrivateKey(res, privateKey)), err => reject(err) )
     })
   }
 
-  @Expose()
   credential() {
     return this.credential.credential
   }
@@ -62,7 +60,7 @@ class Credential {
   }
 
   static fromJSON(json) {
-    return plainToClass(claim, json)
+    return plainToClass(Credential, json)
   }
 }
 
